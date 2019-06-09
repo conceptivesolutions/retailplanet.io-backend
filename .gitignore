@@ -1,6 +1,7 @@
 # IntelliJ
 /.idea/*
 !/.idea/codeStyles
+!/.idea/runConfigurations
 *.ipr
 *.iml
 *.iws
