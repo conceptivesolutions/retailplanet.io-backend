@@ -13,6 +13,17 @@
   <artifactId>businesstoken</artifactId>
   <name>retailplanet.io: BusinessToken</name>
 
+  <distributionManagement>
+    <repository>
+      <id>default</id>
+      <url>https://nexus.conceptive.io/repository/maven-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>default</id>
+      <url>https://nexus.conceptive.io/repository/maven-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <dependencies>
     <!-- REST -->
     <dependency>
