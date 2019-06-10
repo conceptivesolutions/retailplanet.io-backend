@@ -19,6 +19,17 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
+  <distributionManagement>
+    <repository>
+      <id>default</id>
+      <url>https://nexus.conceptive.io/repository/maven-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>default</id>
+      <url>https://nexus.conceptive.io/repository/maven-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
