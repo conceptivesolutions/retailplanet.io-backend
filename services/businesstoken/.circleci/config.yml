@@ -7,9 +7,16 @@ jobs:
     environment:
       MAVEN_OPTS: -Xmx3200m
     steps:
-      - run: mvn -s .circleci.settings.xml dependency:get -Dartifact=io.retailplanet.backend:backend-parent:2.0-SNAPSHOT -DremoteRepositories=default::default::https://nexus.conceptive.io/repository/maven-public
       - checkout
-      - run: mvn clean install
+      - run:
+          name: Download Parent
+          command: |
+            cd .. && \
+            mvn -s ~/repo/.circleci/settings.xml dependency:get \
+              -Dartifact=io.retailplanet.backend:backend-parent:2.0-SNAPSHOT:pom \
+              -DremoteRepositories=default::default::https://nexus.conceptive.io/repository/maven-public && \
+            cd repo
+#      - run: mvn clean install
       - save_cache:
           key: v1-dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -42,6 +49,6 @@ workflows:
   build-and-deploy:
     jobs:
       - build
-      - deploy_docker:
-          requires:
-            - build
+#      - deploy_docker:
+#          requires:
+#            - build
