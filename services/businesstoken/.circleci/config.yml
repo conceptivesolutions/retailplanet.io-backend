@@ -16,11 +16,11 @@ jobs:
               -Dartifact=io.retailplanet.backend:backend-parent:2.0-SNAPSHOT:pom \
               -DremoteRepositories=default::default::https://nexus.conceptive.io/repository/maven-public && \
             cd repo
-#      - run: mvn clean install
+      - run: mvn -DskipTests clean install
       - save_cache:
           key: v1-dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/repo/target
+            - ~/repo
 
   deploy_docker:
     working_directory: ~/repo
@@ -36,8 +36,8 @@ jobs:
       - run:
           name: Build application Docker image
           command: |
-            cd /home/circleci/repo/target
-            docker build -t images.conceptive.io/retailplanet.backend.businesstoken:${CIRCLE_BRANCH} .
+            cd /home/circleci/repo
+            docker build -f src/main/docker/Dockerfile.jvm  -t images.conceptive.io/retailplanet.backend.businesstoken:${CIRCLE_BRANCH} .
       - deploy:
           name: Push application Docker image
           command: |
@@ -49,6 +49,6 @@ workflows:
   build-and-deploy:
     jobs:
       - build
-#      - deploy_docker:
-#          requires:
-#            - build
+      - deploy_docker:
+          requires:
+            - build
