@@ -2,6 +2,7 @@
   <servers>
     <server>
       <id>default</id>
+      <username>circleci</username>
       <password>${env.DOCKER_PASS}</password>
     </server>
   </servers>
