@@ -1,6 +1,36 @@
 version: '3.3'
 
 services:
+
+  # Zookeeper to manage kafka instances
+  kafka_zookeeper:
+    image: debezium/zookeeper:latest
+    restart: always
+    ports:
+      - "2181:2181"
+    volumes:
+      - ./.kafka/zookeeper:/zookeeper/data
+      - ./.kafka/zookeeper_conf:/zookeeper/conf
+
+  # Kafka instance
+  kafka:
+    image: debezium/kafka:latest
+    restart: always
+    links:
+      - kafka_zookeeper
+    ports:
+      - "9092:9092"
+    volumes:
+      - ./.kafka/kafka:/kafka/data
+      - ./.kafka/kafka_conf:/kafka/config
+    environment:
+      ZOOKEEPER_CONNECT: "kafka_zookeeper:2181"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_RETENTION_HOURS: -1
+      LISTENERS: "PLAINTEXT://:9092"
+      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
+
+  # PostgreSQL Database
   db_dev_local:
     image: postgres:11-alpine
     restart: always
