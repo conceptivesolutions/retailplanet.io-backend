@@ -43,7 +43,8 @@
   </dependencyManagement>
 
   <modules>
-    <module>businesstoken</module>
+    <module>common</module>
+    <module>services/businesstoken</module>
   </modules>
 
   <dependencies>
