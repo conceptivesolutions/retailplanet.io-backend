@@ -91,7 +91,8 @@ public interface IDynamicConfig
    */
   class TopicBuilder
   {
-
+    private static final String _IN_SUFFIX = "_IN";
+    private static final String _OUT_SUFFIX = "_OUT";
     private final String name;
     private final boolean read;
     private final Map<String, String> values = new HashMap<>();
@@ -127,7 +128,10 @@ public interface IDynamicConfig
     public static TopicBuilder createRead(@NotNull String pName, @NotNull String pGroupId, @NotNull String pAutoOffsetReset,
                                           @NotNull String pKeyDeserializer, @NotNull String pValueDeserializer)
     {
-      return new TopicBuilder(pName, true)
+      if(!pName.endsWith(_IN_SUFFIX))
+        throw new RuntimeException(pName + " is not a valid READ name");
+
+      return new TopicBuilder(pName, pName.substring(0, pName.length() - _IN_SUFFIX.length()), true)
           .autoOffsetReset(pAutoOffsetReset)
           .groupId(pGroupId)
           .keyDeserializer(pKeyDeserializer)
@@ -159,19 +163,22 @@ public interface IDynamicConfig
     @NotNull
     public static TopicBuilder createWrite(@NotNull String pName, @NotNull String pKeySerializer, @NotNull String pValueSerializer)
     {
-      return new TopicBuilder(pName, false)
+      if(!pName.endsWith(_OUT_SUFFIX))
+        throw new RuntimeException(pName + " is not a valid WRITE name");
+
+      return new TopicBuilder(pName, pName.substring(0, pName.length() - _OUT_SUFFIX.length()), false)
           .keySerializer(pKeySerializer)
           .valueSerializer(pValueSerializer)
           .acks(1);
     }
 
-    private TopicBuilder(@NotNull String pName, boolean pIsRead)
+    private TopicBuilder(@NotNull String pName, @NotNull String pTopicName, boolean pIsRead)
     {
       name = pName;
       read = pIsRead;
 
       // intial topic name
-      values.put("topic", pName);
+      values.put("topic", pTopicName);
     }
 
     @NotNull
