@@ -1,3 +1,6 @@
 [submodule "businesstoken"]
 	path = services/businesstoken
 	url = git@github.com:con-ceptive/retailplanet.io-backend-businesstoken.git
+[submodule "services/businessapi"]
+	path = services/businessapi
+	url = git@github.com:con-ceptive/retailplanet.io-backend-businessapi.git
