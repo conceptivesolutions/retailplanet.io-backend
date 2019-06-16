@@ -14,6 +14,16 @@ public interface IEvents
 {
 
   /**
+   * Event: BusinessToken should be created
+   */
+  String OUT_BUSINESSTOKEN_CREATE = "BusinessToken_CREATE_OUT";
+
+  /**
+   * Event: Indicates, that a BusinessToken was created
+   */
+  String IN_BUSINESSTOKEN_CREATED = "BusinessToken_CREATED_IN";
+
+  /**
    * Configuration for Service: businessapi
    */
   @IDynamicConfig.Provider
@@ -26,7 +36,10 @@ public interface IEvents
     public Builder generate()
     {
       return Builder.create()
-          .defaultValue("bootstrap.servers", "${KAFKA_SERVERS}");
+          .defaultValue("bootstrap.servers", "${KAFKA_SERVERS}")
+          .topic(TopicBuilder.createRead(IN_BUSINESSTOKEN_CREATED, _GROUP_ID, "latest", StringDeserializer.class, JsonObjectDeserializer.class))
+          .topic(TopicBuilder.createWrite(OUT_BUSINESSTOKEN_CREATE, StringSerializer.class, JsonObjectSerializer.class));
     }
   }
+
 }
