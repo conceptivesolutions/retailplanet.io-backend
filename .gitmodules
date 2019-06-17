@@ -4,3 +4,6 @@
 [submodule "services/businessapi"]
 	path = services/businessapi
 	url = git@github.com:con-ceptive/retailplanet.io-backend-businessapi.git
+[submodule "services/userauth"]
+	path = services/userauth
+	url = git@github.com:con-ceptive/retailplanet.io-backend-userauth.git

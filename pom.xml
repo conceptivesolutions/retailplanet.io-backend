@@ -46,6 +46,7 @@
     <module>common</module>
     <module>services/businessapi</module>
     <module>services/businesstoken</module>
+    <module>services/userauth</module>
   </modules>
 
   <dependencies>
