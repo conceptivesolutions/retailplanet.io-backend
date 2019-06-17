@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="businessapi" type="QuarkusMavenBridge">
+    <QuarkusSettings>
+      <option name="mavenRunnerParameters">
+        <MavenRunnerParameters>
+          <option name="workingDirPath" value="$PROJECT_DIR$/services/businessapi" />
+        </MavenRunnerParameters>
+      </option>
+      <option name="mavenRunnerSettings">
+        <MavenRunnerSettings>
+          <option name="environmentProperties">
+            <map>
+              <entry key="KAFKA_SERVERS" value="localhost:9092" />
+            </map>
+          </option>
+        </MavenRunnerSettings>
+      </option>
+    </QuarkusSettings>
+    <method v="2" />
+  </configuration>
+</component>
