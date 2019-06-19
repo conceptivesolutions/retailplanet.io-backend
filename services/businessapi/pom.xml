@@ -10,20 +10,6 @@
     <version>2.0-SNAPSHOT</version>
   </parent>
 
-  <!-- Define repository to resolve "backend-parent" -->
-  <repositories>
-    <repository>
-      <id>default</id>
-      <url>https://nexus.conceptive.io/repository/maven-public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
   <artifactId>businessapi</artifactId>
   <name>retailplanet.io: BusinessAPI</name>
 
