@@ -4,7 +4,7 @@ import io.reactivex.*;
 import io.vertx.core.json.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,15 +43,16 @@ public final class EventChain
   }
 
   /**
-   * Creates a new flowable which waits for a result with the given chainID
+   * Creates a new flowable which waits for a result with the given chainID on the given flowables
    *
    * @param pChainID ChainID to wait for
    * @return Flowable with filtered chainID and set timeout
    */
+  @SafeVarargs
   @NotNull
-  public static Single<JsonObject> waitForEvent(@NotNull Flowable<JsonObject> pFlowable, @NotNull String pChainID)
+  public static Single<JsonObject> waitForEvent(@NotNull String pChainID, @NotNull Flowable<JsonObject>... pFlowables)
   {
-    return pFlowable
+    return Flowable.merge(Arrays.asList(pFlowables))
         .filter(pJson -> EventChain.filter(pJson, pChainID))
         .timeout(30, TimeUnit.SECONDS)
         .firstOrError();
@@ -67,7 +68,7 @@ public final class EventChain
   public static boolean filter(@NotNull JsonObject pChainedEvent, @NotNull String pChainID)
   {
     String chainID = pChainedEvent.getString(CHAINID);
-    if(chainID == null)
+    if (chainID == null)
       return false;
     return chainID.trim().equals(pChainID);
   }
