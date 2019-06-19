@@ -31,6 +31,10 @@ public interface IEvents
   {
     private static final String _GROUP_ID = "userauth";
 
+    public DynamicConfProvider()
+    {
+    }
+
     @NotNull
     @Override
     public Builder generate()
