@@ -24,6 +24,11 @@ public interface IEvents
   String IN_BUSINESSTOKEN_CREATED = "BusinessToken_CREATED_IN";
 
   /**
+   * Event: Indicates, that a BusinessToken could not be created
+   */
+  String IN_BUSINESSTOKEN_CREATE_FAILED = "BusinessToken_CREATE_FAILED_IN";
+
+  /**
    * Configuration for Service: businessapi
    */
   @IDynamicConfig.Provider
@@ -38,6 +43,7 @@ public interface IEvents
       return Builder.create()
           .defaultValue("bootstrap.servers", "${KAFKA_SERVERS}")
           .topic(TopicBuilder.createRead(IN_BUSINESSTOKEN_CREATED, _GROUP_ID, "latest", StringDeserializer.class, JsonObjectDeserializer.class))
+          .topic(TopicBuilder.createRead(IN_BUSINESSTOKEN_CREATE_FAILED, _GROUP_ID, "latest", StringDeserializer.class, JsonObjectDeserializer.class))
           .topic(TopicBuilder.createWrite(OUT_BUSINESSTOKEN_CREATE, StringSerializer.class, JsonObjectSerializer.class));
     }
   }
