@@ -10,6 +10,7 @@
         <MavenRunnerSettings>
           <option name="environmentProperties">
             <map>
+              <entry key="H2_DATA" value="$PROJECT_DIR$/.h2/businesstoken" />
               <entry key="KAFKA_SERVERS" value="localhost:9092" />
             </map>
           </option>

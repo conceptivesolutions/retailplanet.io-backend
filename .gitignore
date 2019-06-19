@@ -14,5 +14,5 @@ pom.xml.versionsBackup
 release.properties
 
 # Docker Data
-.postgresql
+.h2
 .kafka
