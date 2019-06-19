@@ -28,28 +28,30 @@
   </repositories>
 
   <dependencies>
-    <!-- REST -->
+
+    <!-- Retailplanet: Common -->
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy</artifactId>
+      <groupId>io.retailplanet.backend</groupId>
+      <artifactId>common</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
-    <!-- Hibernate ORM specific dependencies -->
+    <!-- Kafka -->
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-jsonb</artifactId>
+      <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
     </dependency>
 
-    <!-- Hibernate ORM specific dependencies -->
+    <!-- Hibernate -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm-panache</artifactId>
     </dependency>
 
-    <!-- JDBC driver dependencies -->
+    <!-- H2 connector -->
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jdbc-postgresql</artifactId>
+      <artifactId>quarkus-jdbc-h2</artifactId>
     </dependency>
   </dependencies>
 
