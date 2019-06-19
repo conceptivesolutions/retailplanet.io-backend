@@ -117,4 +117,31 @@
     </plugins>
   </build>
 
+  <profiles>
+
+    <!-- Native is a profile to compile quarkus instances with GRAAL_VM to native executables -->
+    <profile>
+      <id>native</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-maven-plugin</artifactId>
+            <version>${quarkus.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>native-image</goal>
+                </goals>
+                <configuration>
+                  <autoServiceLoaderRegistration>true</autoServiceLoaderRegistration>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>
