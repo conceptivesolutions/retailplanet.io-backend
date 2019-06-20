@@ -31,6 +31,16 @@ services:
       ADVERTISED_LISTENERS: "LOCAL://kafka:9092"
       KAFKA_INTER_BROKER_LISTENER_NAME: LOCAL
 
+  # REST Documentation
+  docs:
+    image: redocly/redoc
+    ports:
+      - 9500:80
+    volumes:
+      - ./docs/public:/usr/share/nginx/html/public
+    environment:
+      - SPEC_URL=public/v1/endpoints.yml
+
   # BusinessAPI-Service
   businessapi:
     image: images.conceptive.io/retailplanet.backend.businessapi:latest

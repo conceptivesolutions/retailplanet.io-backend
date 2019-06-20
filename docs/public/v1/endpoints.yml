@@ -1,0 +1,74 @@
+openapi: 3.0.0
+info:
+  title: retailplanet.io API
+  description: |
+    This document describes the backend structure of the current retailplanet.io backend webservices.
+    # Important
+    Most of the APIs are not public and should not be uses by third party apps. <br/>
+    For official retailplanet.io (Copyright by con.ceptive solutions e.K.) use only!
+  version: v2
+  x-logo:
+    url: 'https://www.conceptive.io/static/logo/symbol_text/300.png'
+    altText: con.ceptive solutions e.K. Logo
+
+servers:
+  - url: https://api.retailplanet.io
+    description: Official retailplanet.io API server endpoint
+
+tags:
+  - name: business
+    description: |
+      The business API is the public endpoint for companies, to push their product information to. <br/>
+      If you want to push products (same flow for markets), the common workflow looks something like this: <br/>
+      <ul>
+        <li>Init the connection and get a transfer token</li>
+        <li>Put all products, paged</li>
+        <li>Invalidate token</li>
+      </ul>
+
+x-tagGroups:
+  - name: External
+    tags:
+      - business
+
+paths:
+  /businesss/token/generate:
+    get:
+      summary: Generate a new session token
+      description: |
+        Init a new "put data" workflow and retrieve a session token. <br/>
+        If this method was called before, the previous token will be invalidated immediately.
+      tags:
+        - business
+      parameters:
+        - name: clientid
+          in: query
+          required: true
+          description: specifies the client, which the products belong to.
+          schema:
+            type: string
+        - name: token
+          in: query
+          required: true
+          description: |
+            The access token for the current client.
+          schema:
+            type: string
+      responses:
+        200:
+          description: User has correct permissions and was able to retrieve a session token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_token:
+                    type: string
+                    description: the newly created session token
+                    example: token
+#                  valid_until: todo
+#                    type: number
+#                    description: specifies the timestamp (milliseconds since unix epoch) how long this token will be valid.
+#                    example: 1557651767385
+        500:
+          description: Something went wrong during workflow
