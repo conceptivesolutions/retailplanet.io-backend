@@ -12,6 +12,8 @@
             <map>
               <entry key="H2_DATA" value="$PROJECT_DIR$/.h2/businesstoken" />
               <entry key="KAFKA_SERVERS" value="localhost:9092" />
+              <entry key="LOG_FILE" value="false" />
+              <entry key="LOG_LEVEL" value="SEVERE" />
             </map>
           </option>
         </MavenRunnerSettings>

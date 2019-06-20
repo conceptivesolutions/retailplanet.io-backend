@@ -11,6 +11,8 @@
           <option name="environmentProperties">
             <map>
               <entry key="KAFKA_SERVERS" value="localhost:9092" />
+              <entry key="LOG_FILE" value="false" />
+              <entry key="LOG_LEVEL" value="SEVERE" />
             </map>
           </option>
         </MavenRunnerSettings>
