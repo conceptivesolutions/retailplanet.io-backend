@@ -22,33 +22,37 @@ services:
       - "9092:9092"
     volumes:
       - ./.kafka/kafka:/kafka/data
-      - ./.kafka/kafka_conf:/kafka/config
     environment:
       ZOOKEEPER_CONNECT: "kafka_zookeeper:2181"
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_LOG_RETENTION_HOURS: -1
-      LISTENERS: "PLAINTEXT://:9092"
-      ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
-#      ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LOCAL:PLAINTEXT
+      LISTENERS: "LOCAL://0.0.0.0:9092"
+      ADVERTISED_LISTENERS: "LOCAL://kafka:9092"
+      KAFKA_INTER_BROKER_LISTENER_NAME: LOCAL
 
-#  test:
-#    image: images.conceptive.io/quarkus-test-jvm:latest
-#    links:
-#      - kafka
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      KAFKA_SERVERS: kafka:9092
-#
-#  # PostgreSQL Database
-#  db_dev_local:
-#    image: postgres:11-alpine
-#    restart: always
-#    ports:
-#      - 5432:5432
-#    volumes:
-#      - ./.postgresql:/var/lib/postgresql/data
-#    environment:
-#      POSTGRES_USER: root
-#      POSTGRES_PASSWORD: root
-#      POSTGRES_DB: retailplanet_local
+  # BusinessAPI-Service
+  businessapi:
+    image: images.conceptive.io/retailplanet.backend.businessapi:latest
+    links:
+      - kafka
+    ports:
+      - 8888:8080
+    environment:
+      KAFKA_SERVERS: kafka:9092
+
+  # UserAuth-Service
+  businesstoken:
+    image: images.conceptive.io/retailplanet.backend.businesstoken:latest
+    links:
+      - kafka
+    environment:
+      KAFKA_SERVERS: kafka:9092
+
+  # UserAuth-Service
+  userauth:
+    image: images.conceptive.io/retailplanet.backend.userauth:latest
+    links:
+      - kafka
+    environment:
+      KAFKA_SERVERS: kafka:9092
