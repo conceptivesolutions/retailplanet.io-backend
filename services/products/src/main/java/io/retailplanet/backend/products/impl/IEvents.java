@@ -1,4 +1,4 @@
-package io.retailplanet.backend.businessapi.impl;
+package io.retailplanet.backend.products.impl;
 
 /**
  * This interface contains all events, incoming and outgoing
