@@ -66,9 +66,25 @@ paths:
                     type: string
                     description: the newly created session token
                     example: token
-#                  valid_until: todo
-#                    type: number
-#                    description: specifies the timestamp (milliseconds since unix epoch) how long this token will be valid.
-#                    example: 1557651767385
+                  valid_until:
+                    type: number
+                    description: specifies the timestamp (UTC) how long this token will be valid.
+                    example: 2019-06-22T19:04:00.763Z
         500:
           description: Something went wrong during workflow
+
+  /business/token/{token}:
+    delete:
+      summary: Invalidate a session token
+      parameters:
+        - name: token
+          in: path
+          required: true
+          description: token that should be invalidated
+          schema:
+            type: string
+      responses:
+        400:
+          description: Missing token in path
+        200:
+          description: Token was marked for removal
