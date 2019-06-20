@@ -1,7 +1,7 @@
 package io.retailplanet.backend.common.api.comm;
 
 import io.retailplanet.backend.common.api.EventDeserializer;
-import org.apache.kafka.common.serialization.*;
+import org.apache.kafka.common.serialization.Deserializer;
 
 import java.lang.annotation.*;
 
@@ -20,11 +20,6 @@ public @interface IncomingEvent
    * @return "latest", "earliest"
    */
   String autoOffsetReset() default "latest";
-
-  /**
-   * @return Class to deserialize the key
-   */
-  Class<? extends Deserializer> keyDeserializer() default StringDeserializer.class;
 
   /**
    * @return Class to deserialize the value

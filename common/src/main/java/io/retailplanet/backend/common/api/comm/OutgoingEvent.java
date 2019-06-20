@@ -1,7 +1,7 @@
 package io.retailplanet.backend.common.api.comm;
 
 import io.retailplanet.backend.common.api.EventSerializer;
-import org.apache.kafka.common.serialization.*;
+import org.apache.kafka.common.serialization.Serializer;
 
 import java.lang.annotation.*;
 
@@ -13,11 +13,6 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 public @interface OutgoingEvent
 {
-
-  /**
-   * @return Class to serialize the key
-   */
-  Class<? extends Serializer> keySerializer() default StringSerializer.class;
 
   /**
    * @return Class to deserialize the key

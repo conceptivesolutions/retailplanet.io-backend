@@ -158,7 +158,6 @@ public class EventProcessor extends AbstractProcessor
     private final String name;
     private final String topic;
     private final String autoOffsetReset;
-    private final String keyDeserializer;
     private final String valueDeserializer;
 
     private _IncomingEvent(Element pElement)
@@ -171,7 +170,6 @@ public class EventProcessor extends AbstractProcessor
 
       IncomingEvent event = pElement.getAnnotation(IncomingEvent.class);
       autoOffsetReset = event.autoOffsetReset();
-      keyDeserializer = _getClassName(event::keyDeserializer);
       valueDeserializer = _getClassName(event::valueDeserializer);
     }
 
@@ -188,7 +186,6 @@ public class EventProcessor extends AbstractProcessor
       result.put(keyPrefix + "topic", topic);
       result.put(keyPrefix + "group.id", pGroupID);
       result.put(keyPrefix + "auto.offset.reset", autoOffsetReset);
-      result.put(keyPrefix + "key.deserializer", keyDeserializer);
       result.put(keyPrefix + "value.deserializer", valueDeserializer);
 
       return result;
@@ -200,7 +197,6 @@ public class EventProcessor extends AbstractProcessor
     private static final String _OUT_SUFFIX = "_OUT";
     private final String name;
     private final String topic;
-    private final String keySerializer;
     private final String valueSerializer;
 
     private _OutgoingEvent(Element pElement)
@@ -211,7 +207,6 @@ public class EventProcessor extends AbstractProcessor
 
       topic = name.substring(0, name.length() - _OUT_SUFFIX.length());
       OutgoingEvent ev = pElement.getAnnotation(OutgoingEvent.class);
-      keySerializer = _getClassName(ev::keySerializer);
       valueSerializer = _getClassName(ev::valueSerializer);
     }
 
@@ -226,7 +221,6 @@ public class EventProcessor extends AbstractProcessor
 
       // Add all our values
       result.put(keyPrefix + "topic", topic);
-      result.put(keyPrefix + "key.serializer", keySerializer);
       result.put(keyPrefix + "value.serializer", valueSerializer);
       result.put(keyPrefix + "acks", "1");
 
