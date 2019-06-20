@@ -135,7 +135,6 @@
                 </goals>
                 <configuration>
                   <containerRuntime>docker</containerRuntime>
-                  <autoServiceLoaderRegistration>true</autoServiceLoaderRegistration>
                 </configuration>
               </execution>
             </executions>
