@@ -24,9 +24,21 @@ public interface IEvents
   String IN_BUSINESSTOKEN_CREATED = "BusinessToken_CREATED_IN";
 
   /**
+   * Event: a BusinessToken was invalidated
+   */
+  @IncomingEvent
+  String IN_BUSINESSTOKEN_INVALIDATED = "BusinessToken_INVALIDATED_IN";
+
+  /**
    * Event: a new BusinessToken was created
    */
   @OutgoingEvent
   String OUT_BUSINESSTOKEN_CREATED = "BusinessToken_CREATED_OUT";
+
+  /**
+   * Event: a BusinessToken was invalidated
+   */
+  @OutgoingEvent
+  String OUT_BUSINESSTOKEN_INVALIDATED = "BusinessToken_INVALIDATED_OUT";
 
 }
