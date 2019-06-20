@@ -59,6 +59,8 @@
     <module>common</module>
     <module>services/businessapi</module>
     <module>services/businesstoken</module>
+    <module>services/markets</module>
+    <module>services/products</module>
     <module>services/userauth</module>
   </modules>
 
