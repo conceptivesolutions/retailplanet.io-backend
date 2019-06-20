@@ -85,4 +85,21 @@ public class TokenResource
         .subscribe(pResponse::resume, pResponse::resume);
   }
 
+  /**
+   * Invalidates the given token
+   *
+   * @param pSessionToken Token to be removed
+   */
+  @DELETE
+  @Path("{session_token}")
+  public Response invalidateToken(@PathParam("session_token") String pSessionToken)
+  {
+    // validate request
+    if(Utility.isNullOrEmptyTrimmedString(pSessionToken))
+      return Response.status(Response.Status.BAD_REQUEST).build();
+
+    tokenInvalidateEmitter.send(new JsonObject().put("session_token", pSessionToken));
+    return Response.ok().build();
+  }
+
 }
