@@ -18,6 +18,12 @@ public interface IEvents
   String OUT_BUSINESSTOKEN_CREATE = "BusinessToken_CREATE_OUT";
 
   /**
+   * Event: BusinessToken should be invalidated
+   */
+  @OutgoingEvent
+  String OUT_BUSINESSTOKEN_INVALIDATED = "BusinessToken_INVALIDATED_OUT";
+
+  /**
    * Event: Indicates, that a BusinessToken was created
    */
   @IncomingEvent
