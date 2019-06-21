@@ -24,6 +24,12 @@ public interface IEvents
   String OUT_BUSINESSTOKEN_INVALIDATED = "BusinessToken_INVALIDATED_OUT";
 
   /**
+   * Event: Product should be updated or inserted
+   */
+  @OutgoingEvent
+  String OUT_PRODUCT_UPSERT_UNAUTH = "Product_UPSERT_UNAUTH_OUT";
+
+  /**
    * Event: Indicates, that a BusinessToken was created
    */
   @IncomingEvent
