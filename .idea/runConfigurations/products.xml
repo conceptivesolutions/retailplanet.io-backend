@@ -1,0 +1,24 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="products" type="QuarkusMavenBridge">
+    <QuarkusSettings>
+      <option name="mavenRunnerParameters">
+        <MavenRunnerParameters>
+          <option name="workingDirPath" value="$PROJECT_DIR$/services/products" />
+        </MavenRunnerParameters>
+      </option>
+      <option name="mavenRunnerSettings">
+        <MavenRunnerSettings>
+          <option name="environmentProperties">
+            <map>
+              <entry key="ELASTIC_SERVERS" value="localhost:9200" />
+              <entry key="KAFKA_SERVERS" value="localhost:9092" />
+              <entry key="LOG_FILE" value="false" />
+              <entry key="LOG_LEVEL" value="SEVERE" />
+            </map>
+          </option>
+        </MavenRunnerSettings>
+      </option>
+    </QuarkusSettings>
+    <method v="2" />
+  </configuration>
+</component>
