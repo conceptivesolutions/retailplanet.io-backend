@@ -4,6 +4,8 @@ import io.vertx.core.json.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.*;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * @author w.glanzer, 21.06.2019
  */
@@ -15,8 +17,8 @@ class Test_ZipUtility
   {
     final String inputString = "I_AM_A_SIMPLE_STRING_WITH_äöü_ß_<a>_SIGNS";
 
-    String compressed = ZipUtility.compressedBase64(inputString);
-    Assertions.assertNotEquals(inputString, compressed, "String was not compressed");
+    byte[] compressed = ZipUtility.compressedBase64(inputString);
+    Assertions.assertNotEquals(inputString.getBytes(StandardCharsets.UTF_8), compressed, "String was not compressed");
 
     String decompressed = ZipUtility.uncompressBase64(compressed);
     Assertions.assertEquals(inputString, decompressed);
@@ -35,8 +37,8 @@ class Test_ZipUtility
             .add("arr1")
             .add("arr2")).toString();
 
-    String compressed = ZipUtility.compressedBase64(inputString);
-    Assertions.assertNotEquals(inputString, compressed, "String was not compressed");
+    byte[] compressed = ZipUtility.compressedBase64(inputString);
+    Assertions.assertNotEquals(inputString.getBytes(StandardCharsets.UTF_8), compressed, "String was not compressed");
 
     String decompressed = ZipUtility.uncompressBase64(compressed);
     Assertions.assertEquals(inputString, decompressed);
@@ -50,8 +52,8 @@ class Test_ZipUtility
       obj.put("key" + i, RandomStringUtils.randomAlphabetic(50));
     final String inputString = obj.toString();
 
-    String compressed = ZipUtility.compressedBase64(inputString);
-    Assertions.assertNotEquals(inputString, compressed, "String was not compressed");
+    byte[] compressed = ZipUtility.compressedBase64(inputString);
+    Assertions.assertNotEquals(inputString.getBytes(StandardCharsets.UTF_8), compressed, "String was not compressed");
 
     String decompressed = ZipUtility.uncompressBase64(compressed);
     Assertions.assertEquals(inputString, decompressed);
