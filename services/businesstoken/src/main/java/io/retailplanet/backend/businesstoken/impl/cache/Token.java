@@ -70,7 +70,7 @@ class Token extends PanacheEntity
   @NotNull
   public static Stream<Token> findExpiredTokens(@NotNull Instant pTime)
   {
-    return find("VALID < :time", Parameters.with("time", pTime.toEpochMilli())).stream();
+    return find("VALID < :time", Parameters.with("time", new Timestamp(pTime.toEpochMilli()))).stream();
   }
 
 }
