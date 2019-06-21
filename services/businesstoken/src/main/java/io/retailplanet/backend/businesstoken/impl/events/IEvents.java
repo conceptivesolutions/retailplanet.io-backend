@@ -30,6 +30,12 @@ public interface IEvents
   String IN_BUSINESSTOKEN_INVALIDATED = "BusinessToken_INVALIDATED_IN";
 
   /**
+   * Event: Product should be updated or inserted
+   */
+  @IncomingEvent
+  String IN_PRODUCT_UPSERT_UNAUTH = "Product_UPSERT_UNAUTH_IN";
+
+  /**
    * Event: a new BusinessToken was created
    */
   @OutgoingEvent
@@ -40,5 +46,11 @@ public interface IEvents
    */
   @OutgoingEvent
   String OUT_BUSINESSTOKEN_INVALIDATED = "BusinessToken_INVALIDATED_OUT";
+
+  /**
+   * Event: Product should be updated or inserted
+   */
+  @OutgoingEvent
+  String OUT_PRODUCT_UPSERT = "Product_UPSERT_OUT";
 
 }

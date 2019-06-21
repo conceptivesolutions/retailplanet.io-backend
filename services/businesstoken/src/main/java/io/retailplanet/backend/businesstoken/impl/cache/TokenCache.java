@@ -3,7 +3,7 @@ package io.retailplanet.backend.businesstoken.impl.cache;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.*;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -11,7 +11,7 @@ import java.time.Instant;
 /**
  * @author w.glanzer, 17.06.2019
  */
-@ApplicationScoped
+@Singleton
 public class TokenCache
 {
 
@@ -33,6 +33,26 @@ public class TokenCache
     token.persist();
 
     _LOGGER.info("Indexed new token " + token.id + " for client " + pClientID + ", valid until " + pValidUntil);
+  }
+
+  /**
+   * Checks, if a token is valid. If it is expired, it will be removed
+   *
+   * @param pSessionToken session token
+   * @return <tt>true</tt> if the token is valid
+   */
+  @Transactional
+  public STATE validateToken(@NotNull String pSessionToken)
+  {
+    Token token = Token.findBySessionToken(pSessionToken);
+    if (token == null)
+      return STATE.INVALID;
+    if (token.validUntil != null && token.validUntil.toInstant().isBefore(Instant.now()))
+    {
+      _invalidate(token);
+      return STATE.EXPIRED;
+    }
+    return STATE.VALID;
   }
 
   /**
@@ -78,6 +98,16 @@ public class TokenCache
   {
     _LOGGER.info("Invalidating token " + pToken.id + " for client " + pToken.clientID);
     pToken.delete();
+  }
+
+  /**
+   * Represents the current token state
+   */
+  public enum STATE
+  {
+    INVALID,
+    EXPIRED,
+    VALID
   }
 
 }
