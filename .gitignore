@@ -16,3 +16,4 @@ release.properties
 # Docker Data
 .h2
 .kafka
+.elastic
