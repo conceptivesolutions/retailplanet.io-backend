@@ -27,7 +27,6 @@ public class BusinessTokenService
   private static final Duration _TOKEN_LIFESPAN = Duration.ofHours(48);
   private static final Logger _LOGGER = LoggerFactory.getLogger(BusinessTokenService.class);
 
-  @Inject
   @Stream(IEvents.OUT_BUSINESSTOKEN_INVALIDATED)
   Emitter<JsonObject> businessTokenInvalidatedEmitter;
 
