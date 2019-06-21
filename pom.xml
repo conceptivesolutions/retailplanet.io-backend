@@ -107,6 +107,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire-plugin.version}</version>
@@ -115,6 +116,10 @@
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
           </systemProperties>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
