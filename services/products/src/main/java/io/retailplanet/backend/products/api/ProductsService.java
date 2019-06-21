@@ -1,10 +1,13 @@
 package io.retailplanet.backend.products.api;
 
-import io.quarkus.runtime.StartupEvent;
+import io.retailplanet.backend.common.util.ZipUtility;
+import io.retailplanet.backend.products.impl.IEvents;
 import io.retailplanet.backend.products.impl.elastic.ElasticStructureFacade;
+import io.vertx.core.json.JsonObject;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 /**
@@ -13,15 +16,22 @@ import javax.inject.Inject;
  * @author w.glanzer, 20.06.2019
  */
 @ApplicationScoped
-class ProductsService
+public class ProductsService
 {
 
   @Inject
   private ElasticStructureFacade elasticStructureFacade;
 
-  void onStart(@Observes StartupEvent pEvent)
+  @Incoming(IEvents.IN_PRODUCTS_UPSERT)
+  public void productUpsert(@NotNull JsonObject pJsonObject)
   {
-    System.out.println(elasticStructureFacade.hasIndex("nix"));
+    byte[] binContent = pJsonObject.getBinary("content");
+    if (binContent == null || binContent.length == 0)
+      return;
+
+    String content = ZipUtility.uncompressBase64(binContent);
+    // todo insert in elasticsearch
   }
+
 
 }
