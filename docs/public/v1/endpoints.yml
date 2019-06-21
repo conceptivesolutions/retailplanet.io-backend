@@ -73,9 +73,82 @@ paths:
         500:
           description: Something went wrong during workflow
 
+  /business/product:
+    put:
+      summary: Put Products
+      description: Add new products to the clients temp session storage
+      tags:
+        - business
+      parameters:
+        - name: session_token
+          in: query
+          required: true
+          description: The current (valid) session token of a specific client
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              minLength: 1
+              maxLength: 100
+              items:
+                type: object
+                description: a single result item
+                properties:
+                  name:
+                    type: string
+                    required: true
+                    description: displayable name for the current result item
+                  id:
+                    type: string
+                    required: true
+                    description: unique id of the product
+                  category:
+                    type: string
+                    description: category as plain text
+                  url:
+                    type: string
+                    required: true
+                    description: url pointing to a product page, where the client will be redirected to
+                  price:
+                    type: number
+                    default: 0
+                    description: current price
+                  previews:
+                    type: array
+                    items:
+                      type: string
+                      description: url pointing to a picture
+                  additionalInfos:
+                    type: object
+                    description: contains all additional informations about this product
+                  availability:
+                    type: object
+                    description: contains information about the availability status in single retail stores
+                    properties:
+                      MARKET_ID:
+                        description: Replace this key with the ID of the market, this availability information belongs to
+                        properties:
+                          type:
+                            type: string
+                            enum: [AVAILABLE, ORDERABLE, NOT_AVAILABLE]
+                            description: this object provides information about the products availability status
+                          quantity:
+                            type: integer
+                            description: how much pieces are available in the parent market currently
+      responses:
+        200:
+          description: Products successfully added to session store
+        415:
+          description: Only application/json is allowed as content type
+
   /business/token/{token}:
     delete:
       summary: Invalidate a session token
+      tags:
+        - business
       parameters:
         - name: token
           in: path
