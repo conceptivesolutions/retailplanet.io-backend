@@ -35,7 +35,8 @@ public class ValidateService
   public JsonObject validatePutProducts(@NotNull JsonObject pJsonObject)
   {
     String session_token = pJsonObject.getString("session_token");
-    if (Utility.isNullOrEmptyTrimmedString(session_token))
+    String content = pJsonObject.getString("content");
+    if (Utility.isNullOrEmptyTrimmedString(session_token) || Utility.isNullOrEmptyTrimmedString(content))
       return null;
 
     // validate token
@@ -43,9 +44,14 @@ public class ValidateService
     if (valid != TokenCache.STATE.VALID)
       return null;
 
-    // todo include clientid here?
+    // find issuer
+    String issuer = tokenCache.findIssuer(session_token);
+    if (Utility.isNullOrEmptyTrimmedString(issuer))
+      return null;
+
     return new JsonObject()
-        .put("content", pJsonObject.getString("content"));
+        .put("content", content)
+        .put("clientid", issuer);
   }
 
 }

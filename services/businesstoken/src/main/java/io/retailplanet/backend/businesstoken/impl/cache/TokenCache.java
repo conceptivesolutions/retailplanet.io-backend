@@ -1,6 +1,6 @@
 package io.retailplanet.backend.businesstoken.impl.cache;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 import org.slf4j.*;
 
 import javax.inject.Singleton;
@@ -53,6 +53,22 @@ public class TokenCache
       return STATE.EXPIRED;
     }
     return STATE.VALID;
+  }
+
+  /**
+   * Returns the issuer clientid
+   *
+   * @param pSessionToken Session Token
+   * @return the clientid, or <tt>null</tt>
+   */
+  @Nullable
+  @Transactional
+  public String findIssuer(@NotNull String pSessionToken)
+  {
+    Token token = Token.findBySessionToken(pSessionToken);
+    if (token == null)
+      return null;
+    return token.clientID;
   }
 
   /**
