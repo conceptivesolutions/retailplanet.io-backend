@@ -13,3 +13,6 @@
 [submodule "services/products"]
 	path = services/products
 	url = git@github.com:con-ceptive/retailplanet.io-backend-products.git
+[submodule "services/elasticsearch"]
+	path = services/elasticsearch
+	url = git@github.com:con-ceptive/retailplanet.io-backend-elasticsearch.git
