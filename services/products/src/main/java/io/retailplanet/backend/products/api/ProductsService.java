@@ -1,11 +1,13 @@
 package io.retailplanet.backend.products.api;
 
-import io.retailplanet.backend.common.util.ZipUtility;
+import io.retailplanet.backend.common.util.*;
 import io.retailplanet.backend.products.impl.IEvents;
-import io.retailplanet.backend.products.impl.elastic.ElasticStructureFacade;
-import io.vertx.core.json.JsonObject;
+import io.retailplanet.backend.products.impl.index.IIndexFacade;
+import io.retailplanet.backend.products.impl.struct.Product;
+import io.vertx.core.json.*;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -19,19 +21,44 @@ import javax.inject.Inject;
 public class ProductsService
 {
 
-  @Inject
-  private ElasticStructureFacade elasticStructureFacade;
+  private static final Logger _LOGGER = LoggerFactory.getLogger(ProductsService.class);
 
+  @Inject
+  private IIndexFacade indexFacade;
+
+  /**
+   * Inserts / Updates a list of products
+   *
+   * @param pJsonObject Products to upsert
+   */
   @Incoming(IEvents.IN_PRODUCTS_UPSERT)
-  public void productUpsert(@NotNull JsonObject pJsonObject)
+  public void productUpsert(@Nullable JsonObject pJsonObject)
   {
-    byte[] binContent = pJsonObject.getBinary("content");
-    if (binContent == null || binContent.length == 0)
+    if (pJsonObject == null)
       return;
 
-    String content = ZipUtility.uncompressBase64(binContent);
-    // todo insert in elasticsearch
-  }
+    String indexName = pJsonObject.getString("clientid"); //todo really use clientid for indexname?
+    String clientID = pJsonObject.getString("clientid");
+    byte[] binContent = pJsonObject.getBinary("content");
+    if (binContent == null || binContent.length == 0 ||
+        Utility.isNullOrEmptyTrimmedString(clientID) || Utility.isNullOrEmptyTrimmedString(indexName))
+      return;
 
+    try
+    {
+      // decompress
+      String content = ZipUtility.uncompressBase64(binContent);
+
+      // read products
+      Product[] products = Json.decodeValue(content, Product[].class);
+
+      // store in index
+      indexFacade.upsertProducts(indexName, clientID, products);
+    }
+    catch (Exception e)
+    {
+      _LOGGER.warn("Failed to upsert product", e);
+    }
+  }
 
 }
