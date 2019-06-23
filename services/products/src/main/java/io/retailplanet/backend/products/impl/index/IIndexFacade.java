@@ -14,10 +14,9 @@ public interface IIndexFacade
   /**
    * Inserts / Updates products in elasticsearch
    *
-   * @param pIndexName   Name of the index to update
    * @param pClientID    Client from where the products came
    * @param pProductList List of all products to upsert
    */
-  void upsertProducts(@NotNull String pIndexName, @NotNull String pClientID, @NotNull Product[] pProductList);
+  void upsertProducts(@NotNull String pClientID, @NotNull Product[] pProductList);
 
 }

@@ -37,11 +37,9 @@ public class ProductsService
     if (pJsonObject == null)
       return;
 
-    String indexName = pJsonObject.getString("clientid"); //todo really use clientid for indexname?
     String clientID = pJsonObject.getString("clientid");
     byte[] binContent = pJsonObject.getBinary("content");
-    if (binContent == null || binContent.length == 0 ||
-        Utility.isNullOrEmptyTrimmedString(clientID) || Utility.isNullOrEmptyTrimmedString(indexName))
+    if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID))
       return;
 
     try
@@ -53,7 +51,7 @@ public class ProductsService
       Product[] products = Json.decodeValue(content, Product[].class);
 
       // store in index
-      indexFacade.upsertProducts(indexName, clientID, products);
+      indexFacade.upsertProducts(clientID, products);
     }
     catch (Exception e)
     {

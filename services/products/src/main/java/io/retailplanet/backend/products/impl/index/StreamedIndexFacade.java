@@ -25,11 +25,11 @@ class StreamedIndexFacade implements IIndexFacade
   Emitter<JsonObject> upsertProductsInIndex;
 
   @Override
-  public void upsertProducts(@NotNull String pIndexName, @NotNull String pClientID, @NotNull Product[] pProductList)
+  public void upsertProducts(@NotNull String pClientID, @NotNull Product[] pProductList)
   {
     // Build request to index facade
     JsonObject request = new JsonObject()
-        .put("index", pIndexName)
+        .put("clientid", pClientID)
         .put("type", _INDEX_TYPE)
         .put("doc", Arrays.stream(pProductList)
             .map(pProduct -> pProduct.toJSON(pClientID))
