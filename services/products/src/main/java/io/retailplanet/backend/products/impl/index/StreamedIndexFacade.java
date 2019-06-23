@@ -19,7 +19,7 @@ import java.util.stream.Collector;
 class StreamedIndexFacade implements IIndexFacade
 {
 
-  private static final String _INDEX_TYPE = "products";
+  private static final String _INDEX_TYPE = "product";
 
   @Stream(IEvents.OUT_INDEX_DOCUMENT_UPSERT)
   Emitter<JsonObject> upsertProductsInIndex;
