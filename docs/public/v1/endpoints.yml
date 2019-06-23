@@ -76,7 +76,7 @@ paths:
   /business/product:
     put:
       summary: Put Products
-      description: Add new products to the clients temp session storage
+      description: Add new products to the clients storage
       tags:
         - business
       parameters:
@@ -143,6 +143,51 @@ paths:
           description: Products successfully added to session store
         415:
           description: Only application/json is allowed as content type
+
+  /business/market:
+    put:
+      summary: Put Markets
+      description: Add new markets to the clients storage
+      tags:
+        - business
+      parameters:
+        - name: session_token
+          in: query
+          required: true
+          description: The current (valid) session token of a specific client
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              minLength: 1
+              maxLength: 100
+              items:
+                type: object
+                properties:
+                  name:
+                    description: Displayable name of the market
+                    type: string
+                  id:
+                    description: Unique ID
+                    required: true
+                    type: string
+                  lat:
+                    description: Latitude of the current market location
+                    type: number
+                  lng:
+                    description: Longitude of the current market location
+                    type: number
+                  address:
+                    description: Displayable address for the client. \n are used for linebreaks
+                    type: string
+      responses:
+        200:
+          description: Markets successfully added to session store
+        404:
+          description: Something went wrong during workflow
 
   /business/token/{token}:
     delete:
