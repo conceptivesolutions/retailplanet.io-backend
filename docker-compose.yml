@@ -78,8 +78,10 @@ services:
     image: images.conceptive.io/retailplanet.backend.elasticsearch:latest
     links:
       - kafka
+      - search1
     environment:
       KAFKA_SERVERS: kafka:9092
+      ELASTICSEARCH_SERVERS: search1:9200
 
   # Markets-Service
   markets:
