@@ -1,10 +1,11 @@
 package io.retailplanet.backend.products.impl.struct;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collector;
 
 import static io.retailplanet.backend.products.impl.struct.IIndexStructure.IProduct.*;
 
@@ -76,13 +77,13 @@ public class Product
    * @return the content as json object
    */
   @NotNull
-  public JsonObject toJSON(@NotNull String pClientID)
+  public JsonObject toIndexJSON(@NotNull String pClientID)
   {
     JsonObject productObj = new JsonObject();
 
     productObj.put(NAME, name);
     productObj.put(ID, id);
-    productObj.put(CLIENT_ID, pClientID);
+    productObj.put(CLIENTID, pClientID);
     productObj.put(PRICE, price);
     productObj.put(UPDATED, created);
 
@@ -98,9 +99,10 @@ public class Product
     if (additionalInfos != null)
       productObj.put(ADDITIONAL_INFO, additionalInfos);
 
-    JsonObject availObj = new JsonObject();
-    availability.forEach((pMarketID, pAvailability) -> availObj.put(pMarketID, pAvailability.toJSON()));
-    productObj.put(AVAILABILITY, availObj);
+    productObj.put(AVAILABILITY, availability.entrySet().stream()
+        .map(pEntry -> pEntry.getValue().toJSON()
+            .put(IIndexStructure.IAvailability.MARKETID, pEntry.getKey()))
+        .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
 
     return productObj;
   }

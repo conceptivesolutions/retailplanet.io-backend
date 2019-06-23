@@ -32,7 +32,7 @@ class StreamedIndexFacade implements IIndexFacade
         .put("clientid", pClientID)
         .put("type", _INDEX_TYPE)
         .put("doc", Arrays.stream(pProductList)
-            .map(pProduct -> pProduct.toJSON(pClientID))
+            .map(pProduct -> pProduct.toIndexJSON(pClientID))
             .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
 
     // fire request

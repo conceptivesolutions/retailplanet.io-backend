@@ -30,7 +30,7 @@ public interface IIndexStructure
     /* All information about the availability */
     String AVAILABILITY = "availability";
     /* ID of the client, where the product comes from */
-    String CLIENT_ID = "client_id";
+    String CLIENTID = "clientid";
     /* Time this product was inserted / updated */
     String UPDATED = "updated";
   }
@@ -40,6 +40,8 @@ public interface IIndexStructure
    */
   interface IAvailability
   {
+    /* ID of the markted this availability belongs to */
+    String MARKETID = "marketid";
     /* TYPE, if AVAILABLE, ORDERABLE, ... */
     String TYPE = "type";
     /* Current quantity (optional) */
