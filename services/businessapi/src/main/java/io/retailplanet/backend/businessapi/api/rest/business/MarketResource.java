@@ -9,31 +9,31 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 /**
- * Resource for all product requests
+ * Resource for all markets requests
  *
  * @author w.glanzer, 21.06.2019
  */
-@Path("/business/product")
-public class ProductResource
+@Path("/business/market")
+public class MarketResource
 {
 
-  @Stream(IEvents.OUT_PRODUCT_UPSERT_UNAUTH)
-  Emitter<JsonObject> productUpsertedUnauthEmitter;
+  @Stream(IEvents.OUT_MARKET_UPSERT_UNAUTH)
+  Emitter<JsonObject> marketUpsertedUnauthEmitter;
 
   /**
-   * Put products with a given session token
+   * Put markets with a given session token
    *
    * @param pToken    SessionToken to validate put request
    * @param pJsonBody Body
    */
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response putProducts(@HeaderParam("session_token") String pToken, String pJsonBody)
+  public Response putMarkets(@HeaderParam("session_token") String pToken, String pJsonBody)
   {
     // send event
-    productUpsertedUnauthEmitter.send(new JsonObject()
-                                          .put("session_token", pToken)
-                                          .put("content", ZipUtility.compressedBase64(pJsonBody)));
+    marketUpsertedUnauthEmitter.send(new JsonObject()
+                                         .put("session_token", pToken)
+                                         .put("content", ZipUtility.compressedBase64(pJsonBody)));
 
     // return 200
     return Response.ok().build();
