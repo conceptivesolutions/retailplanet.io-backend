@@ -31,7 +31,7 @@ class StreamedIndexFacade implements IIndexFacade
     JsonObject request = new JsonObject()
         .put("type", _INDEX_TYPE)
         .put("doc", Arrays.stream(pMarketList)
-            .map(pMarket -> pMarket.toJSON(pClientID))
+            .map(pMarket -> pMarket.toIndexJSON(pClientID))
             .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
 
     // fire request

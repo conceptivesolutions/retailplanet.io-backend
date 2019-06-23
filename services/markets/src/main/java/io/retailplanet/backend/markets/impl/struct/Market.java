@@ -43,13 +43,14 @@ public class Market
   private String address;
 
   @NotNull
-  public JsonObject toJSON(@NotNull String pClientID)
+  public JsonObject toIndexJSON(@NotNull String pClientID)
   {
     JsonObject result = new JsonObject()
         .put("id", id)
         .put("clientid", pClientID)
-        .put("lat", lat)
-        .put("lng", lng);
+        .put("location", new JsonObject()
+            .put("lat", lat)
+            .put("lon", lng));
 
     if (name != null)
       result.put("name", name);
