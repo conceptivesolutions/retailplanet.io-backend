@@ -73,6 +73,30 @@ services:
     environment:
       KAFKA_SERVERS: kafka:9092
 
+  # Elasticsearch-Service
+  elasticsearch:
+    image: images.conceptive.io/retailplanet.backend.elasticsearch:latest
+    links:
+      - kafka
+    environment:
+      KAFKA_SERVERS: kafka:9092
+
+  # Markets-Service
+  markets:
+    image: images.conceptive.io/retailplanet.backend.markets:latest
+    links:
+      - kafka
+    environment:
+      KAFKA_SERVERS: kafka:9092
+
+  # Products-Service
+  products:
+    image: images.conceptive.io/retailplanet.backend.products:latest
+    links:
+      - kafka
+    environment:
+      KAFKA_SERVERS: kafka:9092
+
   # UserAuth-Service
   userauth:
     image: images.conceptive.io/retailplanet.backend.userauth:latest
