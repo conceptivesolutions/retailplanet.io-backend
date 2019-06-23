@@ -36,6 +36,12 @@ public interface IEvents
   String IN_PRODUCT_UPSERT_UNAUTH = "Product_UPSERT_UNAUTH_IN";
 
   /**
+   * Event: Market should be updated or inserted
+   */
+  @IncomingEvent
+  String IN_MARKET_UPSERT_UNAUTH = "Market_UPSERT_UNAUTH_IN";
+
+  /**
    * Event: a new BusinessToken was created
    */
   @OutgoingEvent
@@ -52,5 +58,11 @@ public interface IEvents
    */
   @OutgoingEvent
   String OUT_PRODUCT_UPSERT = "Product_UPSERT_OUT";
+
+  /**
+   * Event: Market should be updated or inserted
+   */
+  @OutgoingEvent
+  String OUT_MARKET_UPSERT = "Market_UPSERT_OUT";
 
 }

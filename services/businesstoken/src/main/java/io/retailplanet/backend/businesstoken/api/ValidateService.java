@@ -54,4 +54,19 @@ public class ValidateService
         .put("clientid", issuer);
   }
 
+  /**
+   * Validate "put markets" request
+   *
+   * @param pJsonObject Request
+   * @return Validated request, or null
+   */
+  @Incoming(IEvents.IN_MARKET_UPSERT_UNAUTH)
+  @Outgoing(IEvents.OUT_MARKET_UPSERT)
+  @Broadcast
+  public JsonObject validatePutMarkets(@NotNull JsonObject pJsonObject)
+  {
+    // use same validation method as "validatePutProducts"
+    return validatePutProducts(pJsonObject);
+  }
+
 }
