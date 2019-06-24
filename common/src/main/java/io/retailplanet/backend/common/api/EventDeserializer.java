@@ -1,5 +1,6 @@
 package io.retailplanet.backend.common.api;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import org.apache.kafka.common.serialization.Deserializer;
@@ -11,6 +12,7 @@ import java.util.Map;
  *
  * @author w.glanzer, 20.06.2019
  */
+@RegisterForReflection
 public class EventDeserializer implements Deserializer<JsonObject>
 {
 
