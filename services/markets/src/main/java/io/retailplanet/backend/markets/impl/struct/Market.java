@@ -1,8 +1,9 @@
 package io.retailplanet.backend.markets.impl.struct;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.vertx.core.json.JsonObject;
 import org.jetbrains.annotations.NotNull;
+
+import javax.json.bind.annotation.JsonbProperty;
 
 /**
  * Represents a single market
@@ -15,31 +16,31 @@ public class Market
   /**
    * Uniquie identifier
    */
-  @JsonProperty
+  @JsonbProperty
   public String id;
 
   /**
    * Displayable name of this market
    */
-  @JsonProperty
+  @JsonbProperty
   public String name;
 
   /**
    * LAT-Part of the GPS address
    */
-  @JsonProperty
+  @JsonbProperty
   public float lat;
 
   /**
    * LNG-Part of the GPS address
    */
-  @JsonProperty
+  @JsonbProperty
   public float lng;
 
   /**
    * Displayable address
    */
-  @JsonProperty
+  @JsonbProperty
   public String address;
 
   @NotNull
