@@ -42,6 +42,11 @@ public class Market
   @JsonProperty
   private String address;
 
+  // Default constructor for reflection purposes
+  public Market()
+  {
+  }
+
   @NotNull
   public JsonObject toIndexJSON(@NotNull String pClientID)
   {
