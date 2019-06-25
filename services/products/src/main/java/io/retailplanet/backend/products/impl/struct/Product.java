@@ -21,59 +21,54 @@ public class Product
    * Name of the product
    */
   @JsonProperty
-  private String name;
+  public String name;
 
   /**
    * Product ID, not application unique - just within a market
    */
   @JsonProperty
-  private String id;
+  public String id;
 
   /**
    * Category
    */
   @JsonProperty
-  private String category;
+  public String category;
 
   /**
    * URL for more information
    */
   @JsonProperty
-  private String url;
+  public String url;
 
   /**
    * Current price
    */
   @JsonProperty
-  private float price;
+  public float price;
 
   /**
    * A list of all preview urls
    */
   @JsonProperty
-  private List<String> previews;
+  public List<String> previews;
 
   /**
    * Additional information about this product
    */
   @JsonProperty
-  private Map<String, String> additionalInfos;
+  public Map<String, String> additionalInfos;
 
   /**
    * Availability in a specific market
    */
   @JsonProperty
-  private Map<String, ProductAvailability> availability;
+  public Map<String, ProductAvailability> availability;
 
   /**
    * Timestamp to identify the date, when the product was created
    */
   private long created = System.currentTimeMillis();
-
-  // Default Constructor for reflection purposes
-  public Product()
-  {
-  }
 
   /**
    * Transforms this product to a elasticsearch readable json document object
