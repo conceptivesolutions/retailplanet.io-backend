@@ -57,7 +57,7 @@ services:
 
   # BusinessAPI-Service
   businessapi:
-    image: images.conceptive.io/retailplanet.backend.businessapi:latest
+    image: images.conceptive.io/retailplanet.backend.businessapi.native:latest
     links:
       - kafka
     ports:
@@ -65,7 +65,7 @@ services:
     environment:
       KAFKA_SERVERS: kafka:9092
 
-  # UserAuth-Service
+  # BusinessToken-Service
   businesstoken:
     image: images.conceptive.io/retailplanet.backend.businesstoken:latest
     links:
@@ -75,7 +75,7 @@ services:
 
   # Elasticsearch-Service
   elasticsearch:
-    image: images.conceptive.io/retailplanet.backend.elasticsearch:latest
+    image: images.conceptive.io/retailplanet.backend.elasticsearch.native:latest
     links:
       - kafka
       - search1
@@ -85,7 +85,7 @@ services:
 
   # Markets-Service
   markets:
-    image: images.conceptive.io/retailplanet.backend.markets:latest
+    image: images.conceptive.io/retailplanet.backend.markets.native:latest
     links:
       - kafka
     environment:
@@ -93,7 +93,7 @@ services:
 
   # Products-Service
   products:
-    image: images.conceptive.io/retailplanet.backend.products:latest
+    image: images.conceptive.io/retailplanet.backend.products.native:latest
     links:
       - kafka
     environment:
@@ -101,7 +101,7 @@ services:
 
   # UserAuth-Service
   userauth:
-    image: images.conceptive.io/retailplanet.backend.userauth:latest
+    image: images.conceptive.io/retailplanet.backend.userauth.native:latest
     links:
       - kafka
     environment:
