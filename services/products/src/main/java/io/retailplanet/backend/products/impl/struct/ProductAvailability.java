@@ -16,6 +16,11 @@ public class ProductAvailability
   @JsonProperty
   private int quantity;
 
+  // Default constructor for reflection purposes
+  public ProductAvailability()
+  {
+  }
+
   @SuppressWarnings("unused") // JSON
   public enum TYPE
   {

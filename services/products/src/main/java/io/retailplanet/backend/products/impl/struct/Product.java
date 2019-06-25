@@ -70,6 +70,11 @@ public class Product
    */
   private long created = System.currentTimeMillis();
 
+  // Default Constructor for reflection purposes
+  public Product()
+  {
+  }
+
   /**
    * Transforms this product to a elasticsearch readable json document object
    *
