@@ -16,36 +16,31 @@ public class Market
    * Uniquie identifier
    */
   @JsonProperty
-  private String id;
+  public String id;
 
   /**
    * Displayable name of this market
    */
   @JsonProperty
-  private String name;
+  public String name;
 
   /**
    * LAT-Part of the GPS address
    */
   @JsonProperty
-  private float lat;
+  public float lat;
 
   /**
    * LNG-Part of the GPS address
    */
   @JsonProperty
-  private float lng;
+  public float lng;
 
   /**
    * Displayable address
    */
   @JsonProperty
-  private String address;
-
-  // Default constructor for reflection purposes
-  public Market()
-  {
-  }
+  public String address;
 
   @NotNull
   public JsonObject toIndexJSON(@NotNull String pClientID)
