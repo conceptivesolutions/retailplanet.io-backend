@@ -1,8 +1,9 @@
 package io.retailplanet.backend.products.impl.struct;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.vertx.core.json.JsonObject;
 import org.jetbrains.annotations.NotNull;
+
+import javax.json.bind.annotation.JsonbProperty;
 
 /**
  * @author w.glanzer, 21.06.2019
@@ -10,10 +11,10 @@ import org.jetbrains.annotations.NotNull;
 public class ProductAvailability
 {
 
-  @JsonProperty
+  @JsonbProperty
   public TYPE type;
 
-  @JsonProperty
+  @JsonbProperty
   public int quantity;
 
   @SuppressWarnings("unused") // JSON
