@@ -33,13 +33,6 @@
       <artifactId>kafka-clients</artifactId>
     </dependency>
 
-    <!-- H2 -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jdbc-h2</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- Apache Commons -->
     <dependency>
       <groupId>commons-io</groupId>
