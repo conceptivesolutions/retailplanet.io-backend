@@ -1,9 +1,10 @@
 package io.retailplanet.backend.products.impl.struct;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.vertx.core.json.*;
 import org.jetbrains.annotations.NotNull;
 
-import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collector;
 
@@ -14,6 +15,7 @@ import static io.retailplanet.backend.products.impl.struct.IIndexStructure.IProd
  *
  * @author w.glanzer, 21.06.2019
  */
+@RegisterForReflection
 public class Product
 {
 
@@ -69,6 +71,11 @@ public class Product
    * Timestamp to identify the date, when the product was created
    */
   private long created = System.currentTimeMillis();
+
+  @JsonbCreator
+  public Product()
+  {
+  }
 
   /**
    * Transforms this product to a elasticsearch readable json document object
