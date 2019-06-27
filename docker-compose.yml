@@ -70,8 +70,11 @@ services:
     image: images.conceptive.io/retailplanet.backend.businesstoken:latest
     links:
       - kafka
+    volumes:
+      - ./.h2:/data/h2
     environment:
       KAFKA_SERVERS: kafka:9092
+      H2_DATA: /data/h2/businesstoken
 
   # Elasticsearch-Service
   elasticsearch:
