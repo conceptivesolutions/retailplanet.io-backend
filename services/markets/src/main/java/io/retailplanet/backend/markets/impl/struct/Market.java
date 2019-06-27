@@ -1,15 +1,17 @@
 package io.retailplanet.backend.markets.impl.struct;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.vertx.core.json.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
-import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.*;
 
 /**
  * Represents a single market
  *
  * @author w.glanzer, 23.06.2019
  */
+@RegisterForReflection
 public class Market
 {
 
@@ -42,6 +44,11 @@ public class Market
    */
   @JsonbProperty
   public String address;
+
+  @JsonbCreator
+  public Market()
+  {
+  }
 
   @NotNull
   public JsonObject toIndexJSON(@NotNull String pClientID)

@@ -4,13 +4,14 @@ import io.retailplanet.backend.common.util.*;
 import io.retailplanet.backend.markets.impl.IEvents;
 import io.retailplanet.backend.markets.impl.index.IIndexFacade;
 import io.retailplanet.backend.markets.impl.struct.Market;
-import io.vertx.core.json.*;
+import io.vertx.core.json.JsonObject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.json.bind.JsonbBuilder;
 
 /**
  * Service: Markets
@@ -48,7 +49,7 @@ public class MarketsService
       String content = ZipUtility.uncompressBase64(binContent);
 
       // read markets
-      Market[] markets = Json.decodeValue(content, Market[].class);
+      Market[] markets = JsonbBuilder.create().fromJson(content, Market[].class);
 
       // store in index
       indexFacade.upsertMarkets(clientID, markets);
