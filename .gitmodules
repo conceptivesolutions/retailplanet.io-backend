@@ -16,3 +16,6 @@
 [submodule "services/elasticsearch"]
 	path = services/elasticsearch
 	url = git@github.com:con-ceptive/retailplanet.io-backend-elasticsearch.git
+[submodule "services/search"]
+	path = services/search
+	url = git@github.com:con-ceptive/retailplanet.io-backend-search.git

@@ -62,6 +62,7 @@
     <module>services/elasticsearch</module>
     <module>services/markets</module>
     <module>services/products</module>
+    <module>services/search</module>
     <module>services/userauth</module>
   </modules>
 
