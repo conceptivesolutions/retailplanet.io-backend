@@ -67,7 +67,7 @@ services:
 
   # BusinessToken-Service
   businesstoken:
-    image: images.conceptive.io/retailplanet.backend.businesstoken:latest
+    image: images.conceptive.io/retailplanet.backend.businesstoken:latest # no native image, because H2 can not be embedded
     links:
       - kafka
     volumes:
