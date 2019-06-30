@@ -158,6 +158,7 @@
                   <goal>native-image</goal>
                 </goals>
                 <configuration>
+                  <nativeImageXmx>2G</nativeImageXmx>
                   <containerRuntime>docker</containerRuntime>
                 </configuration>
               </execution>
