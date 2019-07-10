@@ -2,6 +2,22 @@ version: '3.3'
 
 services:
 
+  datadog:
+    image: datadog/agent:latest
+    restart: always
+    environment:
+      DD_API_KEY: 37c15f3762f1b01c79516bbdcc16ee15
+      DD_TAGS: localhost
+      DD_APM_ENABLED: "false"
+      DD_LOGS_ENABLED: "true"
+      DD_PROCESS_AGENT_ENABLED: "false"
+      DD_AC_INCLUDE: "retailplanetio-backend-.*"
+      DD_AC_EXCLUDE: ".*datadog.*"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+
   # Zookeeper to manage kafka instances
   kafka_zookeeper:
     image: debezium/zookeeper:latest
