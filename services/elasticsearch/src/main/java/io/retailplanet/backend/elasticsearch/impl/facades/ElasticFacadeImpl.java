@@ -10,7 +10,6 @@ import org.elasticsearch.client.*;
 import org.elasticsearch.client.indices.*;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.*;
-import org.elasticsearch.index.IndexNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.*;
 
@@ -114,7 +113,7 @@ class ElasticFacadeImpl implements IIndexFacade
           .get(new GetIndexRequest(pIndexName), RequestOptions.DEFAULT);
       return true;
     }
-    catch (IndexNotFoundException e)
+    catch (Exception e)
     {
       return false;
     }
