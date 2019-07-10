@@ -1,10 +1,9 @@
 package io.retailplanet.backend.markets.impl.struct;
 
+import com.fasterxml.jackson.annotation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.vertx.core.json.JsonObject;
 import org.jetbrains.annotations.NotNull;
-
-import javax.json.bind.annotation.*;
 
 /**
  * Represents a single market
@@ -18,34 +17,34 @@ public class Market
   /**
    * Uniquie identifier
    */
-  @JsonbProperty
+  @JsonProperty
   public String id;
 
   /**
    * Displayable name of this market
    */
-  @JsonbProperty
+  @JsonProperty
   public String name;
 
   /**
    * LAT-Part of the GPS address
    */
-  @JsonbProperty
+  @JsonProperty
   public float lat;
 
   /**
    * LNG-Part of the GPS address
    */
-  @JsonbProperty
+  @JsonProperty
   public float lng;
 
   /**
    * Displayable address
    */
-  @JsonbProperty
+  @JsonProperty
   public String address;
 
-  @JsonbCreator
+  @JsonCreator
   public Market()
   {
   }
