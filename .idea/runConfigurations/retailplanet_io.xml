@@ -6,6 +6,7 @@
     <runConfiguration name="markets" type="JAR Application" />
     <runConfiguration name="products" type="JAR Application" />
     <runConfiguration name="userauth" type="JAR Application" />
+    <runConfiguration name="search" type="JAR Application" />
     <method v="2" />
   </configuration>
 </component>
