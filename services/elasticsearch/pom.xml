@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>elasticsearch</artifactId>
-  <name>retailplanet.io: elasticsearch</name>
+  <name>retailplanet.io: ElasticSearch</name>
 
   <dependencies>
     <!-- Retailplanet: Common -->
