@@ -4,14 +4,13 @@ import io.retailplanet.backend.common.util.*;
 import io.retailplanet.backend.products.impl.IEvents;
 import io.retailplanet.backend.products.impl.index.IIndexFacade;
 import io.retailplanet.backend.products.impl.struct.Product;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.*;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.json.bind.JsonbBuilder;
 
 /**
  * Service: Products
@@ -49,7 +48,7 @@ public class ProductsService
       String content = ZipUtility.uncompressBase64(binContent);
 
       // read products
-      Product[] products = JsonbBuilder.create().fromJson(content, Product[].class);
+      Product[] products = Json.decodeValue(content, Product[].class);
 
       // store in index
       indexFacade.upsertProducts(clientID, products);

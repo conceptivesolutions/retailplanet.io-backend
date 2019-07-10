@@ -1,10 +1,10 @@
 package io.retailplanet.backend.products.impl.struct;
 
+import com.fasterxml.jackson.annotation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.vertx.core.json.*;
 import org.jetbrains.annotations.NotNull;
 
-import javax.json.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collector;
 
@@ -22,49 +22,49 @@ public class Product
   /**
    * Name of the product
    */
-  @JsonbProperty
+  @JsonProperty
   public String name;
 
   /**
    * Product ID, not application unique - just within a market
    */
-  @JsonbProperty
+  @JsonProperty
   public String id;
 
   /**
    * Category
    */
-  @JsonbProperty
+  @JsonProperty
   public String category;
 
   /**
    * URL for more information
    */
-  @JsonbProperty
+  @JsonProperty
   public String url;
 
   /**
    * Current price
    */
-  @JsonbProperty
+  @JsonProperty
   public float price;
 
   /**
    * A list of all preview urls
    */
-  @JsonbProperty
+  @JsonProperty
   public List<String> previews;
 
   /**
    * Additional information about this product
    */
-  @JsonbProperty
+  @JsonProperty
   public Map<String, String> additionalInfos;
 
   /**
    * Availability in a specific market
    */
-  @JsonbProperty
+  @JsonProperty
   public Map<String, ProductAvailability> availability;
 
   /**
@@ -72,7 +72,7 @@ public class Product
    */
   private long created = System.currentTimeMillis();
 
-  @JsonbCreator
+  @JsonCreator
   public Product()
   {
   }

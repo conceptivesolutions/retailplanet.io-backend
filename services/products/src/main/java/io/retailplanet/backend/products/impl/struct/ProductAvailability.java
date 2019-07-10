@@ -1,10 +1,9 @@
 package io.retailplanet.backend.products.impl.struct;
 
+import com.fasterxml.jackson.annotation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.vertx.core.json.JsonObject;
 import org.jetbrains.annotations.NotNull;
-
-import javax.json.bind.annotation.*;
 
 /**
  * @author w.glanzer, 21.06.2019
@@ -13,13 +12,13 @@ import javax.json.bind.annotation.*;
 public class ProductAvailability
 {
 
-  @JsonbProperty
+  @JsonProperty
   public TYPE type;
 
-  @JsonbProperty
+  @JsonProperty
   public int quantity;
 
-  @JsonbCreator
+  @JsonCreator
   public ProductAvailability()
   {
   }
