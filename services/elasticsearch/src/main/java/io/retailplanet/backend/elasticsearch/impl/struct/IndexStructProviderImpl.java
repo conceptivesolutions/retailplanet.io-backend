@@ -46,11 +46,11 @@ class IndexStructProviderImpl implements IIndexStructProvider
   {
     switch (pIndexType)
     {
-      case "products":
-        return _MAPPING_CACHE.computeIfAbsent(pIndexType, pProductsType -> _readFileUnchecked(getClass().getResource("struct_products.json")));
+      case "product":
+        return _MAPPING_CACHE.computeIfAbsent(pIndexType, pProductsType -> _readFileUnchecked(getClass().getResource("struct_product.json")));
 
-      case "markets":
-        return _MAPPING_CACHE.computeIfAbsent(pIndexType, pProductsType -> _readFileUnchecked(getClass().getResource("struct_markets.json")));
+      case "market":
+        return _MAPPING_CACHE.computeIfAbsent(pIndexType, pProductsType -> _readFileUnchecked(getClass().getResource("struct_market.json")));
 
       default:
         throw new IllegalArgumentException("Indextype " + pIndexType + " not found");
