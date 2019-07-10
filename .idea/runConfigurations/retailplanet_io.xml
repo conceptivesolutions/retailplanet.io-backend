@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="retailplanet.io" type="Multirun" factoryName="Multirun" separateTabs="false" startOneByOne="false" markFailedProcess="true" hideSuccessProcess="true" delayTime="0">
+    <runConfiguration name="elastic" type="JAR Application" />
+    <runConfiguration name="businessapi" type="JAR Application" />
+    <runConfiguration name="businesstoken" type="JAR Application" />
+    <runConfiguration name="markets" type="JAR Application" />
+    <runConfiguration name="products" type="JAR Application" />
+    <runConfiguration name="userauth" type="JAR Application" />
+    <method v="2" />
+  </configuration>
+</component>
