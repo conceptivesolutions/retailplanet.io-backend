@@ -55,7 +55,7 @@ public class IndexService
             if (id == null)
               throw new IllegalArgumentException("JSONObject does not have ID value: " + pJsonObj);
             pJsonObj.remove("id"); // remove id, because we already have it in elasticsearch structure afterwards
-            return Pair.of(id, _toContentBuilder(pJsonObject));
+            return Pair.of(id, _toContentBuilder(pJsonObj));
           }));
     }
     catch (Exception e)
