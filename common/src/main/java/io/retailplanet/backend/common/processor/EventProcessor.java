@@ -186,6 +186,7 @@ public class EventProcessor extends AbstractProcessor
       result.put(keyPrefix + "topic", topic);
       result.put(keyPrefix + "group.id", pGroupID);
       result.put(keyPrefix + "auto.offset.reset", autoOffsetReset);
+      result.put(keyPrefix + "key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
       result.put(keyPrefix + "value.deserializer", valueDeserializer);
 
       return result;
@@ -221,6 +222,7 @@ public class EventProcessor extends AbstractProcessor
 
       // Add all our values
       result.put(keyPrefix + "topic", topic);
+      result.put(keyPrefix + "key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
       result.put(keyPrefix + "value.serializer", valueSerializer);
       result.put(keyPrefix + "acks", "1");
 
