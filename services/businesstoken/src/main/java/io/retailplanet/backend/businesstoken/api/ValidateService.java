@@ -2,9 +2,10 @@ package io.retailplanet.backend.businesstoken.api;
 
 import io.retailplanet.backend.businesstoken.impl.cache.TokenCache;
 import io.retailplanet.backend.businesstoken.impl.events.IEvents;
+import io.retailplanet.backend.common.events.market.MarketUpsertEvent;
+import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
 import io.retailplanet.backend.common.util.Utility;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
-import io.vertx.core.json.JsonObject;
 import org.eclipse.microprofile.reactive.messaging.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,17 +27,16 @@ public class ValidateService
   /**
    * Validate "put products" request
    *
-   * @param pJsonObject Request
+   * @param pEvent Request
    * @return Validated request, or null
    */
   @Incoming(IEvents.IN_PRODUCT_UPSERT_UNAUTH)
   @Outgoing(IEvents.OUT_PRODUCT_UPSERT)
   @Broadcast
-  public JsonObject validatePutProducts(@NotNull JsonObject pJsonObject)
+  public ProductUpsertEvent validatePutProducts(@NotNull ProductUpsertEvent pEvent)
   {
-    String session_token = pJsonObject.getString("session_token");
-    String content = pJsonObject.getString("content");
-    if (Utility.isNullOrEmptyTrimmedString(session_token) || Utility.isNullOrEmptyTrimmedString(content))
+    String session_token = pEvent.session_token;
+    if (Utility.isNullOrEmptyTrimmedString(session_token))
       return null;
 
     // validate token
@@ -49,24 +49,39 @@ public class ValidateService
     if (Utility.isNullOrEmptyTrimmedString(issuer))
       return null;
 
-    return new JsonObject()
-        .put("content", content)
-        .put("clientid", issuer);
+    return pEvent
+        .clientID(issuer)
+        .authorized(true);
   }
 
   /**
    * Validate "put markets" request
    *
-   * @param pJsonObject Request
+   * @param pEvent Request
    * @return Validated request, or null
    */
   @Incoming(IEvents.IN_MARKET_UPSERT_UNAUTH)
   @Outgoing(IEvents.OUT_MARKET_UPSERT)
   @Broadcast
-  public JsonObject validatePutMarkets(@NotNull JsonObject pJsonObject)
+  public MarketUpsertEvent validatePutMarkets(@NotNull MarketUpsertEvent pEvent)
   {
-    // use same validation method as "validatePutProducts"
-    return validatePutProducts(pJsonObject);
+    String session_token = pEvent.session_token;
+    if (Utility.isNullOrEmptyTrimmedString(session_token))
+      return null;
+
+    // validate token
+    TokenCache.STATE valid = tokenCache.validateToken(session_token);
+    if (valid != TokenCache.STATE.VALID)
+      return null;
+
+    // find issuer
+    String issuer = tokenCache.findIssuer(session_token);
+    if (Utility.isNullOrEmptyTrimmedString(issuer))
+      return null;
+
+    return pEvent
+        .clientID(issuer)
+        .authorized(true);
   }
 
 }

@@ -2,9 +2,9 @@ package io.retailplanet.backend.businesstoken.api;
 
 import io.retailplanet.backend.businesstoken.impl.cache.TokenCache;
 import io.retailplanet.backend.businesstoken.impl.events.IEvents;
+import io.retailplanet.backend.common.events.token.*;
 import io.retailplanet.backend.common.util.Utility;
 import io.smallrye.reactive.messaging.annotations.*;
-import io.vertx.core.json.JsonObject;
 import org.eclipse.microprofile.reactive.messaging.*;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.*;
@@ -28,7 +28,7 @@ public class BusinessTokenService
   private static final Logger _LOGGER = LoggerFactory.getLogger(BusinessTokenService.class);
 
   @Stream(IEvents.OUT_BUSINESSTOKEN_INVALIDATED)
-  Emitter<JsonObject> businessTokenInvalidatedEmitter;
+  Emitter<TokenInvalidatedEvent> businessTokenInvalidatedEmitter;
 
   @Inject
   private TokenCache tokenCache;
@@ -36,38 +36,39 @@ public class BusinessTokenService
   /**
    * Generates a new session_token for the BusinessToken_CREATE_AUTH-Event
    *
-   * @param pJsonObject Event
+   * @param pEvent Event
    * @return Result
    */
   @Incoming(IEvents.IN_BUSINESSTOKEN_CREATE_AUTH)
   @Outgoing(IEvents.OUT_BUSINESSTOKEN_CREATED)
   @Broadcast
-  public JsonObject generateTokenForBusinessTokenCreateAuthEvent(@NotNull JsonObject pJsonObject)
+  public TokenCreatedEvent generateTokenForBusinessTokenCreateAuthEvent(@NotNull TokenCreateEvent pEvent)
   {
-    String clientid = pJsonObject.getString("clientid");
+    String clientid = pEvent.clientID;
     if (Utility.isNullOrEmptyTrimmedString(clientid))
       return null;
 
     // Invalidate previous tokens from this client
-    businessTokenInvalidatedEmitter.send(new JsonObject().put("clientid", clientid));
+    businessTokenInvalidatedEmitter.send(new TokenInvalidatedEvent().clientID(clientid));
 
     // Generate new and send
-    return new JsonObject(pJsonObject.getMap())
-        .put("valid_until", Instant.now().plus(_TOKEN_LIFESPAN))
-        .put("session_token", UUID.randomUUID().toString());
+    return pEvent.createAnswer(TokenCreatedEvent.class)
+        .clientID(clientid)
+        .valid_until(Instant.now().plus(_TOKEN_LIFESPAN))
+        .session_token(UUID.randomUUID().toString());
   }
 
   /**
    * Processor for the BusinessToken_CREATED-Event
    *
-   * @param pJsonObject Event
+   * @param pEvent Event
    */
   @Incoming(IEvents.IN_BUSINESSTOKEN_CREATED)
-  public void inBusinessTokenCreated(@NotNull JsonObject pJsonObject)
+  public void inBusinessTokenCreated(@NotNull TokenCreatedEvent pEvent)
   {
-    String clientid = pJsonObject.getString("clientid");
-    String token = pJsonObject.getString("session_token");
-    Instant validUntil = pJsonObject.getInstant("valid_until", Instant.MIN);
+    String clientid = pEvent.clientID;
+    String token = pEvent.session_token;
+    Instant validUntil = pEvent.valid_until == null ? Instant.MIN : pEvent.valid_until;
     if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(token))
       return;
 
@@ -79,23 +80,23 @@ public class BusinessTokenService
   /**
    * Gets called, when a businesstoken was invalidated (mostly by user)
    *
-   * @param pJsonObject Token
+   * @param pEvent Token
    */
   @Incoming(IEvents.IN_BUSINESSTOKEN_INVALIDATED)
-  public void invalidateBusinessToken(@NotNull JsonObject pJsonObject)
+  public void invalidateBusinessToken(@NotNull TokenInvalidatedEvent pEvent)
   {
     // Invalidate given session_token
-    String token = pJsonObject.getString("session_token");
+    String token = pEvent.session_token;
     if (token != null)
       tokenCache.invalidateToken(token);
     else
     {
       // Invalidate all tokens for a specific client
-      String clientid = pJsonObject.getString("clientid");
+      String clientid = pEvent.clientID;
       if (clientid != null)
         tokenCache.invalidateAllTokens(clientid);
       else
-        _LOGGER.warn("Failed to invalidate token for request: " + pJsonObject.toString());
+        _LOGGER.warn("Failed to invalidate token for request: " + pEvent.toString());
     }
   }
 
