@@ -1,9 +1,9 @@
 package io.retailplanet.backend.businessapi.api.rest.business;
 
 import io.retailplanet.backend.businessapi.impl.IEvents;
+import io.retailplanet.backend.common.events.market.MarketUpsertEvent;
 import io.retailplanet.backend.common.util.ZipUtility;
 import io.smallrye.reactive.messaging.annotations.*;
-import io.vertx.core.json.JsonObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -18,7 +18,7 @@ public class MarketResource
 {
 
   @Stream(IEvents.OUT_MARKET_UPSERT_UNAUTH)
-  Emitter<JsonObject> marketUpsertedUnauthEmitter;
+  Emitter<MarketUpsertEvent> marketUpsertedUnauthEmitter;
 
   /**
    * Put markets with a given session token
@@ -31,9 +31,9 @@ public class MarketResource
   public Response putMarkets(@HeaderParam("session_token") String pToken, String pJsonBody)
   {
     // send event
-    marketUpsertedUnauthEmitter.send(new JsonObject()
-                                         .put("session_token", pToken)
-                                         .put("content", ZipUtility.compressedBase64(pJsonBody)));
+    marketUpsertedUnauthEmitter.send(new MarketUpsertEvent()
+                                         .session_token(pToken)
+                                         .content(ZipUtility.compressedBase64(pJsonBody)));
 
     // return 200
     return Response.ok().build();
