@@ -1,10 +1,11 @@
 package io.retailplanet.backend.markets.api;
 
+import io.retailplanet.backend.common.events.market.MarketUpsertEvent;
 import io.retailplanet.backend.common.util.*;
 import io.retailplanet.backend.markets.impl.IEvents;
 import io.retailplanet.backend.markets.impl.index.IIndexFacade;
 import io.retailplanet.backend.markets.impl.struct.Market;
-import io.vertx.core.json.*;
+import io.vertx.core.json.Json;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.*;
@@ -29,16 +30,16 @@ public class MarketsService
   /**
    * Inserts / Updates a list of markets
    *
-   * @param pJsonObject Markets to upsert
+   * @param pEvent Markets to upsert
    */
   @Incoming(IEvents.IN_MARKETS_UPSERT)
-  public void productUpsert(@Nullable JsonObject pJsonObject)
+  public void marketUpsert(@Nullable MarketUpsertEvent pEvent)
   {
-    if (pJsonObject == null)
+    if (pEvent == null)
       return;
 
-    String clientID = pJsonObject.getString("clientid");
-    byte[] binContent = pJsonObject.getBinary("content");
+    String clientID = pEvent.clientID;
+    byte[] binContent = pEvent.content;
     if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID))
       return;
 
