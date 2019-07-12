@@ -1,5 +1,6 @@
 package io.retailplanet.backend.elasticsearch.api;
 
+import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.elasticsearch.impl.IEvents;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
@@ -33,17 +34,17 @@ public class IndexService
   /**
    * Executes the Index_DOCUMENT_UPSERT event, and inserts / updates documents in index
    *
-   * @param pJsonObject Event
+   * @param pEvent Event
    */
   @Incoming(IEvents.IN_INDEX_DOCUMENT_UPSERT)
-  public void documentUpsert(@Nullable JsonObject pJsonObject)
+  public void documentUpsert(@Nullable DocumentUpsertEvent pEvent)
   {
-    if (pJsonObject == null)
+    if (pEvent == null)
       return;
 
-    String clientid = pJsonObject.getString("clientid");
-    String type = pJsonObject.getString("type");
-    Object doc = pJsonObject.getValue("doc");
+    String clientid = pEvent.clientID;
+    String type = pEvent.type;
+    Object doc = pEvent.doc;
     if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(type) || doc == null)
       return;
 
@@ -77,6 +78,8 @@ public class IndexService
       return Collections.singletonList((JsonObject) pEvent);
     else if (pEvent instanceof JsonArray)
       return (List) ((JsonArray) pEvent).stream().collect(Collectors.toList());
+    else if (pEvent instanceof List)
+      return _getDocumentsFromDocField(new JsonArray((List) pEvent));
     else
       throw new IllegalArgumentException("'doc' does not have correct type: " + pEvent.getClass());
   }
