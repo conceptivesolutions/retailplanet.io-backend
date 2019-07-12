@@ -30,33 +30,45 @@ public class EventDeserializer implements Deserializer<AbstractEvent>
   @Override
   public AbstractEvent deserialize(String topic, byte[] data)
   {
-    if (data == null)
-      return null;
-
-    JsonObject json = Buffer.buffer(data).toJsonObject();
-
-    Object className = json.remove(EventSerializer._EVENT_TYPE_KEY);
-    if (className == null)
-      return null;
+    String chainID = null;
 
     try
     {
-      return Json.decodeValue(json.toBuffer(), _CACHE.computeIfAbsent(className, pName -> {
-        try
-        {
-          return (Class<AbstractEvent>) Class.forName(pName.toString());
-        }
-        catch (Exception e)
-        {
-          _LOGGER.error("Failed to create event class " + pName, e);
-          throw new RuntimeException(e);
-        }
-      }));
+      if (data == null)
+        return null;
+
+      JsonObject json = Buffer.buffer(data).toJsonObject();
+
+      Object className = json.remove(EventSerializer._EVENT_TYPE_KEY);
+      if (className == null)
+        return null;
+
+      try
+      {
+        AbstractEvent event = Json.decodeValue(json.toBuffer(), _CACHE.computeIfAbsent(className, pName -> {
+          try
+          {
+            return (Class<AbstractEvent>) Class.forName(pName.toString());
+          }
+          catch (Exception e)
+          {
+            _LOGGER.error("Failed to create event class " + pName, e);
+            throw new RuntimeException(e);
+          }
+        }));
+        chainID = event.chainID;
+        return event;
+      }
+      catch (Throwable e)
+      {
+        _LOGGER.error("Failed to decode value", e);
+        return null;
+      }
     }
-    catch (Throwable e)
+    finally
     {
-      _LOGGER.error("Failed to decode value", e);
-      return null;
+      // Logging
+      _LOGGER.info("Deserialized event '" + chainID + "' from kafka topic " + topic + " with " + (data == null ? "<null>" : data.length) + "b");
     }
   }
 
