@@ -1,10 +1,11 @@
 package io.retailplanet.backend.products.api;
 
+import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
 import io.retailplanet.backend.common.util.*;
 import io.retailplanet.backend.products.impl.IEvents;
 import io.retailplanet.backend.products.impl.index.IIndexFacade;
 import io.retailplanet.backend.products.impl.struct.Product;
-import io.vertx.core.json.*;
+import io.vertx.core.json.Json;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.*;
@@ -29,16 +30,16 @@ public class ProductsService
   /**
    * Inserts / Updates a list of products
    *
-   * @param pJsonObject Products to upsert
+   * @param pEvent Products to upsert
    */
   @Incoming(IEvents.IN_PRODUCTS_UPSERT)
-  public void productUpsert(@Nullable JsonObject pJsonObject)
+  public void productUpsert(@Nullable ProductUpsertEvent pEvent)
   {
-    if (pJsonObject == null)
+    if (pEvent == null)
       return;
 
-    String clientID = pJsonObject.getString("clientid");
-    byte[] binContent = pJsonObject.getBinary("content");
+    String clientID = pEvent.clientID;
+    byte[] binContent = pEvent.content;
     if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID))
       return;
 
