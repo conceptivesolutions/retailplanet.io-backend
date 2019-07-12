@@ -1,9 +1,9 @@
 package io.retailplanet.backend.userauth.api;
 
+import io.retailplanet.backend.common.events.token.TokenCreateEvent;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.userauth.impl.IEvents;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
-import io.vertx.core.json.JsonObject;
 import org.eclipse.microprofile.reactive.messaging.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,10 +27,10 @@ public class AuthBusinessTokenService
   @Incoming(IEvents.IN_BUSINESSTOKEN_CREATE)
   @Outgoing(IEvents.OUT_BUSINESSTOKEN_CREATE_AUTH)
   @Broadcast
-  public JsonObject authenticateBusinessTokenCreationEvent(@NotNull JsonObject pCreateEvent)
+  public TokenCreateEvent authenticateBusinessTokenCreationEvent(@NotNull TokenCreateEvent pCreateEvent)
   {
-    String clientid = pCreateEvent.getString("clientid");
-    String token = pCreateEvent.getString("token");
+    String clientid = pCreateEvent.clientID;
+    String token = pCreateEvent.token;
 
     // validate
     if(Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(token))
@@ -38,9 +38,7 @@ public class AuthBusinessTokenService
 
     // todo check permissions of the user
 
-    // remove token for security and return result
-    pCreateEvent.remove("token");
-    return pCreateEvent;
+    return pCreateEvent.authorized(true);
   }
 
 }
