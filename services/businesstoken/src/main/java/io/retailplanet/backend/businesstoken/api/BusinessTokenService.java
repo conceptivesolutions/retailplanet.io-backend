@@ -6,7 +6,7 @@ import io.retailplanet.backend.common.events.token.*;
 import io.retailplanet.backend.common.util.Utility;
 import io.smallrye.reactive.messaging.annotations.*;
 import org.eclipse.microprofile.reactive.messaging.*;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.*;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -42,8 +42,11 @@ public class BusinessTokenService
   @Incoming(IEvents.IN_BUSINESSTOKEN_CREATE_AUTH)
   @Outgoing(IEvents.OUT_BUSINESSTOKEN_CREATED)
   @Broadcast
-  public TokenCreatedEvent generateTokenForBusinessTokenCreateAuthEvent(@NotNull TokenCreateEvent pEvent)
+  public TokenCreatedEvent generateTokenForBusinessTokenCreateAuthEvent(@Nullable TokenCreateEvent pEvent)
   {
+    if (pEvent == null)
+      return null;
+
     String clientid = pEvent.clientID;
     if (Utility.isNullOrEmptyTrimmedString(clientid))
       return null;
@@ -64,8 +67,11 @@ public class BusinessTokenService
    * @param pEvent Event
    */
   @Incoming(IEvents.IN_BUSINESSTOKEN_CREATED)
-  public void inBusinessTokenCreated(@NotNull TokenCreatedEvent pEvent)
+  public void inBusinessTokenCreated(@Nullable TokenCreatedEvent pEvent)
   {
+    if (pEvent == null)
+      return;
+
     String clientid = pEvent.clientID;
     String token = pEvent.session_token;
     Instant validUntil = pEvent.valid_until == null ? Instant.MIN : pEvent.valid_until;
@@ -83,8 +89,11 @@ public class BusinessTokenService
    * @param pEvent Token
    */
   @Incoming(IEvents.IN_BUSINESSTOKEN_INVALIDATED)
-  public void invalidateBusinessToken(@NotNull TokenInvalidatedEvent pEvent)
+  public void invalidateBusinessToken(@Nullable TokenInvalidatedEvent pEvent)
   {
+    if (pEvent == null)
+      return;
+
     // Invalidate given session_token
     String token = pEvent.session_token;
     if (token != null)

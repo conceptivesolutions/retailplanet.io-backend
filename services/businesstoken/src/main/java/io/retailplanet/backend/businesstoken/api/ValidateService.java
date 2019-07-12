@@ -7,7 +7,7 @@ import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
 import io.retailplanet.backend.common.util.Utility;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
 import org.eclipse.microprofile.reactive.messaging.*;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -33,8 +33,11 @@ public class ValidateService
   @Incoming(IEvents.IN_PRODUCT_UPSERT_UNAUTH)
   @Outgoing(IEvents.OUT_PRODUCT_UPSERT)
   @Broadcast
-  public ProductUpsertEvent validatePutProducts(@NotNull ProductUpsertEvent pEvent)
+  public ProductUpsertEvent validatePutProducts(@Nullable ProductUpsertEvent pEvent)
   {
+    if (pEvent == null)
+      return null;
+
     String session_token = pEvent.session_token;
     if (Utility.isNullOrEmptyTrimmedString(session_token))
       return null;
@@ -63,8 +66,11 @@ public class ValidateService
   @Incoming(IEvents.IN_MARKET_UPSERT_UNAUTH)
   @Outgoing(IEvents.OUT_MARKET_UPSERT)
   @Broadcast
-  public MarketUpsertEvent validatePutMarkets(@NotNull MarketUpsertEvent pEvent)
+  public MarketUpsertEvent validatePutMarkets(@Nullable MarketUpsertEvent pEvent)
   {
+    if (pEvent == null)
+      return null;
+
     String session_token = pEvent.session_token;
     if (Utility.isNullOrEmptyTrimmedString(session_token))
       return null;
