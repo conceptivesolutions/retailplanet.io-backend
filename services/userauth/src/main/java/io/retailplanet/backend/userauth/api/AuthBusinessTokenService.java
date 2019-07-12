@@ -5,7 +5,7 @@ import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.userauth.impl.IEvents;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
 import org.eclipse.microprofile.reactive.messaging.*;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -27,8 +27,11 @@ public class AuthBusinessTokenService
   @Incoming(IEvents.IN_BUSINESSTOKEN_CREATE)
   @Outgoing(IEvents.OUT_BUSINESSTOKEN_CREATE_AUTH)
   @Broadcast
-  public TokenCreateEvent authenticateBusinessTokenCreationEvent(@NotNull TokenCreateEvent pCreateEvent)
+  public TokenCreateEvent authenticateBusinessTokenCreationEvent(@Nullable TokenCreateEvent pCreateEvent)
   {
+    if (pCreateEvent == null)
+      return null;
+
     String clientid = pCreateEvent.clientID;
     String token = pCreateEvent.token;
 
