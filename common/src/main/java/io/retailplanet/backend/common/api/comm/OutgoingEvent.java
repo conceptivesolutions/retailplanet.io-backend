@@ -1,6 +1,6 @@
 package io.retailplanet.backend.common.api.comm;
 
-import io.retailplanet.backend.common.api.EventSerializer;
+import io.retailplanet.backend.common.api.events.EventSerializer;
 import org.apache.kafka.common.serialization.Serializer;
 
 import java.lang.annotation.*;
