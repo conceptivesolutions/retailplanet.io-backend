@@ -1,15 +1,15 @@
 package io.retailplanet.backend.products.api;
 
+import io.reactivex.Flowable;
+import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.search.*;
 import io.retailplanet.backend.products.impl.IEvents;
-import io.retailplanet.backend.products.impl.index.IIndexFacade;
+import io.retailplanet.backend.products.impl.struct.IIndexStructure;
 import io.smallrye.reactive.messaging.annotations.*;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.Nullable;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.util.ArrayList;
 
 /**
  * Service: Product search
@@ -20,8 +20,11 @@ import java.util.ArrayList;
 public class SearchService
 {
 
-  @Inject
-  private IIndexFacade indexFacade;
+  @Stream(IEvents.OUT_INDEX_DOCUMENT_SEARCH)
+  Emitter<DocumentSearchEvent> searchInIndex;
+
+  @Stream(IEvents.IN_INDEX_DOCUMENT_SEARCHRESULT)
+  Flowable<DocumentSearchResultEvent> searchInIndexResult;
 
   @Stream(IEvents.OUT_SEARCH_PRODUCTS_RESULT)
   Emitter<SearchProductsResultEvent> resultEmitter;
@@ -37,12 +40,20 @@ public class SearchService
     if (pEvent == null)
       return;
 
-    // search in index
-    indexFacade.searchProducts(pEvent.query, pEvent.sorting, pEvent.offset, pEvent.length, pEvent.filter)
-        .subscribe(pResult -> resultEmitter.send(pEvent.createAnswer(SearchProductsResultEvent.class)
-                                                     .maxSize(pResult.maxSize)
-                                                     .filters(pResult.filters)
-                                                     .elements(pResult.elements == null ? null : new ArrayList<>(pResult.elements))));
+    // Build request
+    DocumentSearchEvent searchEvent = pEvent.createAnswer(DocumentSearchEvent.class)
+        .query(new DocumentSearchEvent.Query()
+                   .matches(IIndexStructure.IProduct.NAME, pEvent.query))
+        .offset(pEvent.offset)
+        .length(pEvent.length);
+
+    // send
+    searchInIndex.send(searchEvent);
+
+    // wait for answer
+    searchEvent.waitForAnswer(searchInIndexResult)
+        .map(pResult -> pResult.createAnswer(SearchProductsResultEvent.class))
+        .subscribe(resultEmitter::send);
   }
 
 }

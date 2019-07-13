@@ -8,6 +8,8 @@ package io.retailplanet.backend.products.impl.struct;
 public interface IIndexStructure
 {
 
+  String INDEX_TYPE = "product";
+
   /**
    * All fields for a product in index
    */
