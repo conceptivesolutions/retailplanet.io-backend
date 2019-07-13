@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="businessapi" type="JarApplication" folderName="w/o maven">
+  <configuration default="false" name="businessapi (build)" type="JarApplication">
     <option name="JAR_PATH" value="$PROJECT_DIR$/services/businessapi/target/businessapi-2.0-SNAPSHOT-runner.jar" />
     <option name="PROGRAM_PARAMETERS" value="$PROJECT_DIR$/services/businessapi/target/classes $PROJECT_DIR$/services/businessapi/target/wiring-classes" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/services/businessapi" />
@@ -9,6 +9,8 @@
       <env name="LOG_LEVEL" value="SEVERE" />
       <env name="LOG_FILE" value="false" />
     </envs>
-    <method v="2" />
+    <method v="2">
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/services/businessapi/pom.xml" goal="clean compile quarkus:build" />
+    </method>
   </configuration>
 </component>
