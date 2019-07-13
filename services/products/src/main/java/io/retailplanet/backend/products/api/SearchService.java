@@ -42,7 +42,7 @@ public class SearchService
         .subscribe(pResult -> resultEmitter.send(pEvent.createAnswer(SearchProductsResultEvent.class)
                                                      .maxSize(pResult.maxSize)
                                                      .filters(pResult.filters)
-                                                     .elements(new ArrayList<>(pResult.elements))));
+                                                     .elements(pResult.elements == null ? null : new ArrayList<>(pResult.elements))));
   }
 
 }
