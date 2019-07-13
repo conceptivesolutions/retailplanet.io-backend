@@ -8,6 +8,8 @@ package io.retailplanet.backend.markets.impl.struct;
 public interface IIndexStructure
 {
 
+  String INDEX_TYPE = "market";
+
   /**
    * All fields for a market in index
    */

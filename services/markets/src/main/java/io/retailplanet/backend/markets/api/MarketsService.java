@@ -1,17 +1,19 @@
 package io.retailplanet.backend.markets.api;
 
+import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
 import io.retailplanet.backend.common.events.market.MarketUpsertEvent;
 import io.retailplanet.backend.common.util.*;
 import io.retailplanet.backend.markets.impl.IEvents;
-import io.retailplanet.backend.markets.impl.index.IIndexFacade;
-import io.retailplanet.backend.markets.impl.struct.Market;
-import io.vertx.core.json.Json;
+import io.retailplanet.backend.markets.impl.struct.*;
+import io.smallrye.reactive.messaging.annotations.*;
+import io.vertx.core.json.*;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.*;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.stream.Collector;
 
 /**
  * Service: Markets
@@ -24,8 +26,8 @@ public class MarketsService
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(MarketsService.class);
 
-  @Inject
-  private IIndexFacade indexFacade;
+  @Stream(IEvents.OUT_INDEX_DOCUMENT_UPSERT)
+  Emitter<DocumentUpsertEvent> upsertMarketsInIndex;
 
   /**
    * Inserts / Updates a list of markets
@@ -52,7 +54,15 @@ public class MarketsService
       Market[] markets = Json.decodeValue(content, Market[].class);
 
       // store in index
-      indexFacade.upsertMarkets(clientID, markets);
+      DocumentUpsertEvent request = new DocumentUpsertEvent()
+          .clientID(clientID)
+          .type(IIndexStructure.INDEX_TYPE)
+          .doc(Arrays.stream(markets)
+                   .map(pMarket -> pMarket.toIndexJSON(clientID))
+                   .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
+
+      // fire request
+      upsertMarketsInIndex.send(request);
     }
     catch (Exception e)
     {
