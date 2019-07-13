@@ -17,19 +17,19 @@ final class SearchResult
    * Offset of the result page
    */
   @JsonProperty
-  public int offset;
+  public Integer offset;
 
   /**
    * Length / Size of the result page
    */
   @JsonProperty
-  public int length;
+  public Integer length;
 
   /**
    * Maximum count of all results
    */
   @JsonProperty
-  public int maxSize;
+  public Integer maxSize;
 
   /**
    * Map containing all possible filters on the client side (with additional information)
@@ -44,21 +44,21 @@ final class SearchResult
   public List<Object> elements;
 
   @NotNull
-  SearchResult offset(int pOffset)
+  SearchResult offset(Integer pOffset)
   {
     offset = pOffset;
     return this;
   }
 
   @NotNull
-  SearchResult length(int pLength)
+  SearchResult length(Integer pLength)
   {
     length = pLength;
     return this;
   }
 
   @NotNull
-  SearchResult maxSize(int pMaxSize)
+  SearchResult maxSize(Integer pMaxSize)
   {
     maxSize = pMaxSize;
     return this;
