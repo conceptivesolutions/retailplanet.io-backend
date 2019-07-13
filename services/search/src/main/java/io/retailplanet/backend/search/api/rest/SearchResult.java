@@ -10,7 +10,7 @@ import java.util.*;
  * @author w.glanzer, 11.07.2019
  */
 @RegisterForReflection
-final class SearchResult
+public final class SearchResult
 {
 
   /**
