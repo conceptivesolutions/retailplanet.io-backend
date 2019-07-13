@@ -2,6 +2,7 @@ package io.retailplanet.backend.search.api.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -9,7 +10,7 @@ import java.util.*;
  * @author w.glanzer, 11.07.2019
  */
 @RegisterForReflection
-public final class SearchResult
+final class SearchResult
 {
 
   /**
@@ -40,87 +41,41 @@ public final class SearchResult
    * Current result page
    */
   @JsonProperty
-  public List<Product> elements;
+  public List<Object> elements;
 
-  /**
-   * Describes a product in this result page
-   */
-  @RegisterForReflection
-  public final class Product
+  @NotNull
+  SearchResult offset(int pOffset)
   {
-    /**
-     * Displayable name of the product
-     */
-    @JsonProperty
-    public String name;
-
-    /**
-     * Price
-     */
-    @JsonProperty
-    public Float price;
-
-    /**
-     * List containing all URLs for the preview pictures
-     */
-    @JsonProperty
-    public List<String> previews;
-
-    /**
-     * The markets object gives information about the availability of this product.
-     * It contains only those markets, where the products were found and the filters matched.
-     */
-    @JsonProperty
-    public List<Market> markets;
-
-    /**
-     * Additional information about this product
-     */
-    @JsonProperty
-    public Map<String, String> infos;
+    offset = pOffset;
+    return this;
   }
 
-  /**
-   * Describes a market where a product was found
-   */
-  @RegisterForReflection
-  public final class Market
+  @NotNull
+  SearchResult length(int pLength)
   {
-    /**
-     * Market type, something like "MediaMarkt", "Saturn", etc.
-     */
-    @JsonProperty
-    public String _type;
+    length = pLength;
+    return this;
+  }
 
-    /**
-     * Displayable name
-     */
-    @JsonProperty
-    public String name;
+  @NotNull
+  SearchResult maxSize(int pMaxSize)
+  {
+    maxSize = pMaxSize;
+    return this;
+  }
 
-    /**
-     * GPS coordinates in format: "LAT,LNG"
-     */
-    @JsonProperty
-    public String location;
+  @NotNull
+  SearchResult filters(Map<String, String[]> pFilters)
+  {
+    filters = pFilters;
+    return this;
+  }
 
-    /**
-     * Displayable address
-     */
-    @JsonProperty
-    public String address;
-
-    /**
-     * Product availability in this market
-     */
-    @JsonProperty
-    public String availability;
-
-    /**
-     * Quantity to define how many products are currently in stock
-     */
-    @JsonProperty
-    public Integer quantity;
+  @NotNull
+  SearchResult elements(List<Object> pElements)
+  {
+    elements = pElements;
+    return this;
   }
 
 }

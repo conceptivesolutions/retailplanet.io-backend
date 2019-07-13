@@ -41,9 +41,14 @@ public class SearchResource
     // send request
     searchProductsEmitter.send(event);
 
-    // wait for result
+    // wait for result and return
     event.waitForAnswer(searchProductsResultFlowable)
-        .map(pResult -> new SearchResult())
+        .map(pResult -> new SearchResult()
+            .offset(pOffset)
+            .length(pLength)
+            .maxSize(pResult.maxSize)
+            .filters(pResult.filters)
+            .elements(pResult.elements))
         .subscribe(pResponse::resume, pResponse::resume);
   }
 
