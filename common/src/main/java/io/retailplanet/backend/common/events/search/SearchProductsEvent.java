@@ -6,6 +6,8 @@ import io.retailplanet.backend.common.events.AbstractEvent;
 import io.vertx.core.json.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+
 /**
  * Event that will be fired, when a product search was started
  *
@@ -43,7 +45,7 @@ public class SearchProductsEvent extends AbstractEvent<SearchProductsEvent>
    * Desired filters
    */
   @JsonProperty
-  public JsonObject filter;
+  public Map<String, Object> filter;
 
   @NotNull
   public SearchProductsEvent query(String pQuery)
@@ -76,7 +78,7 @@ public class SearchProductsEvent extends AbstractEvent<SearchProductsEvent>
   @NotNull
   public SearchProductsEvent filter(JsonObject pFilter)
   {
-    filter = pFilter;
+    filter = pFilter.getMap();
     return this;
   }
 }
