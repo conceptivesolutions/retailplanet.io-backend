@@ -6,7 +6,7 @@ import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.*;
 import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.client.*;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.indices.*;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.*;
@@ -18,19 +18,18 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
+ * Contains read / write implementations for elasticsearch
+ *
  * @author w.glanzer, 20.06.2019
  */
 @Singleton
-class ElasticFacadeImpl implements IIndexFacade
+class ElasticFacadeReadWriteImpl extends ElasticFacadeReadImpl
 {
 
-  private static final Logger _LOGGER = LoggerFactory.getLogger(ElasticFacadeImpl.class);
+  private static final Logger _LOGGER = LoggerFactory.getLogger(ElasticFacadeReadWriteImpl.class);
 
   @Inject
   private IIndexStructProvider structProvider;
-
-  @Inject
-  private RestHighLevelClient restClient;
 
   @Override
   public void upsertDocument(@NotNull String pClientID, @NotNull String pIndexType, @NotNull Stream<Pair<String, XContentBuilder>> pContentBuilder) throws Exception

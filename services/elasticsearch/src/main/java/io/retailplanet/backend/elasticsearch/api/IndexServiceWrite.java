@@ -18,15 +18,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Service: Index
+ * Service: Write operations on Index
  *
  * @author w.glanzer, 22.06.2019
  */
 @ApplicationScoped
-public class IndexService
+public class IndexServiceWrite
 {
 
-  private static final Logger _LOGGER = LoggerFactory.getLogger(IndexService.class);
+  private static final Logger _LOGGER = LoggerFactory.getLogger(IndexServiceWrite.class);
 
   @Inject
   private IIndexFacade indexFacade;
@@ -42,9 +42,9 @@ public class IndexService
     if (pEvent == null)
       return;
 
-    String clientid = pEvent.clientID;
-    String type = pEvent.type;
-    Object doc = pEvent.doc;
+    String clientid = pEvent.clientID();
+    String type = pEvent.type();
+    Object doc = pEvent.doc();
     if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(type) || doc == null)
       return;
 

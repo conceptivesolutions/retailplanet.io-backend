@@ -1,9 +1,12 @@
 package io.retailplanet.backend.elasticsearch.impl.facades;
 
+import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
+import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -22,6 +25,18 @@ public interface IIndexFacade
    * @param pContentBuilder Content to insert / update
    */
   void upsertDocument(@NotNull String pClientID, @NotNull String pIndexType, @NotNull Stream<Pair<String, XContentBuilder>> pContentBuilder) throws Exception;
+
+  /**
+   * Executes a search in elasticsearch
+   *
+   * @param pMatches Current query, "matches" term
+   * @param pFilters Filter for current query, "filters" term
+   * @param pOffset  Page offset or <tt>null</tt>
+   * @param pLength  Page length or <tt>null</tt>
+   * @return results
+   */
+  @NotNull
+  List<JsonObject> search(@NotNull List<IQueryBuilder> pMatches, @NotNull List<IQueryBuilder> pFilters, @Nullable Integer pOffset, @Nullable Integer pLength) throws Exception;
 
   /**
    * Inserts a new index. The index will be regenerated, if it already exists and force rebuild is set to <tt>true</tt>
