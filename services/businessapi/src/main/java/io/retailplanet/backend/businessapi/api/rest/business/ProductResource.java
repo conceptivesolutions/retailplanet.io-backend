@@ -1,6 +1,7 @@
 package io.retailplanet.backend.businessapi.api.rest.business;
 
 import io.retailplanet.backend.businessapi.impl.IEvents;
+import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
 import io.retailplanet.backend.common.util.ZipUtility;
 import io.smallrye.reactive.messaging.annotations.*;
@@ -14,7 +15,7 @@ import javax.ws.rs.core.*;
  * @author w.glanzer, 21.06.2019
  */
 @Path("/business/product")
-public class ProductResource
+public class ProductResource extends AbstractService
 {
 
   @Stream(IEvents.OUT_PRODUCT_UPSERT_UNAUTH)

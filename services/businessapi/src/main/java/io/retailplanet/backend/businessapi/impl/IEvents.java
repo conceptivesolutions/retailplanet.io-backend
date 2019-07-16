@@ -41,10 +41,4 @@ public interface IEvents
   @IncomingEvent
   String IN_BUSINESSTOKEN_CREATED = "BusinessToken_CREATED_IN";
 
-  /**
-   * Event: Indicates, that a BusinessToken could not be created
-   */
-  @IncomingEvent
-  String IN_BUSINESSTOKEN_CREATE_FAILED = "BusinessToken_CREATE_FAILED_IN";
-
 }

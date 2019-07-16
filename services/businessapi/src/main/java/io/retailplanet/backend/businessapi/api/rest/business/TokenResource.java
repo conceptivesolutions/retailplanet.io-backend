@@ -2,6 +2,7 @@ package io.retailplanet.backend.businessapi.api.rest.business;
 
 import io.reactivex.Flowable;
 import io.retailplanet.backend.businessapi.impl.IEvents;
+import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.ErrorEvent;
 import io.retailplanet.backend.common.events.token.*;
 import io.retailplanet.backend.common.util.Utility;
@@ -20,7 +21,7 @@ import java.time.Instant;
  * @author w.glanzer, 16.06.2019
  */
 @Path("/business/token")
-public class TokenResource
+public class TokenResource extends AbstractService
 {
 
   @Stream(IEvents.OUT_BUSINESSTOKEN_CREATE)
@@ -31,9 +32,6 @@ public class TokenResource
 
   @Stream(IEvents.IN_BUSINESSTOKEN_CREATED)
   Flowable<TokenCreatedEvent> tokenCreatedFlowable;
-
-  @Stream(IEvents.IN_BUSINESSTOKEN_CREATE_FAILED)
-  Flowable<ErrorEvent> tokenCreateFailedFlowable;
 
   /**
    * Generates a new session token for a specific client.
@@ -63,7 +61,7 @@ public class TokenResource
     tokenCreateEmitter.send(event);
 
     // wait for answer
-    event.waitForAnswer(tokenCreatedFlowable, tokenCreateFailedFlowable)
+    event.waitForAnswerAndException(errorsFlowable, tokenCreatedFlowable)
         .map(pEvent -> {
           // Result token
           if (pEvent instanceof TokenCreatedEvent)
