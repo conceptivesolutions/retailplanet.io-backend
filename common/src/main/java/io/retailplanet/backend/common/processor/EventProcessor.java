@@ -1,6 +1,7 @@
 package io.retailplanet.backend.common.processor;
 
 import io.retailplanet.backend.common.api.comm.*;
+import io.retailplanet.backend.common.api.events.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.processing.*;
@@ -64,6 +65,10 @@ public class EventProcessor extends AbstractProcessor
     if (container == null)
       throw new RuntimeException("Missing EventContainer");
 
+    // add defaults
+    incomingEvents.addAll(_createDefaultIncomingEvents());
+    outgoingEvents.addAll(_createDefaultOutgoingEvents());
+
     // Translate to application.properties content
     Map<String, String> content = _toFileContent(container, incomingEvents, outgoingEvents);
 
@@ -71,6 +76,24 @@ public class EventProcessor extends AbstractProcessor
     _writeToApplicationProperties(content);
 
     return true;
+  }
+
+  /**
+   * @return all default incoming events
+   */
+  @NotNull
+  private List<_IncomingEvent> _createDefaultIncomingEvents()
+  {
+    return Collections.singletonList(new _IncomingEvent("ERRORS_IN", "ERRORS", "latest", EventDeserializer.class.getName()));
+  }
+
+  /**
+   * @return all default outgoing events
+   */
+  @NotNull
+  private List<_OutgoingEvent> _createDefaultOutgoingEvents()
+  {
+    return Collections.singletonList(new _OutgoingEvent("ERRORS_OUT", "ERRORS", EventSerializer.class.getName()));
   }
 
   /**
@@ -160,6 +183,14 @@ public class EventProcessor extends AbstractProcessor
     private final String autoOffsetReset;
     private final String valueDeserializer;
 
+    public _IncomingEvent(String pName, String pTopic, String pAutoOffsetReset, String pValueDeserializer)
+    {
+      name = pName;
+      topic = pTopic;
+      autoOffsetReset = pAutoOffsetReset;
+      valueDeserializer = pValueDeserializer;
+    }
+
     private _IncomingEvent(Element pElement)
     {
       name = ElementFilter.fieldsIn(Collections.singletonList(pElement)).get(0).getConstantValue().toString();
@@ -199,6 +230,13 @@ public class EventProcessor extends AbstractProcessor
     private final String name;
     private final String topic;
     private final String valueSerializer;
+
+    public _OutgoingEvent(String pName, String pTopic, String pValueSerializer)
+    {
+      name = pName;
+      topic = pTopic;
+      valueSerializer = pValueSerializer;
+    }
 
     private _OutgoingEvent(Element pElement)
     {

@@ -31,18 +31,45 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
   }
 
   /**
+   * Creates a new flowable which waits for a result (and error) with the given chainID on the given flowables
+   *
+   * @return Flowable with filtered chainID and set timeout
+   */
+  @SafeVarargs
+  @NotNull
+  public final Single<AbstractEvent> waitForAnswerAndException(@NotNull Flowable<ErrorEvent> pErrors, @NotNull Flowable<? extends AbstractEvent>... pFlowables)
+  {
+    Flowable<AbstractEvent> successFlowable = Flowable.merge(Arrays.asList(pFlowables))
+        .filter(pEvent -> pEvent.chainID.trim().equals(chainID));
+
+    return Flowable.merge(successFlowable, pErrors)
+        .timeout(30, TimeUnit.SECONDS)
+        .firstOrError();
+  }
+
+  /**
    * Creates a new flowable which waits for a result with the given chainID on the given flowables
    *
    * @return Flowable with filtered chainID and set timeout
    */
   @SafeVarargs
   @NotNull
-  public final <T extends AbstractEvent> Single<T> waitForAnswer(@NotNull Flowable<? extends T>... pFlowables)
+  public final <T extends AbstractEvent> Maybe<T> waitForAnswer(@NotNull Flowable<ErrorEvent> pErrors, @NotNull Flowable<? extends T>... pFlowables)
   {
-    return Flowable.merge(Arrays.asList(pFlowables))
-        .filter(pEvent -> pEvent.chainID.trim().equals(chainID))
-        .timeout(30, TimeUnit.SECONDS)
-        .firstOrError();
+    return waitForAnswerAndException(pErrors, pFlowables)
+        .filter(pEvent -> {
+          try
+          {
+            //noinspection unused
+            T cast = (T) pEvent;
+            return true;
+          }
+          catch (ClassCastException cce)
+          {
+            return false;
+          }
+        })
+        .map(pEvent -> (T) pEvent);
   }
 
 }
