@@ -18,25 +18,33 @@ public class DocumentUpsertEvent extends AbstractEvent<DocumentUpsertEvent>
    * ID of the client, where this event comes from
    */
   @JsonProperty
-  public String clientID;
+  String clientID;
 
   /**
    * type of the document
    */
   @JsonProperty
-  public String type;
+  String type;
 
   /**
    * document itself
    */
   @JsonProperty
-  public Object doc;
+  Object doc;
 
   @NotNull
   public DocumentUpsertEvent clientID(String pClientID)
   {
     clientID = pClientID;
     return this;
+  }
+
+  /**
+   * @return value of 'clientID' field
+   */
+  public String clientID()
+  {
+    return clientID;
   }
 
   @NotNull
@@ -46,10 +54,27 @@ public class DocumentUpsertEvent extends AbstractEvent<DocumentUpsertEvent>
     return this;
   }
 
+  /**
+   * @return value of 'type' field
+   */
+  public String type()
+  {
+    return type;
+  }
+
   @NotNull
   public DocumentUpsertEvent doc(Object pDoc)
   {
     doc = pDoc;
     return this;
   }
+
+  /**
+   * @return value of 'doc' field
+   */
+  public Object doc()
+  {
+    return doc;
+  }
+
 }
