@@ -2,6 +2,7 @@ package io.retailplanet.backend.businesstoken.api;
 
 import io.retailplanet.backend.businesstoken.impl.cache.TokenCache;
 import io.retailplanet.backend.businesstoken.impl.events.IEvents;
+import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.token.*;
 import io.retailplanet.backend.common.util.Utility;
 import io.smallrye.reactive.messaging.annotations.*;
@@ -20,7 +21,7 @@ import java.util.UUID;
  * @author w.glanzer, 10.06.2019
  */
 @ApplicationScoped
-public class BusinessTokenService
+public class BusinessTokenService extends AbstractService
 {
 
   /* Represents how long a token will be active by default */
