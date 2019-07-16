@@ -1,5 +1,6 @@
 package io.retailplanet.backend.markets.api;
 
+import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
 import io.retailplanet.backend.common.events.market.MarketUpsertEvent;
 import io.retailplanet.backend.common.util.*;
@@ -21,7 +22,7 @@ import java.util.stream.Collector;
  * @author w.glanzer, 23.06.2019
  */
 @ApplicationScoped
-public class MarketsService
+public class MarketsService extends AbstractService
 {
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(MarketsService.class);
