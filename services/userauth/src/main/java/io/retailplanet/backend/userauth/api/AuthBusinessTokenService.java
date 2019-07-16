@@ -1,5 +1,6 @@
 package io.retailplanet.backend.userauth.api;
 
+import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.token.TokenCreateEvent;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.userauth.impl.IEvents;
@@ -15,7 +16,7 @@ import javax.enterprise.context.ApplicationScoped;
  * @author w.glanzer, 17.06.2019
  */
 @ApplicationScoped
-public class AuthBusinessTokenService
+public class AuthBusinessTokenService extends AbstractService
 {
 
   /**
