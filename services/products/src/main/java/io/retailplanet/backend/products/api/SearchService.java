@@ -1,6 +1,7 @@
 package io.retailplanet.backend.products.api;
 
 import io.reactivex.Flowable;
+import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.search.*;
 import io.retailplanet.backend.products.impl.IEvents;
@@ -17,7 +18,7 @@ import javax.enterprise.context.ApplicationScoped;
  * @author w.glanzer, 12.07.2019
  */
 @ApplicationScoped
-public class SearchService
+public class SearchService extends AbstractService
 {
 
   @Stream(IEvents.OUT_INDEX_DOCUMENT_SEARCH)

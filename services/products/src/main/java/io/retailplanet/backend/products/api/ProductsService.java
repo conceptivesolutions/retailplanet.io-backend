@@ -1,5 +1,6 @@
 package io.retailplanet.backend.products.api;
 
+import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
 import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
 import io.retailplanet.backend.common.util.*;
@@ -23,7 +24,7 @@ import static io.retailplanet.backend.products.impl.struct.IIndexStructure.INDEX
  * @author w.glanzer, 20.06.2019
  */
 @ApplicationScoped
-public class ProductsService
+public class ProductsService extends AbstractService
 {
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(ProductsService.class);
