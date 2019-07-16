@@ -29,10 +29,4 @@ public interface IEvents
   @OutgoingEvent
   String OUT_INDEX_DOCUMENT_SEARCHRESULT = "Index_DOCUMENT_SEARCHRESULT_OUT";
 
-  /**
-   * Event: An error happened
-   */
-  @OutgoingEvent
-  String OUT_ERRORS = "ERRORS_OUT";
-
 }

@@ -1,5 +1,6 @@
 package io.retailplanet.backend.elasticsearch.api;
 
+import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.elasticsearch.impl.IEvents;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  * @author w.glanzer, 22.06.2019
  */
 @ApplicationScoped
-public class IndexServiceWrite
+public class IndexServiceWrite extends AbstractService
 {
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(IndexServiceWrite.class);
