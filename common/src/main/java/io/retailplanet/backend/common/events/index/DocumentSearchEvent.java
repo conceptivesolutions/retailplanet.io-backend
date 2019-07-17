@@ -238,6 +238,21 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     {
       return new Match("eq", pFieldName, pFieldValue);
     }
+
+    /**
+     * Creates an or match query to define something like FIELD=XX or FIELD=YY
+     *
+     * @param pFieldName   Name of the field
+     * @param pFieldValues Possible values
+     * @return Match
+     */
+    @NotNull
+    public static Match or(@NotNull String pFieldName, @NotNull List<String> pFieldValues)
+    {
+      Match match = new Match("or", pFieldName);
+      match.content = pFieldValues.toArray(new String[0]);
+      return match;
+    }
   }
 
   /**
