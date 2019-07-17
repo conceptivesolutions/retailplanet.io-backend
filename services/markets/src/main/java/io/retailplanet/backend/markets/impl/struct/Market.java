@@ -53,17 +53,17 @@ public class Market
   public JsonObject toIndexJSON(@NotNull String pClientID)
   {
     JsonObject result = new JsonObject()
-        .put("id", id)
-        .put("clientid", pClientID)
-        .put("location", new JsonObject()
+        .put(IIndexStructure.IMarket.ID, id)
+        .put(IIndexStructure.IMarket.CLIENTID, pClientID)
+        .put(IIndexStructure.IMarket.LOCATION, new JsonObject()
             .put("lat", lat)
             .put("lon", lng));
 
     if (name != null)
-      result.put("name", name);
+      result.put(IIndexStructure.IMarket.NAME, name);
 
     if (address != null)
-      result.put("address", address);
+      result.put(IIndexStructure.IMarket.ADDRESS, address);
 
     return result;
   }

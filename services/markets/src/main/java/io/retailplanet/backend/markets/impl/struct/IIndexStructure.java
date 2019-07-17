@@ -19,6 +19,12 @@ public interface IIndexStructure
     String NAME = "name";
     /* Unique ID of the market (globally unique) */
     String ID = "id";
+    /* ID of the original client */
+    String CLIENTID = "clientid";
+    /* The location in lat,lon */
+    String LOCATION = "location";
+    /* Displayable address */
+    String ADDRESS = "address";
   }
 
 }
