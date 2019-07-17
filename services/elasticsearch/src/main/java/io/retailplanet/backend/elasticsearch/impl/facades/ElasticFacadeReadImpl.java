@@ -55,6 +55,7 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
   {
     return pBuilders.stream()
         .map(IQueryBuilder::toQueryBuilder)
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 

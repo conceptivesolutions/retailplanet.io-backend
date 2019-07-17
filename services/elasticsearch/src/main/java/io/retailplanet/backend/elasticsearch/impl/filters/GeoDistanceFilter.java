@@ -3,7 +3,7 @@ package io.retailplanet.backend.elasticsearch.impl.filters;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.*;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 /**
  * Filter for the geo_distance field in elasticsearch
@@ -28,7 +28,7 @@ class GeoDistanceFilter implements IQueryBuilder
     distance = pDistance;
   }
 
-  @NotNull
+  @Nullable
   @Override
   public QueryBuilder toQueryBuilder()
   {

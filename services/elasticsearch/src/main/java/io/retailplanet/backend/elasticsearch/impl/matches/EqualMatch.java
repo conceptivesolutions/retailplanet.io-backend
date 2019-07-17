@@ -2,7 +2,7 @@ package io.retailplanet.backend.elasticsearch.impl.matches;
 
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import org.elasticsearch.index.query.*;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 /**
  * Match-Implementation for "equal" match
@@ -23,7 +23,7 @@ class EqualMatch implements IQueryBuilder
     fieldValue = pFieldValue;
   }
 
-  @NotNull
+  @Nullable
   @Override
   public QueryBuilder toQueryBuilder()
   {
