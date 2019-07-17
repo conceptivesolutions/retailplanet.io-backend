@@ -19,24 +19,13 @@ public interface IMatchFactory
    * @return list of "real" matches objects
    */
   @NotNull
-  default List<IQueryBuilder> interpretMatches(@Nullable List<Map.Entry<String, String[]>> pMatches) throws Exception
+  default List<IQueryBuilder> interpretMatches(@Nullable List<DocumentSearchEvent.Match> pMatches) throws Exception
   {
     if (pMatches == null)
       return Collections.emptyList();
     List<IQueryBuilder> result = new ArrayList<>();
-    for (Map.Entry<String, String[]> filter : pMatches)
-    {
-      String id = filter.getKey();
-      String nestedPath = null;
-      if (id.contains(DocumentSearchEvent.Query.NESTED_DELIMITER))
-      {
-        String[] split = id.split(DocumentSearchEvent.Query.NESTED_DELIMITER);
-        nestedPath = split[0];
-        id = split[1];
-      }
-
-      result.add(interpretMatch(id, nestedPath, filter.getValue()));
-    }
+    for (DocumentSearchEvent.Match filter : pMatches)
+      result.add(interpretMatch(filter.name(), filter.nestedPath(), filter.content()));
     return result;
   }
 

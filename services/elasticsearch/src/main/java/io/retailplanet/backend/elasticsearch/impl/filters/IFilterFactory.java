@@ -1,5 +1,6 @@
 package io.retailplanet.backend.elasticsearch.impl.filters;
 
+import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import org.jetbrains.annotations.*;
 
@@ -20,13 +21,13 @@ public interface IFilterFactory
    * @return list of "real" filter objects
    */
   @NotNull
-  default List<IQueryBuilder> interpretFilters(@Nullable List<Map.Entry<String, String[]>> pFilters) throws Exception
+  default List<IQueryBuilder> interpretFilters(@Nullable List<DocumentSearchEvent.Filter> pFilters) throws Exception
   {
     if (pFilters == null)
       return Collections.emptyList();
     List<IQueryBuilder> result = new ArrayList<>();
-    for (Map.Entry<String, String[]> filter : pFilters)
-      result.add(interpretFilter(filter.getKey(), filter.getValue()));
+    for (DocumentSearchEvent.Filter filter : pFilters)
+      result.add(interpretFilter(filter.name(), filter.content()));
     return result;
   }
 
