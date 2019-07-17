@@ -287,8 +287,10 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     @NotNull
     public static Match or(@NotNull String pFieldName, @NotNull List<String> pFieldValues)
     {
-      Match match = new Match("or", pFieldName);
-      match.content = pFieldValues.toArray(new String[0]);
+      Match match = new Match("or");
+      List<String> values = new ArrayList<>(pFieldValues);
+      values.add(0, pFieldName);
+      match.content = values.toArray(new String[0]);
       return match;
     }
 
