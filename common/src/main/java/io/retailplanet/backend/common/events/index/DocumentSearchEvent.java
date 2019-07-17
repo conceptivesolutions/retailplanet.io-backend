@@ -131,6 +131,11 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
   public static class Query
   {
     /**
+     * We need to use a delimiter in match/filter type name, to define nested documents
+     */
+    public static final String NESTED_DELIMITER = "//";
+
+    /**
      * This map contains all "match" queries.
      * If no matches are given, the "match_all" term is used.
      */
@@ -154,7 +159,10 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     {
       if (matches == null)
         matches = new ArrayList<>();
-      matches.add(new AbstractMap.SimpleEntry<>(pMatch.name, pMatch.content));
+      String id = pMatch.name;
+      if (pMatch.nestedPath != null)
+        id = pMatch.nestedPath + NESTED_DELIMITER + id;
+      matches.add(new AbstractMap.SimpleEntry<>(id, pMatch.content));
       return this;
     }
 
@@ -197,11 +205,25 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
   {
     private String name;
     private String[] content;
+    private String nestedPath;
 
     private Match(@NotNull String pName, @NotNull String... pContent)
     {
       name = pName;
       content = pContent;
+    }
+
+    /**
+     * Mark this match as "nested document" match
+     *
+     * @param pPath specifies the nested path
+     * @return Builder
+     */
+    @NotNull
+    public Match nested(@NotNull String pPath)
+    {
+      nestedPath = pPath;
+      return this;
     }
 
     /**
