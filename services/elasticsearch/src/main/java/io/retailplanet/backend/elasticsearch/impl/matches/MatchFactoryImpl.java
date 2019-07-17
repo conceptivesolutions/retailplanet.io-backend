@@ -19,11 +19,13 @@ class MatchFactoryImpl implements IMatchFactory
   {
     try
     {
-      //noinspection SwitchStatementWithTooFewBranches
       switch (pMatchType)
       {
         case EqualMatch.TYPE:
           return new EqualMatch(pNestedPath, pMatchDetails[0], pMatchDetails[1]);
+
+        case OrMatch.TYPE:
+          return new OrMatch(pNestedPath, pMatchDetails[0], Arrays.asList(pMatchDetails).subList(1, pMatchDetails.length));
 
         default:
           throw new IllegalArgumentException("Matchtype not found " + pMatchType);
