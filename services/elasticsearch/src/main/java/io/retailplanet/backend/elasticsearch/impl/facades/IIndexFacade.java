@@ -29,14 +29,16 @@ public interface IIndexFacade
   /**
    * Executes a search in elasticsearch
    *
-   * @param pMatches Current query, "matches" term
-   * @param pFilters Filter for current query, "filters" term
-   * @param pOffset  Page offset or <tt>null</tt>
-   * @param pLength  Page length or <tt>null</tt>
+   * @param pIndexTypes Search in specific indices
+   * @param pMatches    Current query, "matches" term
+   * @param pFilters    Filter for current query, "filters" term
+   * @param pOffset     Page offset or <tt>null</tt>
+   * @param pLength     Page length or <tt>null</tt>
    * @return results
    */
   @NotNull
-  List<JsonObject> search(@NotNull List<IQueryBuilder> pMatches, @NotNull List<IQueryBuilder> pFilters, @Nullable Integer pOffset, @Nullable Integer pLength) throws Exception;
+  List<JsonObject> search(@Nullable List<String> pIndexTypes, @NotNull List<IQueryBuilder> pMatches, @NotNull List<IQueryBuilder> pFilters,
+                          @Nullable Integer pOffset, @Nullable Integer pLength) throws Exception;
 
   /**
    * Inserts a new index. The index will be regenerated, if it already exists and force rebuild is set to <tt>true</tt>

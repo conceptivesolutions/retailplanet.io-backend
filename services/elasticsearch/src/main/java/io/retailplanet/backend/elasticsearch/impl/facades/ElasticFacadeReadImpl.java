@@ -30,12 +30,21 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
 
   @NotNull
   @Override
-  public List<JsonObject> search(@NotNull List<IQueryBuilder> pMatches, @NotNull List<IQueryBuilder> pFilters, @Nullable Integer pOffset, @Nullable Integer pLength) throws Exception
+  public List<JsonObject> search(@Nullable List<String> pIndexTypes, @NotNull List<IQueryBuilder> pMatches, @NotNull List<IQueryBuilder> pFilters,
+                                 @Nullable Integer pOffset, @Nullable Integer pLength) throws Exception
   {
-    SearchRequest request = new SearchRequest()
-        .source(new SearchSourceBuilder()
-                    .query(QueryUtility.combineShould(_toQueryBuilders(pMatches)))
-                    .postFilter(QueryUtility.combineMust(_toQueryBuilders(pFilters))));
+    SearchRequest request = new SearchRequest();
+
+    if (pIndexTypes != null)
+      request = request
+          .indices(pIndexTypes.stream()
+                       // we use the "prefix"-search to define the specific indices
+                       .map(pType -> pType + "*")
+                       .toArray(String[]::new));
+
+    request = request.source(new SearchSourceBuilder()
+                                 .query(QueryUtility.combineShould(_toQueryBuilders(pMatches)))
+                                 .postFilter(QueryUtility.combineMust(_toQueryBuilders(pFilters))));
 
     SearchResponse response = restClient.search(request, RequestOptions.DEFAULT);
 

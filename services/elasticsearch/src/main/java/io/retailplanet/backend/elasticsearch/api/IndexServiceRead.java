@@ -53,10 +53,10 @@ public class IndexServiceRead extends AbstractService
       if (query == null)
         throw new IllegalArgumentException("query must not be null");
 
-      //List<String> indices = pEvent.indexTypes(); // todo use indextypes
+      List<String> indexTypes = pEvent.indexTypes();
       List<IQueryBuilder> filters = filterFactory.interpretFilters(query.filters());
       List<IQueryBuilder> matches = matchFactory.interpretMatches(query.matches());
-      List<JsonObject> result = indexFacade.search(matches, filters, pEvent.offset(), pEvent.length());
+      List<JsonObject> result = indexFacade.search(indexTypes, matches, filters, pEvent.offset(), pEvent.length());
 
       searchResultEmitter.send(pEvent.createAnswer(DocumentSearchResultEvent.class)
                                    .hits(Collections.unmodifiableList(result)));
