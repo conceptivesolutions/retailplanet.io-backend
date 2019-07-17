@@ -3,6 +3,8 @@ package io.retailplanet.backend.common.api;
 import io.reactivex.Flowable;
 import io.retailplanet.backend.common.events.ErrorEvent;
 import io.smallrye.reactive.messaging.annotations.*;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstrct service for all kafka services
@@ -23,5 +25,27 @@ public abstract class AbstractService
    */
   @Stream("ERRORS_OUT")
   protected Emitter<ErrorEvent> errorsEmitter;
+
+  /**
+   * Notifies an error in emitter and own logger
+   *
+   * @param pThrowable error
+   */
+  protected void notifyError(@NotNull Throwable pThrowable)
+  {
+    notifyError("", pThrowable);
+  }
+
+  /**
+   * Notifies an error in emitter and own logger
+   *
+   * @param pMessage   additional error message
+   * @param pThrowable error
+   */
+  protected void notifyError(@NotNull String pMessage, @NotNull Throwable pThrowable)
+  {
+    LoggerFactory.getLogger(getClass()).error(pMessage, pThrowable);
+    errorsEmitter.send(new ErrorEvent().error(pThrowable));
+  }
 
 }
