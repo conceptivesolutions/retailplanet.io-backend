@@ -1,6 +1,7 @@
 package io.retailplanet.backend.search.api.rest;
 
 import io.reactivex.Flowable;
+import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.search.*;
 import io.retailplanet.backend.search.impl.IEvents;
 import io.smallrye.reactive.messaging.annotations.*;
@@ -16,7 +17,7 @@ import javax.ws.rs.core.MediaType;
  * @author w.glanzer, 10.07.2019
  */
 @Path("/search")
-public class SearchResource
+public class SearchResource extends AbstractService
 {
 
   @Stream(IEvents.OUT_SEARCH_PRODUCTS)
@@ -42,7 +43,7 @@ public class SearchResource
     searchProductsEmitter.send(event);
 
     // wait for result and return
-    event.waitForAnswer(searchProductsResultFlowable)
+    event.waitForAnswer(errorsFlowable, searchProductsResultFlowable)
         .map(pResult -> new SearchResult()
             .offset(pOffset)
             .length(pLength)
