@@ -1,7 +1,6 @@
 package io.retailplanet.backend.elasticsearch.api;
 
 import io.retailplanet.backend.common.api.AbstractService;
-import io.retailplanet.backend.common.events.ErrorEvent;
 import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.elasticsearch.impl.*;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
@@ -11,7 +10,6 @@ import io.smallrye.reactive.messaging.annotations.*;
 import io.vertx.core.json.JsonObject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -25,8 +23,6 @@ import java.util.*;
 @ApplicationScoped
 public class IndexServiceRead extends AbstractService
 {
-
-  private static final Logger _LOGGER = LoggerFactory.getLogger(IndexServiceRead.class);
 
   @Stream(IEvents.OUT_INDEX_DOCUMENT_SEARCHRESULT)
   Emitter<DocumentSearchResultEvent> searchResultEmitter;
@@ -67,8 +63,7 @@ public class IndexServiceRead extends AbstractService
     }
     catch (Exception e)
     {
-      _LOGGER.error("Failed to execute search", e);
-      errorsEmitter.send(new ErrorEvent().error(e));
+      notifyError("Failed to execute search", e);
     }
   }
 
