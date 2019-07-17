@@ -1,6 +1,6 @@
 package io.retailplanet.backend.common.events.index;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.retailplanet.backend.common.events.AbstractEvent;
 import org.jetbrains.annotations.NotNull;
@@ -131,22 +131,17 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
   public static class Query
   {
     /**
-     * We need to use a delimiter in match/filter type name, to define nested documents
-     */
-    public static final String NESTED_DELIMITER = "//";
-
-    /**
      * This map contains all "match" queries.
      * If no matches are given, the "match_all" term is used.
      */
     @JsonProperty
-    List<Map.Entry<String, String[]>> matches;
+    List<Match> matches;
 
     /**
      * This list contains all filters which should be used to filter the result type
      */
     @JsonProperty
-    List<Map.Entry<String, String[]>> filters;
+    List<Filter> filters;
 
     /**
      * Adds a new match to be used in this query term
@@ -159,17 +154,14 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     {
       if (matches == null)
         matches = new ArrayList<>();
-      String id = pMatch.name;
-      if (pMatch.nestedPath != null)
-        id = pMatch.nestedPath + NESTED_DELIMITER + id;
-      matches.add(new AbstractMap.SimpleEntry<>(id, pMatch.content));
+      matches.add(pMatch);
       return this;
     }
 
     /**
      * @return value of 'matches' field
      */
-    public List<Map.Entry<String, String[]>> matches()
+    public List<Match> matches()
     {
       return matches;
     }
@@ -185,14 +177,14 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     {
       if (filters == null)
         filters = new ArrayList<>();
-      filters.add(new AbstractMap.SimpleEntry<>(pFilter.name, pFilter.content));
+      filters.add(pFilter);
       return this;
     }
 
     /**
      * @return value of 'filters' field
      */
-    public List<Map.Entry<String, String[]>> filters()
+    public List<Filter> filters()
     {
       return filters;
     }
@@ -201,16 +193,51 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
   /**
    * Contains all necessary information about any match methods
    */
+  @RegisterForReflection
   public static class Match
   {
-    private String name;
-    private String[] content;
-    private String nestedPath;
+    @JsonProperty
+    String name;
+
+    @JsonProperty
+    String[] content;
+
+    @JsonProperty
+    String nestedPath;
+
+    @JsonCreator
+    Match()
+    {
+    }
 
     private Match(@NotNull String pName, @NotNull String... pContent)
     {
       name = pName;
       content = pContent;
+    }
+
+    /**
+     * @return value of 'name' field
+     */
+    public String name()
+    {
+      return name;
+    }
+
+    /**
+     * @return value of 'content' field
+     */
+    public String[] content()
+    {
+      return content;
+    }
+
+    /**
+     * @return value of 'nestedPath' field
+     */
+    public String nestedPath()
+    {
+      return nestedPath;
     }
 
     /**
@@ -258,15 +285,40 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
   /**
    * Contains all necessary information about any filter methods
    */
+  @RegisterForReflection
   public static class Filter
   {
-    private String name;
-    private String[] content;
+    @JsonProperty
+    String name;
+
+    @JsonProperty
+    String[] content;
+
+    @JsonCreator
+    Filter()
+    {
+    }
 
     private Filter(@NotNull String pName, @NotNull String... pContent)
     {
       name = pName;
       content = pContent;
+    }
+
+    /**
+     * @return value of 'name' field
+     */
+    public String name()
+    {
+      return name;
+    }
+
+    /**
+     * @return value of 'content' field
+     */
+    public String[] content()
+    {
+      return content;
     }
 
     /**
