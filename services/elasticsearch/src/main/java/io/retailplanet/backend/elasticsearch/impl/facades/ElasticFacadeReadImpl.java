@@ -43,7 +43,7 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
                        .toArray(String[]::new));
 
     request = request.source(new SearchSourceBuilder()
-                                 .query(QueryUtility.combineShould(_toQueryBuilders(pMatches)))
+                                 .query(QueryUtility.combineMust(_toQueryBuilders(pMatches)))
                                  .postFilter(QueryUtility.combineMust(_toQueryBuilders(pFilters))));
 
     SearchResponse response = restClient.search(request, RequestOptions.DEFAULT);
