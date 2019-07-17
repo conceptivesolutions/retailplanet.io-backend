@@ -2,7 +2,8 @@ package io.retailplanet.backend.elasticsearch.impl.matches;
 
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import io.retailplanet.backend.elasticsearch.impl.util.QueryUtility;
-import org.elasticsearch.index.query.QueryBuilder;
+import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.index.query.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
@@ -18,11 +19,13 @@ class CombinedMatch implements IQueryBuilder
 
   static final String TYPE = "combined";
 
+  private final String nestedPath;
   private final boolean useShouldClause;
   private final List<IQueryBuilder> innerBuilders;
 
-  CombinedMatch(@NotNull String pType, @NotNull List<IQueryBuilder> pInnerBuilders)
+  CombinedMatch(@Nullable String pNestedPath, @NotNull String pType, @NotNull List<IQueryBuilder> pInnerBuilders)
   {
+    nestedPath = pNestedPath;
     useShouldClause = pType.equalsIgnoreCase("or");
     innerBuilders = pInnerBuilders;
   }
@@ -39,9 +42,15 @@ class CombinedMatch implements IQueryBuilder
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
 
+    QueryBuilder builder;
     if (useShouldClause)
-      return QueryUtility.combineShould(builders);
-    return QueryUtility.combineMust(builders);
+      builder = QueryUtility.combineShould(builders);
+    else
+      builder = QueryUtility.combineMust(builders);
+
+    if (nestedPath != null)
+      builder = QueryBuilders.nestedQuery(nestedPath, builder, ScoreMode.Avg);
+    return builder;
   }
 
 }

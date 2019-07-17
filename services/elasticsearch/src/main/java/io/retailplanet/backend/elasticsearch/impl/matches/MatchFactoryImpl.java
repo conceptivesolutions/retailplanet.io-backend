@@ -29,7 +29,7 @@ class MatchFactoryImpl implements IMatchFactory
           return new OrMatch(pNestedPath, pMatchDetails[0], Arrays.asList(pMatchDetails).subList(1, pMatchDetails.length));
 
         case CombinedMatch.TYPE:
-          return new CombinedMatch(pMatchDetails[0], Objects.requireNonNull(pInnerMatches));
+          return new CombinedMatch(pNestedPath, pMatchDetails[0], Objects.requireNonNull(pInnerMatches));
 
         default:
           throw new IllegalArgumentException("Matchtype not found " + pMatchType);
