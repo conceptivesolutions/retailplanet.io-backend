@@ -15,7 +15,8 @@ class MatchFactoryImpl implements IMatchFactory
 
   @NotNull
   @Override
-  public IQueryBuilder interpretMatch(@NotNull String pMatchType, @Nullable String pNestedPath, @NotNull String... pMatchDetails) throws Exception
+  public IQueryBuilder interpretMatch(@NotNull String pMatchType, @Nullable String pNestedPath,
+                                      @Nullable List<IQueryBuilder> pInnerMatches, @NotNull String... pMatchDetails) throws Exception
   {
     try
     {
@@ -27,11 +28,14 @@ class MatchFactoryImpl implements IMatchFactory
         case OrMatch.TYPE:
           return new OrMatch(pNestedPath, pMatchDetails[0], Arrays.asList(pMatchDetails).subList(1, pMatchDetails.length));
 
+        case CombinedMatch.TYPE:
+          return new CombinedMatch(pMatchDetails[0], Objects.requireNonNull(pInnerMatches));
+
         default:
           throw new IllegalArgumentException("Matchtype not found " + pMatchType);
       }
     }
-    catch (ClassCastException | NoSuchElementException | NumberFormatException cce)
+    catch (ClassCastException | NoSuchElementException | NumberFormatException | NullPointerException e)
     {
       throw new Exception("Wrong arguments for match " + pMatchType + ": " + Arrays.toString(pMatchDetails));
     }

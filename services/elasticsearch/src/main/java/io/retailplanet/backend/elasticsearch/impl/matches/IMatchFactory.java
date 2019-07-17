@@ -25,7 +25,13 @@ public interface IMatchFactory
       return Collections.emptyList();
     List<IQueryBuilder> result = new ArrayList<>();
     for (DocumentSearchEvent.Match filter : pMatches)
-      result.add(interpretMatch(filter.name(), filter.nestedPath(), filter.content()));
+    {
+      List<DocumentSearchEvent.Match> innerMatches = filter.innerMatches();
+      List<IQueryBuilder> inners = null;
+      if (innerMatches != null)
+        inners = interpretMatches(innerMatches);
+      result.add(interpretMatch(filter.name(), filter.nestedPath(), inners, filter.content()));
+    }
     return result;
   }
 
@@ -34,10 +40,12 @@ public interface IMatchFactory
    *
    * @param pMatchType    Type of the match
    * @param pNestedPath   Path of nested field, if nested
+   * @param pInnerMatches Inner matches
    * @param pMatchDetails Details for the given match
    * @return Match, not <tt>null</tt>
    */
   @NotNull
-  IQueryBuilder interpretMatch(@NotNull String pMatchType, @Nullable String pNestedPath, @NotNull String... pMatchDetails) throws Exception;
+  IQueryBuilder interpretMatch(@NotNull String pMatchType, @Nullable String pNestedPath, @Nullable List<IQueryBuilder> pInnerMatches,
+                               @NotNull String... pMatchDetails) throws Exception;
 
 }
