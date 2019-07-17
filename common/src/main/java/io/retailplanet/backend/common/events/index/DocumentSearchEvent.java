@@ -205,6 +205,9 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     @JsonProperty
     String nestedPath;
 
+    @JsonProperty
+    List<Match> innerMatches;
+
     @JsonCreator
     Match()
     {
@@ -214,6 +217,14 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     {
       name = pName;
       content = pContent;
+    }
+
+    /**
+     * @return value of 'innerMatches' field
+     */
+    public List<Match> innerMatches()
+    {
+      return innerMatches;
     }
 
     /**
@@ -278,6 +289,21 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     {
       Match match = new Match("or", pFieldName);
       match.content = pFieldValues.toArray(new String[0]);
+      return match;
+    }
+
+    /**
+     * Combine matches to a single match
+     *
+     * @param pUseOR   <tt>true</tt> if the matches should combined with the "OR" aggreator, <tt>false</tt> for "AND"
+     * @param pMatches All matches
+     * @return Builder
+     */
+    @NotNull
+    public static Match combined(boolean pUseOR, @NotNull Match... pMatches)
+    {
+      Match match = new Match("combined", pUseOR ? "or" : "and");
+      match.innerMatches = Arrays.asList(pMatches);
       return match;
     }
   }
