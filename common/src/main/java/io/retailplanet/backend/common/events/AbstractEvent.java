@@ -43,7 +43,7 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
         .filter(pEvent -> pEvent.chainID.trim().equals(chainID));
 
     return Flowable.merge(successFlowable, pErrors)
-        .timeout(30, TimeUnit.SECONDS)
+        .timeout(1500, TimeUnit.MILLISECONDS)
         .firstOrError();
   }
 
