@@ -1,9 +1,8 @@
 package io.retailplanet.backend.elasticsearch.api;
 
-import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
 import io.retailplanet.backend.common.util.Utility;
-import io.retailplanet.backend.elasticsearch.impl.IEvents;
+import io.retailplanet.backend.elasticsearch.impl.events.IEvents;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
 import io.vertx.core.json.*;
 import org.apache.commons.lang3.tuple.Pair;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
  * @author w.glanzer, 22.06.2019
  */
 @ApplicationScoped
-public class IndexServiceWrite extends AbstractService
+public class IndexServiceWrite
 {
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(IndexServiceWrite.class);

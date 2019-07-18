@@ -1,12 +1,11 @@
 package io.retailplanet.backend.elasticsearch.api;
 
-import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.index.*;
-import io.retailplanet.backend.elasticsearch.impl.*;
+import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
+import io.retailplanet.backend.elasticsearch.impl.events.*;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
 import io.retailplanet.backend.elasticsearch.impl.filters.IFilterFactory;
 import io.retailplanet.backend.elasticsearch.impl.matches.IMatchFactory;
-import io.smallrye.reactive.messaging.annotations.*;
 import io.vertx.core.json.JsonObject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.Nullable;
@@ -21,11 +20,11 @@ import java.util.*;
  * @author w.glanzer, 16.07.2019
  */
 @ApplicationScoped
-public class IndexServiceRead extends AbstractService
+public class IndexServiceRead
 {
 
-  @Stream(IEvents.OUT_INDEX_DOCUMENT_SEARCHRESULT)
-  Emitter<DocumentSearchResultEvent> searchResultEmitter;
+  @Inject
+  private IEventFacade eventFacade;
 
   @Inject
   private IIndexFacade indexFacade;
@@ -58,12 +57,12 @@ public class IndexServiceRead extends AbstractService
       List<IQueryBuilder> matches = matchFactory.interpretMatches(query.matches());
       List<JsonObject> result = indexFacade.search(indexTypes, matches, filters, pEvent.offset(), pEvent.length());
 
-      searchResultEmitter.send(pEvent.createAnswer(DocumentSearchResultEvent.class)
-                                   .hits(Collections.unmodifiableList(result)));
+      eventFacade.sendDocumentSearchResultEvent(pEvent.createAnswer(DocumentSearchResultEvent.class)
+                                                    .hits(Collections.unmodifiableList(result)));
     }
     catch (Exception e)
     {
-      notifyError("Failed to execute search", e);
+      eventFacade.notifyError("Failed to execute search", e);
     }
   }
 
