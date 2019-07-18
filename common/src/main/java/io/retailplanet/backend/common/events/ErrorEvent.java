@@ -2,7 +2,6 @@ package io.retailplanet.backend.common.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import io.retailplanet.backend.common.util.Utility;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -20,7 +19,7 @@ public class ErrorEvent extends AbstractEvent<ErrorEvent>
   @NotNull
   public ErrorEvent error(Throwable pError)
   {
-    return error(Utility.toString(pError));
+    return error(pError.getMessage()); //todo really?
   }
 
   @NotNull

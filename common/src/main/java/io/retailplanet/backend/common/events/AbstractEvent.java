@@ -37,39 +37,30 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
    */
   @SafeVarargs
   @NotNull
-  public final Single<AbstractEvent> waitForAnswerAndException(@NotNull Flowable<ErrorEvent> pErrors, @NotNull Flowable<? extends AbstractEvent>... pFlowables)
+  public final <T extends AbstractEvent> Single<T> waitForAnswer(@NotNull Flowable<ErrorEvent> pErrors, @NotNull Flowable<? extends T>... pFlowables)
   {
-    Flowable<AbstractEvent> successFlowable = Flowable.merge(Arrays.asList(pFlowables))
+    Flowable<T> successFlowable = Flowable.merge(Arrays.asList(pFlowables))
         .filter(pEvent -> pEvent.chainID.trim().equals(chainID));
 
     return Flowable.merge(successFlowable, pErrors)
         .timeout(1500, TimeUnit.MILLISECONDS)
+        .map(pEvent -> {
+          if (pEvent instanceof ErrorEvent)
+            throw new ErrorReceivedException((ErrorEvent) pEvent);
+          return (T) pEvent;
+        })
         .firstOrError();
   }
 
   /**
-   * Creates a new flowable which waits for a result with the given chainID on the given flowables
-   *
-   * @return Flowable with filtered chainID and set timeout
+   * Exception die geworfen wird, wenn ein ErrorEvent ankommt
    */
-  @SafeVarargs
-  @NotNull
-  public final <T extends AbstractEvent> Maybe<T> waitForAnswer(@NotNull Flowable<ErrorEvent> pErrors, @NotNull Flowable<? extends T>... pFlowables)
+  public static class ErrorReceivedException extends RuntimeException
   {
-    return waitForAnswerAndException(pErrors, pFlowables)
-        .filter(pEvent -> {
-          try
-          {
-            //noinspection unused
-            T cast = (T) pEvent;
-            return true;
-          }
-          catch (ClassCastException cce)
-          {
-            return false;
-          }
-        })
-        .map(pEvent -> (T) pEvent);
+    public ErrorReceivedException(@NotNull ErrorEvent pError)
+    {
+      super("ErrorEvent received: " + pError.error);
+    }
   }
 
 }
