@@ -11,7 +11,7 @@ import org.slf4j.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Service: Product search
@@ -50,7 +50,8 @@ public class SearchService
 
     // send
     eventFacade.sendDocumentSearchEvent(searchEvent)
-        .map(pResult -> pResult.createAnswer(SearchProductsResultEvent.class) //todo create "real" answer
+        .map(pResult -> pResult.createAnswer(SearchProductsResultEvent.class)
+            .filters(new HashMap<>())
             .maxSize(pResult.count())
             .elements(pResult.hits()))
         .subscribe(eventFacade::sendSearchProductsResultEvent, pEx -> eventFacade.notifyError(pEvent, pEx));
