@@ -1,18 +1,16 @@
 package io.retailplanet.backend.markets.api;
 
-import io.reactivex.Flowable;
-import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.market.*;
 import io.retailplanet.backend.common.util.Utility;
-import io.retailplanet.backend.markets.impl.IEvents;
+import io.retailplanet.backend.markets.impl.events.*;
 import io.retailplanet.backend.markets.impl.struct.IIndexStructure;
-import io.smallrye.reactive.messaging.annotations.*;
 import io.vertx.core.json.JsonArray;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.*;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.util.*;
 
 /**
@@ -21,17 +19,11 @@ import java.util.*;
  * @author w.glanzer, 14.07.2019
  */
 @ApplicationScoped
-public class SearchService extends AbstractService
+public class SearchService
 {
 
-  @Stream(IEvents.OUT_INDEX_DOCUMENT_SEARCH)
-  Emitter<DocumentSearchEvent> searchMarketsInIndex;
-
-  @Stream(IEvents.IN_INDEX_DOCUMENT_SEARCHRESULT)
-  Flowable<DocumentSearchResultEvent> searchMarketsInIndexResults;
-
-  @Stream(IEvents.OUT_MARKETS_SEARCHRESULT)
-  Emitter<SearchMarketsResultEvent> marketSearchResults;
+  @Inject
+  private IEventFacade eventFacade;
 
   @Incoming(IEvents.IN_MARKETS_SEARCH)
   public void searchMarkets(@Nullable SearchMarketsEvent pEvent)
@@ -45,14 +37,12 @@ public class SearchService extends AbstractService
       searchEvent = _createGeoSearchEvent(pEvent, pEvent.geoSearch);
     else
     {
-      notifyError(new IllegalArgumentException("Failed to parse search event " + pEvent + ". No search pattern matched."));
+      eventFacade.notifyError(new IllegalArgumentException("Failed to parse search event " + pEvent + ". No search pattern matched."));
       return;
     }
 
-    searchMarketsInIndex.send(searchEvent);
-
-    searchEvent.waitForAnswer(errorsFlowable, searchMarketsInIndexResults)
-        .subscribe(pResult -> marketSearchResults.send(_createResultEvent(pEvent, pResult)));
+    eventFacade.sendDocumentSearchEvent(searchEvent)
+        .subscribe(pResult -> eventFacade.sendSearchMarketsResultEvent(_createResultEvent(pEvent, pResult)), eventFacade::notifyError);
   }
 
   /**
