@@ -53,7 +53,7 @@ public class SearchService
         .map(pResult -> pResult.createAnswer(SearchProductsResultEvent.class) //todo create "real" answer
             .maxSize(pResult.count())
             .elements(pResult.hits()))
-        .subscribe(eventFacade::sendSearchProductsResultEvent);
+        .subscribe(eventFacade::sendSearchProductsResultEvent, pEx -> eventFacade.notifyError(pEvent, pEx));
   }
 
   /**
