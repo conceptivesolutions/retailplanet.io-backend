@@ -7,7 +7,7 @@ import io.vertx.core.json.JsonObject;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.container.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.*;
 
 /**
  * Resource for all /search requests
@@ -27,18 +27,28 @@ public class SearchResource
                      @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength, @QueryParam("filter") JsonObject pFilter,
                      @Suspended AsyncResponse pResponse)
   {
+    int offset = pOffset == null ? 0 : pOffset;
+    int length = pLength == null ? 20 : pLength;
+
+    // validate request
+    if (offset < 0 || length <= 0 || length > 100)
+    {
+      pResponse.resume(Response.status(Response.Status.BAD_REQUEST));
+      return;
+    }
+
     SearchProductsEvent event = new SearchProductsEvent()
         .query(pQuery)
         .sorting(pSorting)
-        .offset(pOffset)
-        .length(pLength)
+        .offset(offset)
+        .length(length)
         .filter(pFilter);
 
     // send request
     eventFacade.sendSearchProductsEvent(event)
         .map(pResult -> new SearchResult()
-            .offset(pOffset == null ? 0 : pOffset)
-            .length(pLength)
+            .offset(offset)
+            .length(length)
             .maxSize(pResult.maxSize)
             .filters(pResult.filters)
             .elements(pResult.elements))
