@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author w.glanzer, 18.07.2019
  */
-public abstract class AbstractEventFacade
+public abstract class AbstractEventFacade implements IAbstractEventFacade
 {
 
   /**
@@ -24,23 +24,14 @@ public abstract class AbstractEventFacade
   @Stream("ERRORS_OUT")
   protected Emitter<ErrorEvent> errorsEmitter;
 
-  /**
-   * Notifies an error in emitter and own logger
-   *
-   * @param pThrowable error
-   */
-  protected void notifyError(@NotNull Throwable pThrowable)
+  @Override
+  public void notifyError(@NotNull Throwable pThrowable)
   {
     notifyError("", pThrowable);
   }
 
-  /**
-   * Notifies an error in emitter and own logger
-   *
-   * @param pMessage   additional error message
-   * @param pThrowable error
-   */
-  protected void notifyError(@NotNull String pMessage, @NotNull Throwable pThrowable)
+  @Override
+  public void notifyError(@NotNull String pMessage, @NotNull Throwable pThrowable)
   {
     LoggerFactory.getLogger(getClass()).error(pMessage, pThrowable);
     errorsEmitter.send(new ErrorEvent().error(pThrowable));
