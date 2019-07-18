@@ -43,7 +43,8 @@ class OrMatch implements IQueryBuilder
 
     QueryBuilder shouldQuery = QueryUtility.combineShould(builders);
     if (nestedPath != null)
-      return QueryBuilders.nestedQuery(nestedPath, shouldQuery, ScoreMode.Avg);
+      return QueryBuilders.nestedQuery(nestedPath, shouldQuery, ScoreMode.Avg)
+          .innerHit(new InnerHitBuilder());
 
     return shouldQuery;
   }

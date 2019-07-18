@@ -49,7 +49,8 @@ class CombinedMatch implements IQueryBuilder
       builder = QueryUtility.combineMust(builders);
 
     if (nestedPath != null)
-      builder = QueryBuilders.nestedQuery(nestedPath, builder, ScoreMode.Avg);
+      builder = QueryBuilders.nestedQuery(nestedPath, builder, ScoreMode.Avg)
+          .innerHit(new InnerHitBuilder());
     return builder;
   }
 

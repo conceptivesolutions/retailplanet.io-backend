@@ -2,7 +2,7 @@ package io.retailplanet.backend.elasticsearch.impl.facades;
 
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import io.retailplanet.backend.elasticsearch.impl.util.QueryUtility;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.*;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.*;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -83,6 +83,18 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
       JsonObject obj = new JsonObject(hit.getSourceAsString());
       if (obj.getValue("id") == null)
         obj.put("id", hit.getId());
+
+      // Overwrite results with inner hits, if some are found (via nested query)
+      Map<String, SearchHits> innerHits = hit.getInnerHits();
+      if (innerHits != null)
+      {
+        innerHits.forEach((pName, pInnerHits) -> {
+          JsonArray array = new JsonArray();
+          for (SearchHit hitsHit : pInnerHits.getHits())
+            array.add(new JsonObject(hitsHit.getSourceAsString()));
+          obj.put(pName, array);
+        });
+      }
       results.add(obj);
     }
     return results;

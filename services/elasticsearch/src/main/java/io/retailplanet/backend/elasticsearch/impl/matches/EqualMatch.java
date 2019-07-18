@@ -32,7 +32,8 @@ class EqualMatch implements IQueryBuilder
   {
     MatchQueryBuilder builder = QueryBuilders.matchQuery(fieldName, fieldValue);
     if (nestedPath != null)
-      return QueryBuilders.nestedQuery(nestedPath, builder, ScoreMode.Avg);
+      return QueryBuilders.nestedQuery(nestedPath, builder, ScoreMode.Avg)
+          .innerHit(new InnerHitBuilder());
     return builder;
   }
 
