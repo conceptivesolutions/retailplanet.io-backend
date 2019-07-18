@@ -5,7 +5,7 @@ import io.retailplanet.backend.common.events.IAbstractEventFacade;
 import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.market.*;
 import io.retailplanet.backend.common.events.search.SearchProductsResultEvent;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Facade to send events
@@ -16,13 +16,12 @@ public interface IEventFacade extends IAbstractEventFacade
 {
 
   /**
-   * Search Markets
+   * Send event "SearchMarketsEvent" and return "SearchMarketsResultEvent" as answer
    *
    * @param pEvent Event to search markets
-   * @return result, or <tt>null</tt> if no event was received
    */
-  @Nullable
-  SearchMarketsResultEvent sendSearchMarketsEvent(@NotNull SearchMarketsEvent pEvent); //todo refactor
+  @NotNull
+  Single<SearchMarketsResultEvent> sendSearchMarketsEvent(@NotNull SearchMarketsEvent pEvent);
 
   /**
    * Send event "DocumentUpsertEvent"

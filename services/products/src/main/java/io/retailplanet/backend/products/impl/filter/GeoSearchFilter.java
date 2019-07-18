@@ -68,7 +68,9 @@ class GeoSearchFilter implements ISearchFilter
                              .lat(lat)
                              .lon(lon)
                              .distance(distance));
-      SearchMarketsResultEvent searchMarketsResultEvent = eventFacade.sendSearchMarketsEvent(ev);
+
+      // we have to block here, because we need the information
+      SearchMarketsResultEvent searchMarketsResultEvent = eventFacade.sendSearchMarketsEvent(ev).blockingGet();
       if (searchMarketsResultEvent != null)
         return searchMarketsResultEvent.marketIDs();
       return null;

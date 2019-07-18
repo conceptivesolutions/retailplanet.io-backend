@@ -7,7 +7,7 @@ import io.retailplanet.backend.common.events.market.*;
 import io.retailplanet.backend.common.events.search.SearchProductsResultEvent;
 import io.smallrye.reactive.messaging.annotations.Emitter;
 import io.smallrye.reactive.messaging.annotations.*;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -36,12 +36,11 @@ class EventFacade extends AbstractEventFacade implements IEventFacade
   @Stream(IEvents.OUT_SEARCH_PRODUCTS_RESULT)
   protected Emitter<SearchProductsResultEvent> resultEmitter;
 
-  @Nullable
-  public SearchMarketsResultEvent sendSearchMarketsEvent(@NotNull SearchMarketsEvent pEvent)
+  @NotNull
+  public Single<SearchMarketsResultEvent> sendSearchMarketsEvent(@NotNull SearchMarketsEvent pEvent)
   {
     searchMarketsEmitter.send(pEvent);
-    return pEvent.waitForAnswer(errorsFlowable, searchMarketsResultFlowable)
-        .blockingGet();
+    return pEvent.waitForAnswer(errorsFlowable, searchMarketsResultFlowable);
   }
 
   @Override
