@@ -1,6 +1,6 @@
 package io.retailplanet.backend.businesstoken.impl.events;
 
-import io.retailplanet.backend.common.api.AbstractEventFacade;
+import io.retailplanet.backend.common.events.AbstractEventFacade;
 import io.retailplanet.backend.common.events.token.TokenInvalidatedEvent;
 import io.smallrye.reactive.messaging.annotations.*;
 import org.jetbrains.annotations.NotNull;
