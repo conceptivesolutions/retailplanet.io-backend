@@ -1,6 +1,6 @@
 package io.retailplanet.backend.userauth.impl.events;
 
-import io.retailplanet.backend.common.api.AbstractEventFacade;
+import io.retailplanet.backend.common.events.AbstractEventFacade;
 
 import javax.enterprise.context.ApplicationScoped;
 

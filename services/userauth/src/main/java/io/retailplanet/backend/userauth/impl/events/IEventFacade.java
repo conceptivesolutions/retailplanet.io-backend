@@ -1,6 +1,6 @@
 package io.retailplanet.backend.userauth.impl.events;
 
-import io.retailplanet.backend.common.api.IAbstractEventFacade;
+import io.retailplanet.backend.common.events.IAbstractEventFacade;
 
 /**
  * Facade to send events
