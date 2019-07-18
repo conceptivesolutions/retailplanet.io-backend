@@ -62,7 +62,7 @@ public class IndexServiceRead
     }
     catch (Exception e)
     {
-      eventFacade.notifyError("Failed to execute search", e);
+      eventFacade.notifyError(pEvent, "Failed to execute search", e);
     }
   }
 

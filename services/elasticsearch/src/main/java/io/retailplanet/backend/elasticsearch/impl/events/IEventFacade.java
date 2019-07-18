@@ -1,6 +1,6 @@
 package io.retailplanet.backend.elasticsearch.impl.events;
 
-import io.retailplanet.backend.common.api.IAbstractEventFacade;
+import io.retailplanet.backend.common.events.IAbstractEventFacade;
 import io.retailplanet.backend.common.events.index.DocumentSearchResultEvent;
 import org.jetbrains.annotations.NotNull;
 
