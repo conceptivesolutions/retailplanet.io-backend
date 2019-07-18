@@ -1,7 +1,7 @@
 package io.retailplanet.backend.search.impl.events;
 
 import io.reactivex.Single;
-import io.retailplanet.backend.common.api.IAbstractEventFacade;
+import io.retailplanet.backend.common.events.IAbstractEventFacade;
 import io.retailplanet.backend.common.events.search.*;
 import org.jetbrains.annotations.NotNull;
 
