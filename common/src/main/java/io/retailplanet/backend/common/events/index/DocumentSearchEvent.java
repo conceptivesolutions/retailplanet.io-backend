@@ -6,6 +6,7 @@ import io.retailplanet.backend.common.events.AbstractEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.*;
 
 /**
  * Event: Document should be searched in index
@@ -302,10 +303,12 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
      * @return Builder
      */
     @NotNull
-    public static Match combined(boolean pUseOR, @NotNull Match... pMatches)
+    public static Match combined(boolean pUseOR, Match... pMatches)
     {
       Match match = new Match("combined", pUseOR ? "or" : "and");
-      match.innerMatches = Arrays.asList(pMatches);
+      match.innerMatches = Stream.of(pMatches)
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
       return match;
     }
   }
