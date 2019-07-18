@@ -20,7 +20,7 @@ public class DocumentSearchResultEvent extends AbstractEvent<DocumentSearchResul
    * Contains the current count of result elements
    */
   @JsonProperty
-  int count;
+  long count;
 
   /**
    * Contains the result elements
@@ -35,7 +35,7 @@ public class DocumentSearchResultEvent extends AbstractEvent<DocumentSearchResul
    * @return Builder
    */
   @NotNull
-  public DocumentSearchResultEvent count(int pCount)
+  public DocumentSearchResultEvent count(long pCount)
   {
     count = pCount;
     return this;
@@ -44,7 +44,7 @@ public class DocumentSearchResultEvent extends AbstractEvent<DocumentSearchResul
   /**
    * @return the value of the "count" field
    */
-  public int count()
+  public long count()
   {
     return count;
   }

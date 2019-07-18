@@ -20,7 +20,7 @@ public class SearchProductsResultEvent extends AbstractEvent<SearchProductsResul
    * Maximum count of all results
    */
   @JsonProperty
-  public int maxSize;
+  public long maxSize;
 
   /**
    * Map containing all possible filters on the client side (with additional information)
@@ -35,7 +35,7 @@ public class SearchProductsResultEvent extends AbstractEvent<SearchProductsResul
   public List<Object> elements;
 
   @NotNull
-  public SearchProductsResultEvent maxSize(int pMaxSize)
+  public SearchProductsResultEvent maxSize(long pMaxSize)
   {
     maxSize = pMaxSize;
     return this;
