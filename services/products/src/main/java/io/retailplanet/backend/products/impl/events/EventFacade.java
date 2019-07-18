@@ -1,7 +1,7 @@
 package io.retailplanet.backend.products.impl.events;
 
 import io.reactivex.*;
-import io.retailplanet.backend.common.api.AbstractEventFacade;
+import io.retailplanet.backend.common.events.AbstractEventFacade;
 import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.market.*;
 import io.retailplanet.backend.common.events.search.SearchProductsResultEvent;

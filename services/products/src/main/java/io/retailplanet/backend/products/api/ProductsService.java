@@ -65,7 +65,7 @@ public class ProductsService
     }
     catch (Exception e)
     {
-      eventFacade.notifyError("Failed to upsert product", e);
+      eventFacade.notifyError(pEvent, "Failed to upsert product", e);
     }
   }
 
