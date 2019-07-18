@@ -63,7 +63,7 @@ public class MarketsService
     }
     catch (Exception e)
     {
-      eventFacade.notifyError("Failed to upsert product", e);
+      eventFacade.notifyError(pEvent, "Failed to upsert market", e);
     }
   }
 }

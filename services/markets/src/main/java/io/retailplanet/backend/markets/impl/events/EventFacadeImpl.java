@@ -1,7 +1,7 @@
 package io.retailplanet.backend.markets.impl.events;
 
 import io.reactivex.*;
-import io.retailplanet.backend.common.api.AbstractEventFacade;
+import io.retailplanet.backend.common.events.AbstractEventFacade;
 import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.market.SearchMarketsResultEvent;
 import io.smallrye.reactive.messaging.annotations.Emitter;

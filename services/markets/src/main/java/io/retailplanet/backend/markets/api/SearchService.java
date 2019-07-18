@@ -37,12 +37,12 @@ public class SearchService
       searchEvent = _createGeoSearchEvent(pEvent, pEvent.geoSearch);
     else
     {
-      eventFacade.notifyError(new IllegalArgumentException("Failed to parse search event " + pEvent + ". No search pattern matched."));
+      eventFacade.notifyError(pEvent, new IllegalArgumentException("Failed to parse search event " + pEvent + ". No search pattern matched."));
       return;
     }
 
     eventFacade.sendDocumentSearchEvent(searchEvent)
-        .subscribe(pResult -> eventFacade.sendSearchMarketsResultEvent(_createResultEvent(pEvent, pResult)), eventFacade::notifyError);
+        .subscribe(pResult -> eventFacade.sendSearchMarketsResultEvent(_createResultEvent(pEvent, pResult)), pEx -> eventFacade.notifyError(pEvent, pEx));
   }
 
   /**
