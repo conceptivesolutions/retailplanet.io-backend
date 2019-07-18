@@ -2,7 +2,6 @@ package io.retailplanet.backend.businesstoken.api;
 
 import io.retailplanet.backend.businesstoken.impl.cache.TokenCache;
 import io.retailplanet.backend.businesstoken.impl.events.IEvents;
-import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.market.MarketUpsertEvent;
 import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
 import io.retailplanet.backend.common.util.Utility;
@@ -19,7 +18,7 @@ import javax.inject.Inject;
  * @author w.glanzer, 21.06.2019
  */
 @ApplicationScoped
-public class ValidateService extends AbstractService
+public class ValidateService
 {
 
   @Inject

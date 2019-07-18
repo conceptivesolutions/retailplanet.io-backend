@@ -1,11 +1,10 @@
 package io.retailplanet.backend.businesstoken.api;
 
 import io.retailplanet.backend.businesstoken.impl.cache.TokenCache;
-import io.retailplanet.backend.businesstoken.impl.events.IEvents;
-import io.retailplanet.backend.common.api.AbstractService;
+import io.retailplanet.backend.businesstoken.impl.events.*;
 import io.retailplanet.backend.common.events.token.*;
 import io.retailplanet.backend.common.util.Utility;
-import io.smallrye.reactive.messaging.annotations.*;
+import io.smallrye.reactive.messaging.annotations.Broadcast;
 import org.eclipse.microprofile.reactive.messaging.*;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.*;
@@ -21,15 +20,15 @@ import java.util.UUID;
  * @author w.glanzer, 10.06.2019
  */
 @ApplicationScoped
-public class BusinessTokenService extends AbstractService
+public class BusinessTokenService
 {
 
   /* Represents how long a token will be active by default */
   private static final Duration _TOKEN_LIFESPAN = Duration.ofHours(48);
   private static final Logger _LOGGER = LoggerFactory.getLogger(BusinessTokenService.class);
 
-  @Stream(IEvents.OUT_BUSINESSTOKEN_INVALIDATED)
-  Emitter<TokenInvalidatedEvent> businessTokenInvalidatedEmitter;
+  @Inject
+  private IEventFacade eventFacade;
 
   @Inject
   private TokenCache tokenCache;
@@ -53,7 +52,7 @@ public class BusinessTokenService extends AbstractService
       return null;
 
     // Invalidate previous tokens from this client
-    businessTokenInvalidatedEmitter.send(new TokenInvalidatedEvent().clientID(clientid));
+    eventFacade.sendTokenInvalidatedEvent(new TokenInvalidatedEvent().clientID(clientid));
 
     // Generate new and send
     return pEvent.createAnswer(TokenCreatedEvent.class)
