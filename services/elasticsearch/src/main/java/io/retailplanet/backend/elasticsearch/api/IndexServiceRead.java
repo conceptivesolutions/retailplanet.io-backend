@@ -6,7 +6,6 @@ import io.retailplanet.backend.elasticsearch.impl.events.*;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
 import io.retailplanet.backend.elasticsearch.impl.filters.IFilterFactory;
 import io.retailplanet.backend.elasticsearch.impl.matches.IMatchFactory;
-import io.vertx.core.json.JsonObject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,10 +54,11 @@ public class IndexServiceRead
       List<String> indexTypes = pEvent.indexTypes();
       List<IQueryBuilder> filters = filterFactory.interpretFilters(query.filters());
       List<IQueryBuilder> matches = matchFactory.interpretMatches(query.matches());
-      List<JsonObject> result = indexFacade.search(indexTypes, matches, filters, pEvent.offset(), pEvent.length());
+      IIndexFacade.ISearchResult result = indexFacade.search(indexTypes, matches, filters, pEvent.offset(), pEvent.length());
 
       eventFacade.sendDocumentSearchResultEvent(pEvent.createAnswer(DocumentSearchResultEvent.class)
-                                                    .hits(Collections.unmodifiableList(result)));
+                                                    .hits(Collections.unmodifiableList(result.getElements()))
+                                                    .count(result.getMaxSize()));
     }
     catch (Exception e)
     {

@@ -30,8 +30,8 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
 
   @NotNull
   @Override
-  public List<JsonObject> search(@Nullable List<String> pIndexTypes, @NotNull List<IQueryBuilder> pMatches, @NotNull List<IQueryBuilder> pFilters,
-                                 @Nullable Integer pOffset, @Nullable Integer pLength) throws Exception
+  public ISearchResult search(@Nullable List<String> pIndexTypes, @NotNull List<IQueryBuilder> pMatches, @NotNull List<IQueryBuilder> pFilters,
+                              @Nullable Integer pOffset, @Nullable Integer pLength) throws Exception
   {
     SearchRequest request = new SearchRequest();
 
@@ -75,7 +75,21 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
    * @return retailplanet objects
    */
   @NotNull
-  private List<JsonObject> _toResults(@NotNull SearchHits pHits)
+  private _SearchResult _toResults(@NotNull SearchHits pHits)
+  {
+    List<JsonObject> elements = _extractElements(pHits);
+    long maxSize = pHits.getTotalHits().value;
+    return new _SearchResult(elements, maxSize);
+  }
+
+  /**
+   * Extracts all result elements from elasticsearch result
+   *
+   * @param pHits elasticsearch object
+   * @return retailplanet object
+   */
+  @NotNull
+  private List<JsonObject> _extractElements(@NotNull SearchHits pHits)
   {
     List<JsonObject> results = new ArrayList<>();
     for (SearchHit hit : pHits.getHits())
@@ -98,6 +112,34 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
       results.add(obj);
     }
     return results;
+  }
+
+  /**
+   * SearchResult-Impl
+   */
+  private static final class _SearchResult implements ISearchResult
+  {
+    private final List<JsonObject> elements;
+    private final long maxSize;
+
+    private _SearchResult(List<JsonObject> pElements, long pMaxSize)
+    {
+      elements = pElements;
+      maxSize = pMaxSize;
+    }
+
+    @NotNull
+    @Override
+    public List<JsonObject> getElements()
+    {
+      return elements;
+    }
+
+    @Override
+    public long getMaxSize()
+    {
+      return maxSize;
+    }
   }
 
 }

@@ -37,8 +37,8 @@ public interface IIndexFacade
    * @return results
    */
   @NotNull
-  List<JsonObject> search(@Nullable List<String> pIndexTypes, @NotNull List<IQueryBuilder> pMatches, @NotNull List<IQueryBuilder> pFilters,
-                          @Nullable Integer pOffset, @Nullable Integer pLength) throws Exception;
+  ISearchResult search(@Nullable List<String> pIndexTypes, @NotNull List<IQueryBuilder> pMatches, @NotNull List<IQueryBuilder> pFilters,
+                       @Nullable Integer pOffset, @Nullable Integer pLength) throws Exception;
 
   /**
    * Inserts a new index. The index will be regenerated, if it already exists and force rebuild is set to <tt>true</tt>
@@ -57,4 +57,23 @@ public interface IIndexFacade
    * @return <tt>true</tt> if an index exists
    */
   boolean hasIndex(@NotNull String pClientID, @NotNull String pIndexType) throws Exception;
+
+  /**
+   * SearchResult
+   *
+   * @see IIndexFacade#search(List, List, List, Integer, Integer)
+   */
+  interface ISearchResult
+  {
+    /**
+     * @return the current result page
+     */
+    @NotNull
+    List<JsonObject> getElements();
+
+    /**
+     * @return count of all elements (not only the current resultpage)
+     */
+    long getMaxSize();
+  }
 }
