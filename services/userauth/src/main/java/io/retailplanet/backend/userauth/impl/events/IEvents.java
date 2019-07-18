@@ -1,4 +1,4 @@
-package io.retailplanet.backend.userauth.impl;
+package io.retailplanet.backend.userauth.impl.events;
 
 import io.retailplanet.backend.common.api.comm.*;
 
