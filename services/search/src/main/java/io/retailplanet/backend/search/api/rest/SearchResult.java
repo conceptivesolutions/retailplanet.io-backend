@@ -29,7 +29,7 @@ public final class SearchResult
    * Maximum count of all results
    */
   @JsonProperty
-  public Integer maxSize;
+  public Long maxSize;
 
   /**
    * Map containing all possible filters on the client side (with additional information)
@@ -58,7 +58,7 @@ public final class SearchResult
   }
 
   @NotNull
-  SearchResult maxSize(Integer pMaxSize)
+  SearchResult maxSize(Long pMaxSize)
   {
     maxSize = pMaxSize;
     return this;

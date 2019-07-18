@@ -37,7 +37,7 @@ public class SearchResource
     // send request
     eventFacade.sendSearchProductsEvent(event)
         .map(pResult -> new SearchResult()
-            .offset(pOffset)
+            .offset(pOffset == null ? 0 : pOffset)
             .length(pLength)
             .maxSize(pResult.maxSize)
             .filters(pResult.filters)
