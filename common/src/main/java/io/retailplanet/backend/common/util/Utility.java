@@ -3,6 +3,7 @@ package io.retailplanet.backend.common.util;
 import org.jetbrains.annotations.*;
 
 import java.io.*;
+import java.util.Properties;
 
 /**
  * @author w.glanzer, 17.06.2019
@@ -33,6 +34,25 @@ public class Utility
     StringWriter sw = new StringWriter();
     pError.printStackTrace(new PrintWriter(sw));
     return sw.toString();
+  }
+
+  /**
+   * @return Returns the name / id of the current service
+   */
+  @NotNull
+  public static String getServiceID()
+  {
+    try (InputStream propStream = ClassLoader.getSystemResourceAsStream("application.properties"))
+    {
+      Properties props = new Properties();
+      assert propStream != null;
+      props.load(new InputStreamReader(propStream));
+      return props.getProperty("retailplanet.service.group.id");
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
   }
 
 }

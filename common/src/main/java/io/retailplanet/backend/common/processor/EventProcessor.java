@@ -154,6 +154,7 @@ public class EventProcessor extends AbstractProcessor
     defaultValues.put("bootstrap.servers", "${KAFKA_SERVERS}");
 
     Map<String, String> map = new LinkedHashMap<>();
+    map.put("retailplanet.service.group.id", pContainer.groupID);
     pIncomingEvents.forEach(pEv -> map.putAll(pEv.toMap(pContainer.groupID, defaultValues)));
     pOutgoingEvents.forEach(pEv -> map.putAll(pEv.toMap(defaultValues)));
     return map;
