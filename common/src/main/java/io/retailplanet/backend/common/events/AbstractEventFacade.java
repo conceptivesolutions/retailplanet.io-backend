@@ -1,9 +1,8 @@
-package io.retailplanet.backend.common.api;
+package io.retailplanet.backend.common.events;
 
 import io.reactivex.Flowable;
-import io.retailplanet.backend.common.events.ErrorEvent;
 import io.smallrye.reactive.messaging.annotations.*;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -25,17 +24,20 @@ public abstract class AbstractEventFacade implements IAbstractEventFacade
   protected Emitter<ErrorEvent> errorsEmitter;
 
   @Override
-  public void notifyError(@NotNull Throwable pThrowable)
+  public void notifyError(@Nullable AbstractEvent<?> pSourceEvent, @NotNull Throwable pThrowable)
   {
-    notifyError("", pThrowable);
+    notifyError(pSourceEvent, "", pThrowable);
   }
 
   @Override
-  public void notifyError(@NotNull String pMessage, @NotNull Throwable pThrowable)
+  public void notifyError(@Nullable AbstractEvent<?> pSourceEvent, @NotNull String pMessage, @NotNull Throwable pThrowable)
   {
-    // todo chainid
+    // log
     LoggerFactory.getLogger(getClass()).error(pMessage, pThrowable);
-    errorsEmitter.send(new ErrorEvent().error(pThrowable));
+
+    // send
+    ErrorEvent event = pSourceEvent == null ? new ErrorEvent() : pSourceEvent.createAnswer(ErrorEvent.class);
+    errorsEmitter.send(event.error(pThrowable));
   }
 
 }

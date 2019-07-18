@@ -1,6 +1,6 @@
-package io.retailplanet.backend.common.api;
+package io.retailplanet.backend.common.events;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 /**
  * @author w.glanzer, 18.07.2019
@@ -13,7 +13,7 @@ public interface IAbstractEventFacade
    *
    * @param pThrowable error
    */
-  void notifyError(@NotNull Throwable pThrowable);
+  void notifyError(@Nullable AbstractEvent<?> pSourceEvent, @NotNull Throwable pThrowable);
 
   /**
    * Notifies an error in emitter and own logger
@@ -21,6 +21,6 @@ public interface IAbstractEventFacade
    * @param pMessage   additional error message
    * @param pThrowable error
    */
-  void notifyError(@NotNull String pMessage, @NotNull Throwable pThrowable);
+  void notifyError(@Nullable AbstractEvent<?> pSourceEvent, @NotNull String pMessage, @NotNull Throwable pThrowable);
 
 }

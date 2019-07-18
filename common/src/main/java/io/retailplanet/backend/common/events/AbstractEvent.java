@@ -39,11 +39,9 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
   @NotNull
   public final <T extends AbstractEvent> Single<T> waitForAnswer(@NotNull Flowable<ErrorEvent> pErrors, @NotNull Flowable<? extends T>... pFlowables)
   {
-    Flowable<T> successFlowable = Flowable.merge(Arrays.asList(pFlowables))
-        .filter(pEvent -> pEvent.chainID.trim().equals(chainID));
-
-    return Flowable.merge(successFlowable, pErrors)
+    return Flowable.merge(Flowable.merge(Arrays.asList(pFlowables)), pErrors)
         .timeout(1500, TimeUnit.MILLISECONDS)
+        .filter(pEvent -> pEvent.chainID.trim().equals(chainID))
         .map(pEvent -> {
           if (pEvent instanceof ErrorEvent)
             throw new ErrorReceivedException((ErrorEvent) pEvent);
