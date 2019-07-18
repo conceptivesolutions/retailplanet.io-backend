@@ -33,6 +33,7 @@ public abstract class AbstractEventFacade implements IAbstractEventFacade
   @Override
   public void notifyError(@NotNull String pMessage, @NotNull Throwable pThrowable)
   {
+    // todo chainid
     LoggerFactory.getLogger(getClass()).error(pMessage, pThrowable);
     errorsEmitter.send(new ErrorEvent().error(pThrowable));
   }
