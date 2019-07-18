@@ -30,6 +30,12 @@ public interface IEvents
   String IN_INDEX_DOCUMENT_SEARCHRESULT = "Index_DOCUMENT_SEARCHRESULT_IN";
 
   /**
+   * Event: Market search returned result
+   */
+  @IncomingEvent
+  String IN_SEARCH_MARKETS_RESULT = "Search_MARKET_RESULT_IN";
+
+  /**
    * Event: Index document should be inserted / updated
    */
   @OutgoingEvent
@@ -47,4 +53,9 @@ public interface IEvents
   @OutgoingEvent
   String OUT_SEARCH_PRODUCTS_RESULT = "Search_PRODUCTS_RESULT_OUT";
 
+  /**
+   * Event: Search markets
+   */
+  @OutgoingEvent
+  String OUT_SEARCH_MARKETS = "Search_MARKETS_OUT";
 }
