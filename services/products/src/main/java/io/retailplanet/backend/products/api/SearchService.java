@@ -1,13 +1,10 @@
 package io.retailplanet.backend.products.api;
 
-import io.reactivex.Flowable;
-import io.retailplanet.backend.common.api.AbstractService;
-import io.retailplanet.backend.common.events.index.*;
+import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
 import io.retailplanet.backend.common.events.search.*;
-import io.retailplanet.backend.products.impl.IEvents;
+import io.retailplanet.backend.products.impl.events.*;
 import io.retailplanet.backend.products.impl.filter.*;
 import io.retailplanet.backend.products.impl.struct.IIndexStructure;
-import io.smallrye.reactive.messaging.annotations.*;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.*;
 import org.slf4j.*;
@@ -22,19 +19,13 @@ import java.util.Map;
  * @author w.glanzer, 12.07.2019
  */
 @ApplicationScoped
-public class SearchService extends AbstractService
+public class SearchService
 {
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(SearchService.class);
 
-  @Stream(IEvents.OUT_INDEX_DOCUMENT_SEARCH)
-  Emitter<DocumentSearchEvent> searchInIndex;
-
-  @Stream(IEvents.IN_INDEX_DOCUMENT_SEARCHRESULT)
-  Flowable<DocumentSearchResultEvent> searchInIndexResult;
-
-  @Stream(IEvents.OUT_SEARCH_PRODUCTS_RESULT)
-  Emitter<SearchProductsResultEvent> resultEmitter;
+  @Inject
+  private IEventFacade eventFacade;
 
   @Inject
   private ISearchFilterFactory filterFactory;
@@ -58,14 +49,11 @@ public class SearchService extends AbstractService
         .length(pEvent.length);
 
     // send
-    searchInIndex.send(searchEvent);
-
-    // wait for answer
-    searchEvent.waitForAnswer(errorsFlowable, searchInIndexResult)
+    eventFacade.sendDocumentSearchEvent(searchEvent)
         .map(pResult -> pResult.createAnswer(SearchProductsResultEvent.class) //todo create "real" answer
             .maxSize(pResult.count())
             .elements(pResult.hits()))
-        .subscribe(resultEmitter::send);
+        .subscribe(eventFacade::sendSearchProductsResultEvent);
   }
 
   /**

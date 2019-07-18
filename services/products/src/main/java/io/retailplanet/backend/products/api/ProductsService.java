@@ -1,18 +1,16 @@
 package io.retailplanet.backend.products.api;
 
-import io.retailplanet.backend.common.api.AbstractService;
 import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
 import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
 import io.retailplanet.backend.common.util.*;
-import io.retailplanet.backend.products.impl.IEvents;
+import io.retailplanet.backend.products.impl.events.*;
 import io.retailplanet.backend.products.impl.struct.Product;
-import io.smallrye.reactive.messaging.annotations.*;
 import io.vertx.core.json.*;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.*;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.stream.Collector;
 
@@ -24,13 +22,11 @@ import static io.retailplanet.backend.products.impl.struct.IIndexStructure.INDEX
  * @author w.glanzer, 20.06.2019
  */
 @ApplicationScoped
-public class ProductsService extends AbstractService
+public class ProductsService
 {
 
-  private static final Logger _LOGGER = LoggerFactory.getLogger(ProductsService.class);
-
-  @Stream(IEvents.OUT_INDEX_DOCUMENT_UPSERT)
-  Emitter<DocumentUpsertEvent> upsertProductsInIndex;
+  @Inject
+  private IEventFacade eventFacade;
 
   /**
    * Inserts / Updates a list of products
@@ -65,11 +61,11 @@ public class ProductsService extends AbstractService
                    .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
 
       // fire request
-      upsertProductsInIndex.send(event);
+      eventFacade.sendDocumentUpsertEvent(event);
     }
     catch (Exception e)
     {
-      _LOGGER.warn("Failed to upsert product", e);
+      eventFacade.notifyError("Failed to upsert product", e);
     }
   }
 

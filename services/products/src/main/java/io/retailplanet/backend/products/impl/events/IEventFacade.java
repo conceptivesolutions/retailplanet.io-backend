@@ -1,6 +1,10 @@
 package io.retailplanet.backend.products.impl.events;
 
+import io.reactivex.Single;
+import io.retailplanet.backend.common.api.IAbstractEventFacade;
+import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.market.*;
+import io.retailplanet.backend.common.events.search.SearchProductsResultEvent;
 import org.jetbrains.annotations.*;
 
 /**
@@ -8,7 +12,7 @@ import org.jetbrains.annotations.*;
  *
  * @author w.glanzer, 17.07.2019
  */
-public interface IEventFacade
+public interface IEventFacade extends IAbstractEventFacade
 {
 
   /**
@@ -18,6 +22,28 @@ public interface IEventFacade
    * @return result, or <tt>null</tt> if no event was received
    */
   @Nullable
-  SearchMarketsResultEvent searchMarkets(@NotNull SearchMarketsEvent pEvent);
+  SearchMarketsResultEvent sendSearchMarketsEvent(@NotNull SearchMarketsEvent pEvent); //todo refactor
+
+  /**
+   * Send event "DocumentUpsertEvent"
+   *
+   * @param pEvent event
+   */
+  void sendDocumentUpsertEvent(@NotNull DocumentUpsertEvent pEvent);
+
+  /**
+   * Send event "DocumentSearchEvent" and return "DocumentSearchResultEvent" as answer
+   *
+   * @param pEvent event
+   */
+  @NotNull
+  Single<DocumentSearchResultEvent> sendDocumentSearchEvent(@NotNull DocumentSearchEvent pEvent);
+
+  /**
+   * Send event "SearchProductsResultEvent"
+   *
+   * @param pEvent event
+   */
+  void sendSearchProductsResultEvent(@NotNull SearchProductsResultEvent pEvent);
 
 }
