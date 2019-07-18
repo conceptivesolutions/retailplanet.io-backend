@@ -1,12 +1,10 @@
 package io.retailplanet.backend.search.api.rest;
 
-import io.reactivex.Flowable;
-import io.retailplanet.backend.common.api.AbstractService;
-import io.retailplanet.backend.common.events.search.*;
-import io.retailplanet.backend.search.impl.IEvents;
-import io.smallrye.reactive.messaging.annotations.*;
+import io.retailplanet.backend.common.events.search.SearchProductsEvent;
+import io.retailplanet.backend.search.impl.events.IEventFacade;
 import io.vertx.core.json.JsonObject;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.container.*;
 import javax.ws.rs.core.MediaType;
@@ -17,14 +15,11 @@ import javax.ws.rs.core.MediaType;
  * @author w.glanzer, 10.07.2019
  */
 @Path("/search")
-public class SearchResource extends AbstractService
+public class SearchResource
 {
 
-  @Stream(IEvents.OUT_SEARCH_PRODUCTS)
-  Emitter<SearchProductsEvent> searchProductsEmitter;
-
-  @Stream(IEvents.IN_SEARCH_PRODUCTS_RESULT)
-  Flowable<SearchProductsResultEvent> searchProductsResultFlowable;
+  @Inject
+  private IEventFacade eventFacade;
 
   @Produces(MediaType.APPLICATION_JSON)
   @GET
@@ -40,10 +35,7 @@ public class SearchResource extends AbstractService
         .filter(pFilter);
 
     // send request
-    searchProductsEmitter.send(event);
-
-    // wait for result and return
-    event.waitForAnswer(errorsFlowable, searchProductsResultFlowable)
+    eventFacade.sendSearchProductsEvent(event)
         .map(pResult -> new SearchResult()
             .offset(pOffset)
             .length(pLength)

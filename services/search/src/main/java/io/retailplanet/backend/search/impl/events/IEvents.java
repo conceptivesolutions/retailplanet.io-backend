@@ -1,4 +1,4 @@
-package io.retailplanet.backend.search.impl;
+package io.retailplanet.backend.search.impl.events;
 
 import io.retailplanet.backend.common.api.comm.*;
 
