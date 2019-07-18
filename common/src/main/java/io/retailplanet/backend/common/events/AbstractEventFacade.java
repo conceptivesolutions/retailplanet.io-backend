@@ -32,12 +32,14 @@ public abstract class AbstractEventFacade implements IAbstractEventFacade
   @Override
   public void notifyError(@Nullable AbstractEvent<?> pSourceEvent, @NotNull String pMessage, @NotNull Throwable pThrowable)
   {
+    ErrorEvent event = pSourceEvent == null ? new ErrorEvent() : pSourceEvent.createAnswer(ErrorEvent.class);
+    event = event.error(new Exception(pMessage, pThrowable));
+
     // log
     LoggerFactory.getLogger(getClass()).error(pMessage, pThrowable);
 
     // send
-    ErrorEvent event = pSourceEvent == null ? new ErrorEvent() : pSourceEvent.createAnswer(ErrorEvent.class);
-    errorsEmitter.send(event.error(pThrowable));
+    errorsEmitter.send(event);
   }
 
 }

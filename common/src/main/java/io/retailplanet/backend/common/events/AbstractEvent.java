@@ -44,21 +44,10 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
         .filter(pEvent -> pEvent.chainID.trim().equals(chainID))
         .map(pEvent -> {
           if (pEvent instanceof ErrorEvent)
-            throw new ErrorReceivedException((ErrorEvent) pEvent);
+            throw ((ErrorEvent) pEvent).error();
           return (T) pEvent;
         })
         .firstOrError();
-  }
-
-  /**
-   * Exception die geworfen wird, wenn ein ErrorEvent ankommt
-   */
-  public static class ErrorReceivedException extends RuntimeException
-  {
-    public ErrorReceivedException(@NotNull ErrorEvent pError)
-    {
-      super("ErrorEvent received: " + pError.error);
-    }
   }
 
 }
