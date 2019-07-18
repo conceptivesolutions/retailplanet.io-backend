@@ -1,15 +1,11 @@
 package io.retailplanet.backend.businessapi.api.rest.business;
 
-import io.reactivex.Flowable;
-import io.retailplanet.backend.businessapi.impl.IEvents;
-import io.retailplanet.backend.common.api.AbstractService;
-import io.retailplanet.backend.common.events.ErrorEvent;
+import io.retailplanet.backend.businessapi.impl.events.IEventFacade;
 import io.retailplanet.backend.common.events.token.*;
 import io.retailplanet.backend.common.util.Utility;
-import io.smallrye.reactive.messaging.annotations.*;
 import io.vertx.core.json.JsonObject;
-import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.container.*;
 import javax.ws.rs.core.*;
@@ -21,17 +17,11 @@ import java.time.Instant;
  * @author w.glanzer, 16.06.2019
  */
 @Path("/business/token")
-public class TokenResource extends AbstractService
+public class TokenResource
 {
 
-  @Stream(IEvents.OUT_BUSINESSTOKEN_CREATE)
-  Emitter<TokenCreateEvent> tokenCreateEmitter;
-
-  @Stream(IEvents.OUT_BUSINESSTOKEN_INVALIDATED)
-  Emitter<TokenInvalidatedEvent> tokenInvalidateEmitter;
-
-  @Stream(IEvents.IN_BUSINESSTOKEN_CREATED)
-  Flowable<TokenCreatedEvent> tokenCreatedFlowable;
+  @Inject
+  private IEventFacade eventFacade;
 
   /**
    * Generates a new session token for a specific client.
@@ -57,32 +47,19 @@ public class TokenResource extends AbstractService
         .clientID(pClientID)
         .token(pClientToken);
 
-    // Fire BusinessToken_CREATE-Event
-    tokenCreateEmitter.send(event);
-
-    // wait for answer
-    event.waitForAnswerAndException(errorsFlowable, tokenCreatedFlowable)
+    // send event
+    eventFacade.sendTokenCreateEvent(event)
         .map(pEvent -> {
           // Result token
-          if (pEvent instanceof TokenCreatedEvent)
-          {
-            String token = ((TokenCreatedEvent) pEvent).session_token;
-            Instant validity = ((TokenCreatedEvent) pEvent).valid_until;
-            if (token != null)
-              return Response.ok(new JsonObject()
-                                     .put("session_token", token)
-                                     .put("valid_until", validity == null ? Instant.MIN : validity)).build();
-          }
-
-          // Error?
-          if (pEvent instanceof ErrorEvent)
-            return Response.status(500, ((ErrorEvent) pEvent).error).build();
-
-          // WTF has happened..
-          LoggerFactory.getLogger(TokenResource.class).warn("Failed to interpret event: " + pEvent.toString());
-          return Response.serverError().build();
+          String token = pEvent.session_token;
+          Instant validity = pEvent.valid_until;
+          if (token != null)
+            return Response.ok(new JsonObject()
+                                   .put("session_token", token)
+                                   .put("valid_until", validity == null ? Instant.MIN : validity)).build();
+          return Response.status(Response.Status.BAD_REQUEST);
         })
-        .subscribe(pResponse::resume, pResponse::resume);
+        .subscribe(pResponse::resume, pEx -> Response.serverError().entity(pEx));
   }
 
   /**
@@ -98,7 +75,7 @@ public class TokenResource extends AbstractService
     if (Utility.isNullOrEmptyTrimmedString(pSessionToken))
       return Response.status(Response.Status.BAD_REQUEST).build();
 
-    tokenInvalidateEmitter.send(new TokenInvalidatedEvent().session_token(pSessionToken));
+    eventFacade.sendTokenInvalidatedEvent(new TokenInvalidatedEvent().session_token(pSessionToken));
     return Response.ok().build();
   }
 
