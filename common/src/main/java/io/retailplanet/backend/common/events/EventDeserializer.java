@@ -1,7 +1,6 @@
-package io.retailplanet.backend.common.api.events;
+package io.retailplanet.backend.common.events;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import io.retailplanet.backend.common.events.AbstractEvent;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.*;
 import org.apache.kafka.common.serialization.Deserializer;

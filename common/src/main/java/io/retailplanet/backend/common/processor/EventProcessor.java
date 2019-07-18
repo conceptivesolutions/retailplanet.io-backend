@@ -1,7 +1,6 @@
 package io.retailplanet.backend.common.processor;
 
-import io.retailplanet.backend.common.api.comm.*;
-import io.retailplanet.backend.common.api.events.*;
+import io.retailplanet.backend.common.events.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.processing.*;
@@ -21,9 +20,9 @@ import java.util.function.Supplier;
  *
  * @author w.glanzer, 19.06.2019
  */
-@SupportedAnnotationTypes({"io.retailplanet.backend.common.api.comm.IncomingEvent",
-                           "io.retailplanet.backend.common.api.comm.OutgoingEvent",
-                           "io.retailplanet.backend.common.api.comm.EventContainer"})
+@SupportedAnnotationTypes({"io.retailplanet.backend.common.processor.IncomingEvent",
+                           "io.retailplanet.backend.common.processor.OutgoingEvent",
+                           "io.retailplanet.backend.common.processor.EventContainer"})
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class EventProcessor extends AbstractProcessor
 {
@@ -47,15 +46,15 @@ public class EventProcessor extends AbstractProcessor
       {
         switch (annotation.getQualifiedName().toString())
         {
-          case "io.retailplanet.backend.common.api.comm.IncomingEvent":
+          case "io.retailplanet.backend.common.processor.IncomingEvent":
             incomingEvents.add(new _IncomingEvent(element));
             break;
 
-          case "io.retailplanet.backend.common.api.comm.OutgoingEvent":
+          case "io.retailplanet.backend.common.processor.OutgoingEvent":
             outgoingEvents.add(new _OutgoingEvent(element));
             break;
 
-          case "io.retailplanet.backend.common.api.comm.EventContainer":
+          case "io.retailplanet.backend.common.processor.EventContainer":
             container = new _EventContainer(element);
             break;
         }

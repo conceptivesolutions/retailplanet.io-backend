@@ -1,4 +1,4 @@
-package io.retailplanet.backend.common.api.comm;
+package io.retailplanet.backend.common.processor;
 
 /**
  * A EventContainer represents a class containing a bunch of events
