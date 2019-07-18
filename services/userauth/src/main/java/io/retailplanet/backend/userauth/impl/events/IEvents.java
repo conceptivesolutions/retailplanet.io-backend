@@ -1,6 +1,6 @@
 package io.retailplanet.backend.userauth.impl.events;
 
-import io.retailplanet.backend.common.api.comm.*;
+import io.retailplanet.backend.common.processor.*;
 
 /**
  * This interface contains all events, incoming and outgoing
