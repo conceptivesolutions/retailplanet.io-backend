@@ -1,7 +1,7 @@
 package io.retailplanet.backend.businessapi.impl.events;
 
 import io.reactivex.*;
-import io.retailplanet.backend.common.api.AbstractEventFacade;
+import io.retailplanet.backend.common.events.AbstractEventFacade;
 import io.retailplanet.backend.common.events.market.MarketUpsertEvent;
 import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
 import io.retailplanet.backend.common.events.token.*;
