@@ -1,6 +1,7 @@
 package io.retailplanet.backend.products.impl.filter;
 
 import io.retailplanet.backend.products.impl.events.IEventFacade;
+import io.retailplanet.backend.products.impl.struct.ProductAvailability;
 import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -28,7 +29,7 @@ class SearchFilterFactory implements ISearchFilterFactory
       {
         case "geo":
           List<Object> arguments = (List<Object>) pArgumentObject;
-          return new GeoSearchFilter(eventFacade, null, (double) arguments.get(0), (double) arguments.get(1), (int) arguments.get(2)); //todo availability
+          return new GeoSearchFilter(eventFacade, Collections.singletonList(ProductAvailability.TYPE.AVAILABLE), (double) arguments.get(0), (double) arguments.get(1), (int) arguments.get(2)); //todo availability
 
         default:
           throw new IllegalArgumentException("Type " + pType + " as search filter not found");
