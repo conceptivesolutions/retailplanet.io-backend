@@ -16,6 +16,7 @@ servers:
     description: Official retailplanet.io API server endpoint
 
 tags:
+  - name: search
   - name: business
     description: |
       The business API is the public endpoint for companies, to push their product information to. <br/>
@@ -27,6 +28,9 @@ tags:
       </ul>
 
 x-tagGroups:
+  - name: Internal
+    tags:
+      - search
   - name: External
     tags:
       - business
@@ -206,3 +210,126 @@ paths:
           description: Missing token in path
         200:
           description: Token was marked for removal
+
+  /search:
+    get:
+      summary: Product Search
+      description: Executes a product search
+      tags:
+        - search
+      parameters:
+        - name: query
+          in: query
+          required: true
+          description: query to search for
+          schema:
+            type: string
+        - name: sort
+          in: query
+          required: false
+          description: adds sorting to the results
+          schema:
+            type: string
+            enum: [RELEVANCE_ASC, RELEVANCE_DESC, PRICE_ASC, PRICE_DESC]
+            default: RELEVANCE_DESC
+        - name: offset
+          in: query
+          required: false
+          description: the current search offset as element count, not page count
+          schema:
+            type: number
+        - name: length
+          in: query
+          required: false
+          description: page size
+          schema:
+            type: number
+            minimum: 0
+            maximum: 100
+        - name: filter
+          in: query
+          required: false
+          description: all filters that should be applied on the given search request
+          schema:
+            type: object
+            description: all filters, which describe a predicate that must match.<br/>Key = Name,<br/>Value = Array of information
+            example:
+              geo: [99, 99, 100]
+      responses:
+        500:
+          description: something went wrong during search
+        204:
+          description: search successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  offset:
+                    type: number
+                    description: offset range given in search query
+                  length:
+                    type: number
+                    description: length / size of this result page
+                  maxSize:
+                    type: number
+                    description: maximum count of all results of this query
+                  filters:
+                    type: object
+                    description: an object containing all possible filters on the client side with additional informations
+                    properties:
+                      price:
+                        type: array
+                        example:
+                          - 7.99
+                          - 100
+                        items:
+                          type: number
+                        minItems: 2
+                        maxItems: 2
+                        description: contains two numbers, that specify the price range for the price filter. The first item specifies the lowest, the second item the highest price of the current resultset.
+                  elements:
+                    type: array
+                    description: contains the current page of the resultset
+                    items:
+                      type: object
+                      description: a single result item
+                      properties:
+                        name:
+                          type: string
+                          description: displayable name for the current result item
+                        id:
+                          type: string
+                          description: id of the product
+                        category:
+                          type: string
+                          description: product category
+                        url:
+                          type: string
+                          description: url for this product, to redirect all external requests
+                        price:
+                          type: number
+                          description: current price for the current result item
+                        availability:
+                          type: object
+                          description: the markets object gives information about the availability of this product. It contains only these markets, where the products were found and the filters matched.
+                          properties:
+                            MARKETID:
+                              type: object
+                              description: this object describes a single retail store
+                              properties:
+                                type:
+                                  type: string
+                                  enum: [AVAILABLE, ORDERABLE, NOT_AVAILABLE]
+                                  description: this object provides information about the products availability status in the parent market
+                                quantity:
+                                  type: integer
+                                  description: how much pieces are available in the parent market currently
+                        previews:
+                          type: array
+                          items:
+                            type: string
+                            description: URL pointing to a picture
+                        additionalInfos:
+                          type: object
+                          description: contains all additional informations about this product
