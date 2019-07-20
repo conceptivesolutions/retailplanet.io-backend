@@ -84,7 +84,7 @@ public class SearchService
   private DocumentSearchEvent.Query _buildIndexQuery(@NotNull SearchProductsEvent pEvent)
   {
     DocumentSearchEvent.Query query = new DocumentSearchEvent.Query()
-        .matches(DocumentSearchEvent.Match.equal(IIndexStructure.IProduct.NAME, pEvent.query));
+        .matches(DocumentSearchEvent.Match.equal(IIndexStructure.IProduct.NAME, pEvent.query, DocumentSearchEvent.Operator.OR));
     _enrichWithFilters(query, pEvent.filter);
     return query;
   }

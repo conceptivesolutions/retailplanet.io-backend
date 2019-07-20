@@ -41,7 +41,7 @@ class GeoSearchFilter implements ISearchFilter
     if (marketIDs == null)
       return;
 
-    pQuery.matches(combined(false, _createMarketIDsMatch(marketIDs), _createAvailabilityMatch(availabilities))
+    pQuery.matches(combined(DocumentSearchEvent.Operator.AND, _createMarketIDsMatch(marketIDs), _createAvailabilityMatch(availabilities))
                        .nested(IIndexStructure.IProduct.AVAILABILITY));
   }
 
