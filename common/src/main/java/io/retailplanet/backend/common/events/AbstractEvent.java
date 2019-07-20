@@ -1,6 +1,7 @@
 package io.retailplanet.backend.common.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.reactivex.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author w.glanzer, 11.07.2019
  */
+@RegisterForReflection
 public abstract class AbstractEvent<S extends AbstractEvent<S>>
 {
 
