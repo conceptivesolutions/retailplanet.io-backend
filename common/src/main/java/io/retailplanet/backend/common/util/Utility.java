@@ -12,6 +12,17 @@ public class Utility
 {
 
   /**
+   * @return Returns <tt>true</tt> if the current running application runs in DEV mode
+   */
+  public static boolean isDevMode()
+  {
+    String property = System.getenv("DEV");
+    if (property == null)
+      return true;
+    return !Boolean.FALSE.toString().equalsIgnoreCase(property);
+  }
+
+  /**
    * Determines if the given string is null or an emptry trimmed string
    *
    * @param pString String to check

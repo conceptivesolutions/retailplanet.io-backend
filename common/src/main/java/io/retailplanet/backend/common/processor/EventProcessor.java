@@ -168,7 +168,7 @@ public class EventProcessor extends AbstractProcessor
     private _EventContainer(Element pElement)
     {
       EventContainer anno = pElement.getAnnotation(EventContainer.class);
-      groupID = anno.groupID();
+      groupID = anno.groupID() + "_${KAFKA_GROUP_ID:dev}";
       String[] defaults = anno.defaults();
       for (int i = 0; i < defaults.length; i = i + 2)
         defaultValues.put(defaults[i], defaults[i + 1]);
