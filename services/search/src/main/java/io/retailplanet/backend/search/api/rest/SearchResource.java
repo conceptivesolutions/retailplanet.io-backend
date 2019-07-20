@@ -1,6 +1,7 @@
 package io.retailplanet.backend.search.api.rest;
 
 import io.retailplanet.backend.common.events.search.SearchProductsEvent;
+import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.search.impl.events.IEventFacade;
 import io.vertx.core.json.JsonObject;
 
@@ -31,7 +32,7 @@ public class SearchResource
     int length = pLength == null ? 20 : pLength;
 
     // validate request
-    if (offset < 0 || length <= 0 || length > 100)
+    if (offset < 0 || length <= 0 || length > 100 || Utility.isNullOrEmptyTrimmedString(pQuery))
     {
       pResponse.resume(Response.status(Response.Status.BAD_REQUEST));
       return;
