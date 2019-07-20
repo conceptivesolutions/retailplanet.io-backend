@@ -6,7 +6,7 @@ import io.vertx.core.json.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collector;
+import java.util.stream.*;
 
 import static io.retailplanet.backend.products.impl.struct.IIndexStructure.IProduct.*;
 
@@ -112,5 +112,36 @@ public class Product
         .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
 
     return productObj;
+  }
+
+  /**
+   * Creates a product of a search result hit
+   *
+   * @param pIndexObj SearchResult-Object
+   * @return Product
+   */
+  @NotNull
+  public static Product fromIndexJSON(@NotNull Map<String, Object> pIndexObj)
+  {
+    JsonObject index = new JsonObject(pIndexObj);
+    Product product = new Product();
+    product.name = index.getString(NAME);
+    product.id = index.getString(ID);
+    product.price = index.getFloat(PRICE, 0F);
+    product.created = index.getInteger(UPDATED, 0);
+    product.url = index.getString(URL);
+    product.category = index.getString(CATEGORY);
+    product.previews = index.getJsonArray(PREVIEWS).getList();
+    product.additionalInfos = (Map) index.getJsonObject(ADDITIONAL_INFO, new JsonObject()).getMap();
+    product.availability = index.getJsonArray(AVAILABILITY, new JsonArray()).stream()
+        .map(JsonObject.class::cast)
+        .map(pEntry -> {
+          ProductAvailability avail = new ProductAvailability();
+          avail.quantity = pEntry.getInteger(IIndexStructure.IAvailability.QUANTITY, 0);
+          avail.type = ProductAvailability.TYPE.valueOf(pEntry.getString(IIndexStructure.IAvailability.TYPE));
+          return new AbstractMap.SimpleImmutableEntry<>(pEntry.getString(IIndexStructure.IAvailability.MARKETID), avail);
+        })
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    return product;
   }
 }

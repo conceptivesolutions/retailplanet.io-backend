@@ -4,7 +4,7 @@ import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
 import io.retailplanet.backend.common.events.search.*;
 import io.retailplanet.backend.products.impl.events.*;
 import io.retailplanet.backend.products.impl.filter.*;
-import io.retailplanet.backend.products.impl.struct.IIndexStructure;
+import io.retailplanet.backend.products.impl.struct.*;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jetbrains.annotations.*;
 import org.slf4j.*;
@@ -12,6 +12,7 @@ import org.slf4j.*;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Service: Product search
@@ -53,8 +54,24 @@ public class SearchService
         .map(pResult -> pResult.createAnswer(SearchProductsResultEvent.class)
             .filters(new HashMap<>())
             .maxSize(pResult.count())
-            .elements(pResult.hits()))
+            .elements(pResult.hits().stream()
+                          .map(this::_searchResultToProduct)
+                          .collect(Collectors.toList())))
         .subscribe(eventFacade::sendSearchProductsResultEvent, pEx -> eventFacade.notifyError(pEvent, pEx));
+  }
+
+  /**
+   * Creates a product of a search result hit
+   *
+   * @param pSearchResultObj SearchResult-Object
+   * @return Product
+   */
+  @NotNull
+  private Product _searchResultToProduct(@NotNull Object pSearchResultObj)
+  {
+    if (pSearchResultObj instanceof Map)
+      return Product.fromIndexJSON((Map<String, Object>) pSearchResultObj);
+    throw new IllegalArgumentException("pSearchResult is not an instance of Map");
   }
 
   /**
