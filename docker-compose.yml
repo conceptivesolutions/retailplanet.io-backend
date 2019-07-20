@@ -81,6 +81,16 @@ services:
     environment:
       KAFKA_SERVERS: kafka:9092
 
+  # searchAPI-Service
+  search:
+    image: images.conceptive.io/retailplanet.backend.search.native:latest
+    links:
+      - kafka
+    ports:
+      - 8888:8080
+    environment:
+      KAFKA_SERVERS: kafka:9092
+
   # BusinessToken-Service
   businesstoken:
     image: images.conceptive.io/retailplanet.backend.businesstoken:latest # no native image, because H2 can not be embedded
