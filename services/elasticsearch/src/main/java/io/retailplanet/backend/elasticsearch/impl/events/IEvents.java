@@ -14,7 +14,7 @@ public interface IEvents
   /**
    * Event: Index document should be inserted / updated
    */
-  @IncomingEvent(autoOffsetReset = "earliest")
+  @IncomingEvent
   String IN_INDEX_DOCUMENT_UPSERT = "Index_DOCUMENT_UPSERT_IN";
 
   /**
