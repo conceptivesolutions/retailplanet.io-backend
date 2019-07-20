@@ -78,7 +78,7 @@ public class SearchProductsEvent extends AbstractEvent<SearchProductsEvent>
   @NotNull
   public SearchProductsEvent filter(JsonObject pFilter)
   {
-    filter = pFilter.getMap();
+    filter = pFilter == null ? null : pFilter.getMap();
     return this;
   }
 }
