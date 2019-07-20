@@ -270,12 +270,13 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
      *
      * @param pFieldName  Name of the searched field
      * @param pFieldValue Searched value
+     * @param pOperator   Operator to define how single words are handled. AND = all words must match, OR = One word must match
      * @return the match
      */
     @NotNull
-    public static Match equal(@NotNull String pFieldName, @NotNull String pFieldValue)
+    public static Match equal(@NotNull String pFieldName, @NotNull String pFieldValue, @NotNull Operator pOperator)
     {
-      return new Match("eq", pFieldName, pFieldValue);
+      return new Match("eq", pFieldName, pFieldValue, pOperator.name());
     }
 
     /**
@@ -298,14 +299,14 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     /**
      * Combine matches to a single match
      *
-     * @param pUseOR   <tt>true</tt> if the matches should combined with the "OR" aggreator, <tt>false</tt> for "AND"
-     * @param pMatches All matches
+     * @param pOperator Operator to define, how combinations are combined
+     * @param pMatches  All matches
      * @return Builder
      */
     @NotNull
-    public static Match combined(boolean pUseOR, Match... pMatches)
+    public static Match combined(@NotNull Operator pOperator, Match... pMatches)
     {
-      Match match = new Match("combined", pUseOR ? "or" : "and");
+      Match match = new Match("combined", pOperator.name());
       match.innerMatches = Stream.of(pMatches)
           .filter(Objects::nonNull)
           .collect(Collectors.toList());
@@ -366,6 +367,15 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     {
       return new Filter("geo_distance", pLocationFieldName, String.valueOf(pLat), String.valueOf(pLon), String.valueOf(pDistance));
     }
+  }
+
+  /**
+   * Common "operator", to define contexts
+   */
+  public enum Operator
+  {
+    AND,
+    OR
   }
 
 }
