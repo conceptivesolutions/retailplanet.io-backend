@@ -42,22 +42,24 @@ public class SearchService
     if (pEvent == null)
       return;
 
-    // Build request
-    DocumentSearchEvent searchEvent = pEvent.createAnswer(DocumentSearchEvent.class)
-        .indices(IIndexStructure.INDEX_TYPE)
-        .query(_buildIndexQuery(pEvent))
-        .offset(pEvent.offset)
-        .length(pEvent.length);
+    eventFacade.trace(pEvent, () -> {
+      // Build request
+      DocumentSearchEvent searchEvent = pEvent.createAnswer(DocumentSearchEvent.class)
+          .indices(IIndexStructure.INDEX_TYPE)
+          .query(_buildIndexQuery(pEvent))
+          .offset(pEvent.offset)
+          .length(pEvent.length);
 
-    // send
-    eventFacade.sendDocumentSearchEvent(searchEvent)
-        .map(pResult -> pResult.createAnswer(SearchProductsResultEvent.class)
-            .filters(new HashMap<>())
-            .maxSize(pResult.count())
-            .elements(pResult.hits().stream()
-                          .map(this::_searchResultToProduct)
-                          .collect(Collectors.toList())))
-        .subscribe(eventFacade::sendSearchProductsResultEvent, pEx -> eventFacade.notifyError(pEvent, pEx));
+      // send
+      eventFacade.sendDocumentSearchEvent(searchEvent)
+          .map(pResult -> pResult.createAnswer(SearchProductsResultEvent.class)
+              .filters(new HashMap<>())
+              .maxSize(pResult.count())
+              .elements(pResult.hits().stream()
+                            .map(this::_searchResultToProduct)
+                            .collect(Collectors.toList())))
+          .subscribe(eventFacade::sendSearchProductsResultEvent, pEx -> eventFacade.notifyError(pEvent, pEx));
+    });
   }
 
   /**

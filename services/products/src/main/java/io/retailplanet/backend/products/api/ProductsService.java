@@ -39,34 +39,38 @@ public class ProductsService
     if (pEvent == null)
       return;
 
-    String clientID = pEvent.clientID;
-    byte[] binContent = pEvent.content;
-    if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID))
+    eventFacade.trace(pEvent, () -> {
+      String clientID = pEvent.clientID;
+      byte[] binContent = pEvent.content;
+      if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID))
+        return;
+
+      try
+      {
+        // decompress
+        String content = ZipUtility.uncompressBase64(binContent);
+
+        // read products
+        Product[] products = Json.decodeValue(content, Product[].class);
+
+        // store in index
+        DocumentUpsertEvent event = pEvent.createAnswer(DocumentUpsertEvent.class)
+            .clientID(clientID)
+            .type(INDEX_TYPE)
+            .doc(Arrays.stream(products)
+                     .map(pProduct -> pProduct.toIndexJSON(clientID))
+                     .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
+
+        // fire request
+        eventFacade.sendDocumentUpsertEvent(event);
+      }
+      catch (Exception e)
+      {
+        eventFacade.notifyError(pEvent, "Failed to upsert product", e);
+      }
+
       return;
-
-    try
-    {
-      // decompress
-      String content = ZipUtility.uncompressBase64(binContent);
-
-      // read products
-      Product[] products = Json.decodeValue(content, Product[].class);
-
-      // store in index
-      DocumentUpsertEvent event = pEvent.createAnswer(DocumentUpsertEvent.class)
-          .clientID(clientID)
-          .type(INDEX_TYPE)
-          .doc(Arrays.stream(products)
-                   .map(pProduct -> pProduct.toIndexJSON(clientID))
-                   .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
-
-      // fire request
-      eventFacade.sendDocumentUpsertEvent(event);
-    }
-    catch (Exception e)
-    {
-      eventFacade.notifyError(pEvent, "Failed to upsert product", e);
-    }
+    });
   }
 
 }
