@@ -161,6 +161,7 @@
                 <configuration>
                   <nativeImageXmx>2G</nativeImageXmx>
                   <containerRuntime>docker</containerRuntime>
+                  <additionalBuildArgs>-H:IncludeResources=io/retailplanet/backend/.*</additionalBuildArgs>
                 </configuration>
               </execution>
             </executions>
