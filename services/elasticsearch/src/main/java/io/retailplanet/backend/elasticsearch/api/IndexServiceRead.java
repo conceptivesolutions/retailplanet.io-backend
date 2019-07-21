@@ -45,25 +45,27 @@ public class IndexServiceRead
     if (pEvent == null)
       return;
 
-    try
-    {
-      DocumentSearchEvent.Query query = pEvent.query();
-      if (query == null)
-        throw new IllegalArgumentException("query must not be null");
+    eventFacade.trace(pEvent, () -> {
+      try
+      {
+        DocumentSearchEvent.Query query = pEvent.query();
+        if (query == null)
+          throw new IllegalArgumentException("query must not be null");
 
-      List<String> indexTypes = pEvent.indexTypes();
-      List<IQueryBuilder> filters = filterFactory.interpretFilters(query.filters());
-      List<IQueryBuilder> matches = matchFactory.interpretMatches(query.matches());
-      IIndexFacade.ISearchResult result = indexFacade.search(indexTypes, matches, filters, pEvent.offset(), pEvent.length());
+        List<String> indexTypes = pEvent.indexTypes();
+        List<IQueryBuilder> filters = filterFactory.interpretFilters(query.filters());
+        List<IQueryBuilder> matches = matchFactory.interpretMatches(query.matches());
+        IIndexFacade.ISearchResult result = indexFacade.search(indexTypes, matches, filters, pEvent.offset(), pEvent.length());
 
-      eventFacade.sendDocumentSearchResultEvent(pEvent.createAnswer(DocumentSearchResultEvent.class)
-                                                    .hits(Collections.unmodifiableList(result.getElements()))
-                                                    .count(result.getMaxSize()));
-    }
-    catch (Exception e)
-    {
-      eventFacade.notifyError(pEvent, "Failed to execute search", e);
-    }
+        eventFacade.sendDocumentSearchResultEvent(pEvent.createAnswer(DocumentSearchResultEvent.class)
+                                                      .hits(Collections.unmodifiableList(result.getElements()))
+                                                      .count(result.getMaxSize()));
+      }
+      catch (Exception e)
+      {
+        eventFacade.notifyError(pEvent, "Failed to execute search", e);
+      }
+    });
   }
 
 }

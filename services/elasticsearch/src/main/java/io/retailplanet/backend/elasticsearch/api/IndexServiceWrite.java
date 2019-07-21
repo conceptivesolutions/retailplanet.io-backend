@@ -2,7 +2,7 @@ package io.retailplanet.backend.elasticsearch.api;
 
 import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
 import io.retailplanet.backend.common.util.Utility;
-import io.retailplanet.backend.elasticsearch.impl.events.IEvents;
+import io.retailplanet.backend.elasticsearch.impl.events.*;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
 import io.vertx.core.json.*;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,6 +31,9 @@ public class IndexServiceWrite
   @Inject
   private IIndexFacade indexFacade;
 
+  @Inject
+  private IEventFacade eventFacade;
+
   /**
    * Executes the Index_DOCUMENT_UPSERT event, and inserts / updates documents in index
    *
@@ -42,27 +45,31 @@ public class IndexServiceWrite
     if (pEvent == null)
       return;
 
-    String clientid = pEvent.clientID();
-    String type = pEvent.type();
-    Object doc = pEvent.doc();
-    if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(type) || doc == null)
-      return;
+    eventFacade.trace(pEvent, () -> {
+      String clientid = pEvent.clientID();
+      String type = pEvent.type();
+      Object doc = pEvent.doc();
+      if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(type) || doc == null)
+        return;
 
-    try
-    {
-      indexFacade.upsertDocument(clientid, type, _getDocumentsFromDocField(doc).stream()
-          .map(pJsonObj -> {
-            String id = pJsonObj.getString("id");
-            if (id == null)
-              throw new IllegalArgumentException("JSONObject does not have ID value: " + pJsonObj);
-            pJsonObj.remove("id"); // remove id, because we already have it in elasticsearch structure afterwards
-            return Pair.of(id, _toContentBuilder(pJsonObj));
-          }));
-    }
-    catch (Exception e)
-    {
-      _LOGGER.error("Failed to update index with type " + type + " for client " + clientid, e);
-    }
+      try
+      {
+        indexFacade.upsertDocument(clientid, type, _getDocumentsFromDocField(doc).stream()
+            .map(pJsonObj -> {
+              String id = pJsonObj.getString("id");
+              if (id == null)
+                throw new IllegalArgumentException("JSONObject does not have ID value: " + pJsonObj);
+              pJsonObj.remove("id"); // remove id, because we already have it in elasticsearch structure afterwards
+              return Pair.of(id, _toContentBuilder(pJsonObj));
+            }));
+      }
+      catch (Exception e)
+      {
+        _LOGGER.error("Failed to update index with type " + type + " for client " + clientid, e);
+      }
+
+      return;
+    });
   }
 
   /**
