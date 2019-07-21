@@ -29,6 +29,7 @@ public class EventDeserializer implements Deserializer<AbstractEvent>
   @Override
   public AbstractEvent deserialize(String topic, byte[] data)
   {
+    long time = System.currentTimeMillis();
     String chainID = null;
 
     try
@@ -56,6 +57,10 @@ public class EventDeserializer implements Deserializer<AbstractEvent>
           }
         }));
         chainID = event.chainID;
+
+        //enrich with timestamp
+        event.receivedTimeMillis = time;
+
         return event;
       }
       catch (Throwable e)

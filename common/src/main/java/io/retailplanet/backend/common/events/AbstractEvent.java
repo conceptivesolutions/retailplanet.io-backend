@@ -22,6 +22,9 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
   @JsonProperty
   public Map<String, String> traceContext;
 
+  /* Timestamp when this event was received */
+  Long receivedTimeMillis;
+
   public <T extends AbstractEvent> T createAnswer(Class<T> pClazz)
   {
     try
