@@ -26,7 +26,6 @@ class EventFacadeImpl extends AbstractEventFacade implements IEventFacade
   @Override
   public Single<SearchProductsResultEvent> sendSearchProductsEvent(@NotNull SearchProductsEvent pEvent)
   {
-    searchProductsEmitter.send(pEvent);
-    return pEvent.waitForAnswer(errorsFlowable, searchProductsResultFlowable);
+    return send(pEvent, searchProductsEmitter, searchProductsResultFlowable);
   }
 }
