@@ -43,7 +43,7 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
    */
   @SafeVarargs
   @NotNull
-  public final <T extends AbstractEvent> Single<T> waitForAnswer(@NotNull Flowable<ErrorEvent> pErrors, @NotNull Flowable<? extends T>... pFlowables)
+  final <T extends AbstractEvent> Single<T> waitForAnswer(@NotNull Flowable<ErrorEvent> pErrors, @NotNull Flowable<? extends T>... pFlowables)
   {
     return Flowable.merge(Flowable.merge(Arrays.asList(pFlowables)), pErrors)
         .timeout(1500, TimeUnit.MILLISECONDS)
