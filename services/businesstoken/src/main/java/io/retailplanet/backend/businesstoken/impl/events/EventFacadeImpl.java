@@ -20,6 +20,7 @@ class EventFacadeImpl extends AbstractEventFacade implements IEventFacade
   @Override
   public void sendTokenInvalidatedEvent(@NotNull TokenInvalidatedEvent pEvent)
   {
-    tokenInvalidatedEmitter.send(pEvent);
+    send(pEvent, tokenInvalidatedEmitter);
   }
+
 }
