@@ -37,25 +37,24 @@ class EventFacadeImpl extends AbstractEventFacade implements IEventFacade
   @Override
   public Single<TokenCreatedEvent> sendTokenCreateEvent(@NotNull TokenCreateEvent pEvent)
   {
-    tokenCreateEmitter.send(pEvent);
-    return pEvent.waitForAnswer(errorsFlowable, tokenCreatedFlowable);
+    return send(pEvent, tokenCreateEmitter, tokenCreatedFlowable);
   }
 
   @Override
   public void sendMarketUpsertEvent(@NotNull MarketUpsertEvent pEvent)
   {
-    marketUpsertedUnauthEmitter.send(pEvent);
+    send(pEvent, marketUpsertedUnauthEmitter);
   }
 
   @Override
   public void sendProductUpsertEvent(@NotNull ProductUpsertEvent pEvent)
   {
-    productUpsertedUnauthEmitter.send(pEvent);
+    send(pEvent, productUpsertedUnauthEmitter);
   }
 
   @Override
   public void sendTokenInvalidatedEvent(@NotNull TokenInvalidatedEvent pEvent)
   {
-    tokenInvalidateEmitter.send(pEvent);
+    send(pEvent, tokenInvalidateEmitter);
   }
 }
