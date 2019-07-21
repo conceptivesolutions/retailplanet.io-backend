@@ -39,28 +39,26 @@ class EventFacade extends AbstractEventFacade implements IEventFacade
   @NotNull
   public Single<SearchMarketsResultEvent> sendSearchMarketsEvent(@NotNull SearchMarketsEvent pEvent)
   {
-    searchMarketsEmitter.send(pEvent);
-    return pEvent.waitForAnswer(errorsFlowable, searchMarketsResultFlowable);
+    return send(pEvent, searchMarketsEmitter, searchMarketsResultFlowable);
   }
 
   @Override
   public void sendDocumentUpsertEvent(@NotNull DocumentUpsertEvent pEvent)
   {
-    upsertProductsInIndex.send(pEvent);
+    send(pEvent, upsertProductsInIndex);
   }
 
   @NotNull
   @Override
   public Single<DocumentSearchResultEvent> sendDocumentSearchEvent(@NotNull DocumentSearchEvent pEvent)
   {
-    searchInIndex.send(pEvent);
-    return pEvent.waitForAnswer(errorsFlowable, searchInIndexResult);
+    return send(pEvent, searchInIndex, searchInIndexResult);
   }
 
   @Override
   public void sendSearchProductsResultEvent(@NotNull SearchProductsResultEvent pEvent)
   {
-    resultEmitter.send(pEvent);
+    send(pEvent, resultEmitter);
   }
 
 }
