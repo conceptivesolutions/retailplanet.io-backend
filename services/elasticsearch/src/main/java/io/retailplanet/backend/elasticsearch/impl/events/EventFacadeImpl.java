@@ -20,7 +20,7 @@ class EventFacadeImpl extends AbstractEventFacade implements IEventFacade
   @Override
   public void sendDocumentSearchResultEvent(@NotNull DocumentSearchResultEvent pEvent)
   {
-    searchResultEmitter.send(pEvent);
+    send(pEvent, searchResultEmitter);
   }
 
 }
