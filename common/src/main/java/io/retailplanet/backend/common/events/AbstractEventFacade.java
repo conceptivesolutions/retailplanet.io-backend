@@ -1,7 +1,6 @@
 package io.retailplanet.backend.common.events;
 
-import io.opentracing.*;
-import io.opentracing.propagation.*;
+import io.opentracing.Tracer;
 import io.reactivex.*;
 import io.smallrye.reactive.messaging.annotations.Emitter;
 import io.smallrye.reactive.messaging.annotations.*;
@@ -9,7 +8,7 @@ import org.jetbrains.annotations.*;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.HashMap;
+import java.util.function.Supplier;
 
 /**
  * @author w.glanzer, 18.07.2019
@@ -51,25 +50,43 @@ public abstract class AbstractEventFacade implements IAbstractEventFacade
     errorsEmitter.send(event);
   }
 
+  @Override
+  public <Out> Out trace(@NotNull AbstractEvent<?> pEvent, @NotNull Supplier<Out> pFn)
+  {
+    pEvent.startTrace(tracer);
+
+    try
+    {
+      return pFn.get();
+    }
+    finally
+    {
+      pEvent.finishTrace();
+    }
+  }
+
   @SafeVarargs
   @NotNull
   protected final <In extends AbstractEvent<In>, Out extends AbstractEvent<Out>> Single<Out> send(@NotNull In pEvent, @NotNull Emitter<In> pEmitter, Flowable<? extends Out>... pAnswerFlowables)
   {
-    Span span = tracer.buildSpan("SEND:" + pEvent.getClass().getSimpleName())
-        .asChildOf(tracer.activeSpan())
-        .start();
+    // inject current span
+    pEvent.injectCurrentTrace(tracer);
 
-    // Inject current TraceContext for context propagation
-    pEvent.traceContext = new HashMap<>();
-    pEvent.traceContext.put("__CTX_TYPE", pAnswerFlowables.length == 0 ? References.CHILD_OF : References.FOLLOWS_FROM);
-    tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, new TextMapInjectAdapter(pEvent.traceContext));
-
+    // send event
     pEmitter.send(pEvent);
 
+    // No result is expected
     if (pAnswerFlowables.length == 0)
       return Single.never();
 
-    return pEvent.waitForAnswer(errorsFlowable, pAnswerFlowables);
+    // result expected
+    return pEvent.waitForAnswer(errorsFlowable, pAnswerFlowables)
+        .map(pEv -> {
+          pEv.startTrace(tracer);
+          return pEv;
+        })
+        .doOnError(pEx -> tracer.scopeManager().active().close())
+        .doOnSuccess(AbstractEvent::finishTrace);
   }
 
 }

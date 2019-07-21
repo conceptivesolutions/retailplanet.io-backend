@@ -29,7 +29,6 @@ public class EventDeserializer implements Deserializer<AbstractEvent>
   @Override
   public AbstractEvent deserialize(String topic, byte[] data)
   {
-    long time = System.currentTimeMillis();
     String chainID = null;
 
     try
@@ -45,7 +44,7 @@ public class EventDeserializer implements Deserializer<AbstractEvent>
 
       try
       {
-        AbstractEvent event = Json.decodeValue(json.toBuffer(), _CACHE.computeIfAbsent(className, pName -> {
+        AbstractEvent<?> event = Json.decodeValue(json.toBuffer(), _CACHE.computeIfAbsent(className, pName -> {
           try
           {
             return (Class<AbstractEvent>) Class.forName(pName.toString());
@@ -58,8 +57,8 @@ public class EventDeserializer implements Deserializer<AbstractEvent>
         }));
         chainID = event.chainID;
 
-        //enrich with timestamp
-        event.receivedTimeMillis = time;
+        //enrich with topic information
+        event.receivedTopic = topic;
 
         return event;
       }

@@ -1,6 +1,8 @@
 package io.retailplanet.backend.common.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.opentracing.*;
+import io.opentracing.propagation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.reactivex.*;
 import org.jetbrains.annotations.NotNull;
@@ -14,16 +16,19 @@ import java.util.concurrent.TimeUnit;
 @RegisterForReflection
 public abstract class AbstractEvent<S extends AbstractEvent<S>>
 {
+  private static final String _REFERENCE_TYPE_KEY = "__REF_TYPE";
 
   @JsonProperty
   public String chainID = UUID.randomUUID().toString();
 
-  /* Context for OpenTracing propagation */
+  /* Current execution context for OpenTracing propagation */
   @JsonProperty
   public Map<String, String> traceContext;
 
-  /* Timestamp when this event was received */
-  Long receivedTimeMillis;
+  /* Topic, where this event comes from */
+  String receivedTopic;
+
+  private Span computingSpan;
 
   public <T extends AbstractEvent> T createAnswer(Class<T> pClazz)
   {
@@ -37,6 +42,53 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
     {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * Starts to trace the current event computation
+   *
+   * @param pTracer Tracer
+   */
+  void startTrace(@NotNull Tracer pTracer)
+  {
+    Tracer.SpanBuilder builder = pTracer.buildSpan(getClass().getSimpleName());
+    if (traceContext != null)
+    {
+      String refType = traceContext.get(_REFERENCE_TYPE_KEY);
+      if (refType != null)
+        builder = builder.addReference(refType, pTracer.extract(Format.Builtin.HTTP_HEADERS, new TextMapExtractAdapter(traceContext)));
+    }
+
+    if (receivedTopic != null)
+      builder = builder.withTag("topic", receivedTopic);
+
+    computingSpan = builder.startActive(true).span();
+  }
+
+  /**
+   * Sets the current active span as trace to this event
+   *
+   * @param pTracer Tracer to get the span from
+   */
+  void injectCurrentTrace(@NotNull Tracer pTracer)
+  {
+    traceContext = new HashMap<>();
+
+    Span span = pTracer.activeSpan();
+    if (span != null)
+    {
+      traceContext.put(_REFERENCE_TYPE_KEY, References.CHILD_OF);
+      pTracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, new TextMapInjectAdapter(traceContext));
+    }
+  }
+
+  /**
+   * Finishes the computation of this event
+   */
+  void finishTrace()
+  {
+    if (computingSpan != null)
+      computingSpan.finish();
   }
 
   /**
