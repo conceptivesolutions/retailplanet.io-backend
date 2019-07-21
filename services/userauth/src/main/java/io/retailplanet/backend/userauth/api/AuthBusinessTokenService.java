@@ -2,12 +2,13 @@ package io.retailplanet.backend.userauth.api;
 
 import io.retailplanet.backend.common.events.token.TokenCreateEvent;
 import io.retailplanet.backend.common.util.Utility;
-import io.retailplanet.backend.userauth.impl.events.IEvents;
+import io.retailplanet.backend.userauth.impl.events.*;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
 import org.eclipse.microprofile.reactive.messaging.*;
 import org.jetbrains.annotations.Nullable;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 /**
  * Service to authenticate BusinessToken Events
@@ -17,6 +18,9 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class AuthBusinessTokenService
 {
+
+  @Inject
+  private IEventFacade eventFacade;
 
   /**
    * Authenticates a given BusinessToken-Create-Event
@@ -32,16 +36,18 @@ public class AuthBusinessTokenService
     if (pCreateEvent == null)
       return null;
 
-    String clientid = pCreateEvent.clientID;
-    String token = pCreateEvent.token;
+    return eventFacade.trace(pCreateEvent, () -> {
+      String clientid = pCreateEvent.clientID;
+      String token = pCreateEvent.token;
 
-    // validate
-    if(Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(token))
-      return null;
+      // validate
+      if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(token))
+        return null;
 
-    // todo check permissions of the user
+      // todo check permissions of the user
 
-    return pCreateEvent.authorized(true);
+      return pCreateEvent.authorized(true);
+    });
   }
 
 }
