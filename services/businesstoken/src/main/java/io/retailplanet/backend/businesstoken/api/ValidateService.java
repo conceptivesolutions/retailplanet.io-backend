@@ -1,7 +1,7 @@
 package io.retailplanet.backend.businesstoken.api;
 
 import io.retailplanet.backend.businesstoken.impl.cache.TokenCache;
-import io.retailplanet.backend.businesstoken.impl.events.IEvents;
+import io.retailplanet.backend.businesstoken.impl.events.*;
 import io.retailplanet.backend.common.events.market.MarketUpsertEvent;
 import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
 import io.retailplanet.backend.common.util.Utility;
@@ -22,6 +22,9 @@ public class ValidateService
 {
 
   @Inject
+  private IEventFacade eventFacade;
+
+  @Inject
   TokenCache tokenCache;
 
   /**
@@ -38,23 +41,25 @@ public class ValidateService
     if (pEvent == null)
       return null;
 
-    String session_token = pEvent.session_token;
-    if (Utility.isNullOrEmptyTrimmedString(session_token))
-      return null;
+    return eventFacade.trace(pEvent, () -> {
+      String session_token = pEvent.session_token;
+      if (Utility.isNullOrEmptyTrimmedString(session_token))
+        return null;
 
-    // validate token
-    TokenCache.STATE valid = tokenCache.validateToken(session_token);
-    if (valid != TokenCache.STATE.VALID)
-      return null;
+      // validate token
+      TokenCache.STATE valid = tokenCache.validateToken(session_token);
+      if (valid != TokenCache.STATE.VALID)
+        return null;
 
-    // find issuer
-    String issuer = tokenCache.findIssuer(session_token);
-    if (Utility.isNullOrEmptyTrimmedString(issuer))
-      return null;
+      // find issuer
+      String issuer = tokenCache.findIssuer(session_token);
+      if (Utility.isNullOrEmptyTrimmedString(issuer))
+        return null;
 
-    return pEvent
-        .clientID(issuer)
-        .authorized(true);
+      return pEvent
+          .clientID(issuer)
+          .authorized(true);
+    });
   }
 
   /**
@@ -71,23 +76,25 @@ public class ValidateService
     if (pEvent == null)
       return null;
 
-    String session_token = pEvent.session_token;
-    if (Utility.isNullOrEmptyTrimmedString(session_token))
-      return null;
+    return eventFacade.trace(pEvent, () -> {
+      String session_token = pEvent.session_token;
+      if (Utility.isNullOrEmptyTrimmedString(session_token))
+        return null;
 
-    // validate token
-    TokenCache.STATE valid = tokenCache.validateToken(session_token);
-    if (valid != TokenCache.STATE.VALID)
-      return null;
+      // validate token
+      TokenCache.STATE valid = tokenCache.validateToken(session_token);
+      if (valid != TokenCache.STATE.VALID)
+        return null;
 
-    // find issuer
-    String issuer = tokenCache.findIssuer(session_token);
-    if (Utility.isNullOrEmptyTrimmedString(issuer))
-      return null;
+      // find issuer
+      String issuer = tokenCache.findIssuer(session_token);
+      if (Utility.isNullOrEmptyTrimmedString(issuer))
+        return null;
 
-    return pEvent
-        .clientID(issuer)
-        .authorized(true);
+      return pEvent
+          .clientID(issuer)
+          .authorized(true);
+    });
   }
 
 }

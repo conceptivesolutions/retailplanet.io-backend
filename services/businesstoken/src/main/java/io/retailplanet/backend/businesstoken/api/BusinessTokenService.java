@@ -47,18 +47,20 @@ public class BusinessTokenService
     if (pEvent == null)
       return null;
 
-    String clientid = pEvent.clientID;
-    if (Utility.isNullOrEmptyTrimmedString(clientid))
-      return null;
+    return eventFacade.trace(pEvent, () -> {
+      String clientid = pEvent.clientID;
+      if (Utility.isNullOrEmptyTrimmedString(clientid))
+        return null;
 
-    // Invalidate previous tokens from this client
-    eventFacade.sendTokenInvalidatedEvent(new TokenInvalidatedEvent().clientID(clientid));
+      // Invalidate previous tokens from this client
+      eventFacade.sendTokenInvalidatedEvent(new TokenInvalidatedEvent().clientID(clientid));
 
-    // Generate new and send
-    return pEvent.createAnswer(TokenCreatedEvent.class)
-        .clientID(clientid)
-        .valid_until(Instant.now().plus(_TOKEN_LIFESPAN))
-        .session_token(UUID.randomUUID().toString());
+      // Generate new and send
+      return pEvent.createAnswer(TokenCreatedEvent.class)
+          .clientID(clientid)
+          .valid_until(Instant.now().plus(_TOKEN_LIFESPAN))
+          .session_token(UUID.randomUUID().toString());
+    });
   }
 
   /**
@@ -72,15 +74,19 @@ public class BusinessTokenService
     if (pEvent == null)
       return;
 
-    String clientid = pEvent.clientID;
-    String token = pEvent.session_token;
-    Instant validUntil = pEvent.valid_until == null ? Instant.MIN : pEvent.valid_until;
-    if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(token))
-      return;
+    eventFacade.trace(pEvent, () -> {
+      String clientid = pEvent.clientID;
+      String token = pEvent.session_token;
+      Instant validUntil = pEvent.valid_until == null ? Instant.MIN : pEvent.valid_until;
+      if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(token))
+        return null;
 
-    // Only add valid tokens, because invalid are useless
-    if (validUntil.isAfter(Instant.now()))
-      tokenCache.putToken(clientid, token, validUntil);
+      // Only add valid tokens, because invalid are useless
+      if (validUntil.isAfter(Instant.now()))
+        tokenCache.putToken(clientid, token, validUntil);
+
+      return null;
+    });
   }
 
   /**
@@ -94,19 +100,23 @@ public class BusinessTokenService
     if (pEvent == null)
       return;
 
-    // Invalidate given session_token
-    String token = pEvent.session_token;
-    if (token != null)
-      tokenCache.invalidateToken(token);
-    else
-    {
-      // Invalidate all tokens for a specific client
-      String clientid = pEvent.clientID;
-      if (clientid != null)
-        tokenCache.invalidateAllTokens(clientid);
+    eventFacade.trace(pEvent, () -> {
+      // Invalidate given session_token
+      String token = pEvent.session_token;
+      if (token != null)
+        tokenCache.invalidateToken(token);
       else
-        _LOGGER.warn("Failed to invalidate token for request: " + pEvent.toString());
-    }
+      {
+        // Invalidate all tokens for a specific client
+        String clientid = pEvent.clientID;
+        if (clientid != null)
+          tokenCache.invalidateAllTokens(clientid);
+        else
+          _LOGGER.warn("Failed to invalidate token for request: " + pEvent.toString());
+      }
+
+      return null;
+    });
   }
 
 }
