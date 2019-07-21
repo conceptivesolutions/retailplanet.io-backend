@@ -18,6 +18,10 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
   @JsonProperty
   public String chainID = UUID.randomUUID().toString();
 
+  /* Context for OpenTracing propagation */
+  @JsonProperty
+  public Map<String, String> traceContext;
+
   public <T extends AbstractEvent> T createAnswer(Class<T> pClazz)
   {
     try
