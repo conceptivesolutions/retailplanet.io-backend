@@ -31,9 +31,23 @@ x-tagGroups:
   - name: Internal
     tags:
       - search
+      - profile
   - name: External
     tags:
       - business
+
+components:
+  securitySchemes:
+    retailplanet_auth:
+      description: |
+        Get access to data while protecting your account credentials.
+        OAuth2 is also a safer and more secure way to give you access.
+      type: oauth2
+      flows:
+        implicit:
+          scopes:
+            'read:profile': (Implicit) read access of own profile
+            'write:profile': (Implicit) write access of own profile
 
 paths:
   /businesss/token/generate:
@@ -333,3 +347,96 @@ paths:
                         additionalInfos:
                           type: object
                           description: contains all additional informations about this product
+
+  /profile:
+    get:
+      summary: Profile Information
+      description: Retrieve information about the user currently logged in
+      tags:
+        - profile
+      parameters:
+        - name: Authorization
+          in: header
+          description: OAuth2 Token
+      security:
+        - retailplanet_auth:
+            - 'read:profile'
+      responses:
+        200:
+          description: All user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the current user
+                  roles:
+                    type: array
+                    description: A list of all roles this user has
+                    items:
+                      type: string
+        400:
+          description: Token not provided
+        404:
+          description: User not found
+    patch:
+      summary: Update profile information
+      tags:
+        - profile
+      security:
+        - retailplanet_auth:
+            - 'write:profile'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: object
+                  description: New avatar references
+                  properties:
+                    url:
+                      type: string
+                      description: url pointing to the new users avatar picture
+                    base64:
+                      type: string
+                      description: base64 string for the new avatar picture
+      responses:
+        200:
+          description: Update successful
+        400:
+          description: Token not provided
+        404:
+          description: User not found
+
+  /profile/avatar/{userid}.png:
+    get:
+      summary: Get Avatar
+      description: Retrieves an avatar picture of the user specified in url
+      tags:
+        - profile
+      parameters:
+        - name: userid
+          description: ID of the user
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: If-None-Match
+          in: header
+          description: HTTP Cache Header
+          required: false
+          schema:
+            type: string
+      responses:
+        204:
+          description: Avatar as PNG picture
+        304:
+          description: Nothing changed, Browser should use cached picture
+          content:
+            image/png: {}
+        404:
+          description: User not found
