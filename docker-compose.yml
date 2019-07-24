@@ -1,36 +1,9 @@
 version: '3.3'
 
 services:
-
-  datadog:
-    image: datadog/agent:latest
-    restart: always
-    environment:
-      DD_API_KEY: 37c15f3762f1b01c79516bbdcc16ee15
-      DD_TAGS: localhost
-      DD_APM_ENABLED: "false"
-      DD_LOGS_ENABLED: "true"
-      DD_PROCESS_AGENT_ENABLED: "false"
-      DD_AC_INCLUDE: "retailplanetio-backend-.*"
-      DD_AC_EXCLUDE: ".*datadog.*"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /proc/:/host/proc/:ro
-      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
-
-  jaeger:
-    image: jaegertracing/all-in-one
-    restart: on-failure
-    environment:
-      COLLECTOR_ZIPKIN_HTTP_PORT: "9411"
-    ports:
-      - 5775:5775/udp
-      - 6831:6831/udp
-      - 6832:6832/udp
-      - 5778:5778
-      - 16686:16686
-      - 14268:14268
-      - 9411:9411
+  # =================
+  # ==== STORAGE ====
+  # =================
 
   # Zookeeper to manage kafka instances
   kafka_zookeeper:
@@ -61,16 +34,6 @@ services:
       ADVERTISED_LISTENERS: "LOCAL://kafka:9092"
       KAFKA_INTER_BROKER_LISTENER_NAME: LOCAL
 
-  # REST Documentation
-  docs:
-    image: redocly/redoc
-    ports:
-      - 9500:80
-    volumes:
-      - ./docs/public:/usr/share/nginx/html/public
-    environment:
-      - SPEC_URL=public/v1/endpoints.yml
-
   # Elasticsearch
   search1:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.0.0
@@ -85,15 +48,23 @@ services:
     ports:
       - 9200:9200
 
-  # BusinessAPI-Service
-  businessapi:
-    image: images.conceptive.io/retailplanet.backend.businessapi.native:latest
-    links:
-      - kafka
+  # =======================
+  # ==== DOCUMENTATION ====
+  # =======================
+
+  docs:
+    image: redocly/redoc
     ports:
-      - 8888:8080
+      - 9500:80
+    volumes:
+      - ./docs/public:/usr/share/nginx/html/public
     environment:
-      KAFKA_SERVERS: kafka:9092
+      - SPEC_URL=public/v1/endpoints.yml
+
+
+  # ======================
+  # ==== API Services ====
+  # ======================
 
   # searchAPI-Service
   search:
@@ -101,9 +72,33 @@ services:
     links:
       - kafka
     ports:
-      - 8888:8080
+      - 8880:8080
     environment:
       KAFKA_SERVERS: kafka:9092
+
+  # BusinessAPI-Service
+  businessapi:
+    image: images.conceptive.io/retailplanet.backend.businessapi.native:latest
+    links:
+      - kafka
+    ports:
+      - 8881:8080
+    environment:
+      KAFKA_SERVERS: kafka:9092
+
+  # UserAuth-Service
+  userauth:
+    image: images.conceptive.io/retailplanet.backend.userauth.native:latest
+    links:
+      - kafka
+    ports:
+      - 8882:8080
+    environment:
+      KAFKA_SERVERS: kafka:9092
+
+  # ===========================
+  # ==== Internal Services ====
+  # ===========================
 
   # BusinessToken-Service
   businesstoken:
@@ -137,14 +132,6 @@ services:
   # Products-Service
   products:
     image: images.conceptive.io/retailplanet.backend.products.native:latest
-    links:
-      - kafka
-    environment:
-      KAFKA_SERVERS: kafka:9092
-
-  # UserAuth-Service
-  userauth:
-    image: images.conceptive.io/retailplanet.backend.userauth.native:latest
     links:
       - kafka
     environment:

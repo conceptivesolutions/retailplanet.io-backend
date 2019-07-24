@@ -1,6 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="businessapi" type="JarApplication" folderName="w/o maven">
     <option name="JAR_PATH" value="$PROJECT_DIR$/services/businessapi/target/businessapi-2.0-SNAPSHOT-runner.jar" />
+    <option name="VM_PARAMETERS" value="-Dquarkus.http.port=8081 " />
     <option name="PROGRAM_PARAMETERS" value="$PROJECT_DIR$/services/businessapi/target/classes $PROJECT_DIR$/services/businessapi/target/wiring-classes" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/services/businessapi" />
     <option name="ALTERNATIVE_JRE_PATH" />
