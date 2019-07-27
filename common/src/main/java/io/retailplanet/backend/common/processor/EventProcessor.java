@@ -1,6 +1,5 @@
 package io.retailplanet.backend.common.processor;
 
-import io.retailplanet.backend.common.events.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.processing.*;
@@ -83,7 +82,7 @@ public class EventProcessor extends AbstractProcessor
   @NotNull
   private List<_IncomingEvent> _createDefaultIncomingEvents()
   {
-    return Collections.singletonList(new _IncomingEvent("ERRORS_IN", "ERRORS", "latest", EventDeserializer.class.getName()));
+    return Collections.singletonList(new _IncomingEvent("ERRORS_IN", "ERRORS", "latest", "io.retailplanet.backend.common.events.EventDeserializer"));
   }
 
   /**
@@ -92,7 +91,7 @@ public class EventProcessor extends AbstractProcessor
   @NotNull
   private List<_OutgoingEvent> _createDefaultOutgoingEvents()
   {
-    return Collections.singletonList(new _OutgoingEvent("ERRORS_OUT", "ERRORS", EventSerializer.class.getName()));
+    return Collections.singletonList(new _OutgoingEvent("ERRORS_OUT", "ERRORS", "io.retailplanet.backend.common.events.EventSerializer"));
   }
 
   /**
