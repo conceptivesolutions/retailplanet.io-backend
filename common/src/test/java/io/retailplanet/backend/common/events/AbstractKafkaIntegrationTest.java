@@ -29,7 +29,7 @@ public abstract class AbstractKafkaIntegrationTest
   private static final AtomicReference<KafkaProducer<String, AbstractEvent<?>>> _PRODUCER = new AtomicReference<>();
 
   @ConfigProperty(name = "retailplanet.service.group.id")
-  private String serviceID;
+  public String serviceID;
 
   /**
    * Sends a message to kafka
