@@ -37,7 +37,7 @@ public abstract class AbstractKafkaIntegrationTest
    * @param pEventName Name of the event
    * @param pEvent     Event
    */
-  protected void send(@NotNull String pEventName, @NotNull AbstractEvent<?> pEvent)
+  protected void send(@NotNull String pEventName, @Nullable AbstractEvent<?> pEvent)
   {
     try
     {
@@ -66,7 +66,7 @@ public abstract class AbstractKafkaIntegrationTest
    * @return the result (can be <tt>null</tt>, if the result was <tt>null</tt>)
    */
   @Nullable
-  protected <T extends AbstractEvent<T>> T send(@NotNull String pEventName, @NotNull AbstractEvent<?> pEvent, @NotNull Value<T> pEventSupplier)
+  protected <T extends AbstractEvent<T>> T send(@NotNull String pEventName, @Nullable AbstractEvent<?> pEvent, @NotNull Value<T> pEventSupplier)
   {
     try
     {
@@ -75,7 +75,7 @@ public abstract class AbstractKafkaIntegrationTest
       for (int i = 0; i < (_RECEIVE_TIMEOUT_MS / _RECEIVE_WAIT_MS); i++)
       {
         T value = pEventSupplier.getValue();
-        if (pEventSupplier.isValueSet() && (value == null || Objects.equals(pEvent.chainID, value.chainID))) //validate chainID
+        if (pEventSupplier.isValueSet() && (pEvent != null && (value == null || Objects.equals(pEvent.chainID, value.chainID)))) //validate chainID
           return pEventSupplier.getValueAndReset();
 
         Thread.sleep(_RECEIVE_WAIT_MS);
