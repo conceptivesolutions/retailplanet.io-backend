@@ -11,7 +11,7 @@ import org.jetbrains.annotations.*;
 import org.slf4j.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 /**
@@ -126,6 +126,7 @@ public abstract class AbstractKafkaIntegrationTest
       try
       {
         long startTime = System.currentTimeMillis();
+        int retryCount = 0;
 
         while (true)
         {
@@ -145,9 +146,10 @@ public abstract class AbstractKafkaIntegrationTest
                 break;
             }
           }
-          catch (CoordinatorNotAvailableException cnae)
+          catch (ExecutionException e)
           {
-            // ignore
+            if (retryCount++ > 3 || !(e.getCause() != null && e.getCause() instanceof CoordinatorNotAvailableException)) // ignore CoordinatorExceptions
+              throw e;
           }
 
           // next run
