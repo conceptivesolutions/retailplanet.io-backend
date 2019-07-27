@@ -42,7 +42,8 @@ public class ProductsService
     eventFacade.trace(pEvent, () -> {
       String clientID = pEvent.clientID;
       byte[] binContent = pEvent.content;
-      if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID))
+      String sessionToken = pEvent.session_token; //todo validate session token
+      if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID) || Utility.isNullOrEmptyTrimmedString(sessionToken))
         return;
 
       try
@@ -68,8 +69,6 @@ public class ProductsService
       {
         eventFacade.notifyError(pEvent, "Failed to upsert product", e);
       }
-
-      return;
     });
   }
 
