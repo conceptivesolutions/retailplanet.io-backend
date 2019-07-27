@@ -5,22 +5,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>io.retailplanet.backend</groupId>
-    <artifactId>backend-parent</artifactId>
+    <groupId>io.retailplanet.backend.services</groupId>
+    <artifactId>services</artifactId>
     <version>2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>elasticsearch</artifactId>
-  <name>retailplanet.io: ElasticSearch</name>
+  <name>retailplanet.io: Service: ElasticSearch</name>
 
   <dependencies>
-    <!-- Retailplanet: Common -->
-    <dependency>
-      <groupId>io.retailplanet.backend</groupId>
-      <artifactId>common</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
     <!-- Elasticsearch Client -->
     <dependency>
       <groupId>io.quarkus</groupId>
