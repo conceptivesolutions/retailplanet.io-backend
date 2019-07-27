@@ -86,7 +86,7 @@ public abstract class AbstractKafkaIntegrationTest
     }
 
     // Fail
-    throw new RuntimeException("Result was not received within timeout");
+    throw new NoEventReceivedException("Result was not received within timeout");
   }
 
   /**
