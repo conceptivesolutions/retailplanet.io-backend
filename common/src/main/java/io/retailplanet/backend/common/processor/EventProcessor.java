@@ -130,7 +130,7 @@ public class EventProcessor extends AbstractProcessor
   {
     URI targetFolderUri = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "nothing").toUri();
     File moduleFolder = new File(targetFolderUri).getParentFile().getParentFile().getParentFile();
-    File propertiesFile = new File(moduleFolder, "src/main/resources/application.properties");
+    File propertiesFile = new File(moduleFolder, "src/main/resources/_application.properties");
     if(!propertiesFile.exists())
       return "";
     return String.join("\n", Files.readAllLines(propertiesFile.toPath()));
