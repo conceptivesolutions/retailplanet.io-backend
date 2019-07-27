@@ -13,7 +13,7 @@ import java.util.Map;
  * @author w.glanzer, 20.06.2019
  */
 @RegisterForReflection
-public class EventSerializer implements Serializer<AbstractEvent>
+public class EventSerializer implements Serializer<AbstractEvent<?>>
 {
 
   static final String _EVENT_TYPE_KEY = "_eventtype";

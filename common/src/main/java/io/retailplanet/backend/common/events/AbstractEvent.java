@@ -5,6 +5,7 @@ import io.opentracing.*;
 import io.opentracing.propagation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.reactivex.*;
+import io.retailplanet.backend.common.util.Utility;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 @RegisterForReflection
 public abstract class AbstractEvent<S extends AbstractEvent<S>>
 {
+  private static final boolean _TRACE_ENABLED = !Utility.isNullOrEmptyTrimmedString(System.getenv("OPENTRACING_SERVERS"));
   private static final String _REFERENCE_TYPE_KEY = "__REF_TYPE";
 
   @JsonProperty
@@ -51,6 +53,9 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
    */
   void startTrace(@NotNull Tracer pTracer)
   {
+    if (!_TRACE_ENABLED)
+      return;
+
     Tracer.SpanBuilder builder = pTracer.buildSpan(getClass().getSimpleName());
     if (traceContext != null)
     {
@@ -72,6 +77,9 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
    */
   void injectCurrentTrace(@NotNull Tracer pTracer)
   {
+    if (!_TRACE_ENABLED)
+      return;
+
     traceContext = new HashMap<>();
 
     Span span = pTracer.activeSpan();
@@ -87,6 +95,9 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
    */
   void finishTrace()
   {
+    if (!_TRACE_ENABLED)
+      return;
+
     if (computingSpan != null)
       computingSpan.finish();
   }
