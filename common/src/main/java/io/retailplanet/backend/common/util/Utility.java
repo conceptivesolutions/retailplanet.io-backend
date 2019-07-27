@@ -23,6 +23,14 @@ public class Utility
   }
 
   /**
+   * @return Returns <tt>true</tt> if the current running unit test runs in DEV mode
+   */
+  public static boolean isUnitTestDevMode()
+  {
+    return System.getProperty("intellij.debug.agent", "").equalsIgnoreCase("true");
+  }
+
+  /**
    * Determines if the given string is null or an emptry trimmed string
    *
    * @param pString String to check

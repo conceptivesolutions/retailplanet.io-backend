@@ -23,10 +23,10 @@ public abstract class AbstractKafkaIntegrationTest
 {
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(AbstractKafkaIntegrationTest.class);
-  private static final int _RECEIVE_TIMEOUT_MS = 10000;
+  private static final int _RECEIVE_TIMEOUT_MS = 2500;
   private static final int _RECEIVE_WAIT_MS = 250;
-  private final AtomicBoolean running = new AtomicBoolean();
-  private final AtomicReference<KafkaProducer<String, AbstractEvent<?>>> producer = new AtomicReference<>();
+  private static final AtomicBoolean _RUNNING = new AtomicBoolean();
+  private static final AtomicReference<KafkaProducer<String, AbstractEvent<?>>> _PRODUCER = new AtomicReference<>();
 
   @ConfigProperty(name = "retailplanet.service.group.id")
   private String serviceID;
@@ -46,7 +46,7 @@ public abstract class AbstractKafkaIntegrationTest
         throw new IllegalArgumentException("topic " + pEventName + " is not valid");
 
       getProducer()
-          .send(new ProducerRecord<>(pEventName, pEvent))
+          .send(new ProducerRecord<>(topic, pEvent))
           .get(5, TimeUnit.SECONDS);
     }
     catch (Exception e)
@@ -66,7 +66,7 @@ public abstract class AbstractKafkaIntegrationTest
    * @return the result (can be <tt>null</tt>, if the result was <tt>null</tt>)
    */
   @Nullable
-  protected <T> T send(@NotNull String pEventName, @NotNull AbstractEvent<?> pEvent, @NotNull Value<T> pEventSupplier)
+  protected <T extends AbstractEvent<T>> T send(@NotNull String pEventName, @NotNull AbstractEvent<?> pEvent, @NotNull Value<T> pEventSupplier)
   {
     try
     {
@@ -74,7 +74,8 @@ public abstract class AbstractKafkaIntegrationTest
 
       for (int i = 0; i < (_RECEIVE_TIMEOUT_MS / _RECEIVE_WAIT_MS); i++)
       {
-        if (pEventSupplier.isValueSet())
+        T value = pEventSupplier.getValue();
+        if (pEventSupplier.isValueSet() && (value == null || Objects.equals(pEvent.chainID, value.chainID))) //validate chainID
           return pEventSupplier.getValueAndReset();
 
         Thread.sleep(_RECEIVE_WAIT_MS);
@@ -97,13 +98,13 @@ public abstract class AbstractKafkaIntegrationTest
   {
     awaitServiceRunning();
 
-    synchronized (producer)
+    synchronized (_PRODUCER)
     {
-      KafkaProducer<String, AbstractEvent<?>> prod = producer.get();
+      KafkaProducer<String, AbstractEvent<?>> prod = _PRODUCER.get();
       if (prod == null)
       {
         prod = getResource().getKafkaTestUtils().getKafkaProducer(StringSerializer.class, EventSerializer.class);
-        producer.set(prod);
+        _PRODUCER.set(prod);
       }
 
       return prod;
@@ -115,10 +116,10 @@ public abstract class AbstractKafkaIntegrationTest
    */
   protected void awaitServiceRunning()
   {
-    synchronized (running)
+    synchronized (_RUNNING)
     {
       // Already running
-      if (running.get())
+      if (_RUNNING.get())
         return;
 
       AdminClient adminClient = getResource().getKafkaTestUtils().getAdminClient();
@@ -156,7 +157,7 @@ public abstract class AbstractKafkaIntegrationTest
           Thread.sleep(_RECEIVE_WAIT_MS);
         }
 
-        running.set(true);
+        _RUNNING.set(true);
 
         // Wait for assignment propagation inside quarkus (really necessary? Just to be safe...)
         Thread.sleep(_RECEIVE_WAIT_MS);
