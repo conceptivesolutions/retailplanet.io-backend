@@ -151,7 +151,7 @@
 
     <!-- Native is a profile to compile quarkus instances with GRAAL_VM to native executables -->
     <profile>
-      <id>native</id>
+      <id>build.native</id>
       <build>
         <plugins>
           <plugin>

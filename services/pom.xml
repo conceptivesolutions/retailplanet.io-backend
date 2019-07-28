@@ -15,16 +15,6 @@
   <name>retailplanet.io: Services</name>
   <packaging>pom</packaging>
 
-  <modules>
-    <module>businessapi</module>
-    <module>businesstoken</module>
-    <module>elasticsearch</module>
-    <module>markets</module>
-    <module>products</module>
-    <module>search</module>
-    <module>userauth</module>
-  </modules>
-
   <dependencies>
     <!-- Retailplanet: Common -->
     <dependency>
@@ -52,5 +42,31 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>build.jvm</id>
+      <modules>
+        <module>businessapi</module>
+        <module>businesstoken</module>
+        <module>elasticsearch</module>
+        <module>markets</module>
+        <module>products</module>
+        <module>search</module>
+        <module>userauth</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>build.native</id>
+      <modules>
+        <module>businessapi</module>
+        <module>elasticsearch</module>
+        <module>markets</module>
+        <module>products</module>
+        <module>search</module>
+        <module>userauth</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>
