@@ -3,9 +3,10 @@ package io.retailplanet.backend.common.events;
 import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
 import io.retailplanet.backend.common.util.Value;
 import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.errors.CoordinatorNotAvailableException;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.serialization.*;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jetbrains.annotations.*;
 import org.slf4j.*;
@@ -72,14 +73,30 @@ public abstract class AbstractKafkaIntegrationTest
     {
       send(pEventName, pEvent);
 
+      // Poll events
       for (int i = 0; i < (_RECEIVE_TIMEOUT_MS / _RECEIVE_WAIT_MS); i++)
       {
         T value = pEventSupplier.getValue();
+
+        // Valid response?
         if (pEventSupplier.isValueSet() && (pEvent != null && (value == null || Objects.equals(pEvent.chainID, value.chainID)))) //validate chainID
           return pEventSupplier.getValueAndReset();
 
+        // Error event?
+        if (pEvent != null)
+        {
+          ErrorEvent errorEvent = _findErrorEvent(pEvent.chainID);
+          if (errorEvent != null)
+            throw new ErrorEventReceivedException(errorEvent);
+        }
+
         Thread.sleep(_RECEIVE_WAIT_MS);
       }
+    }
+    catch (ErrorEventReceivedException e)
+    {
+      // Do not catch, just rethrow
+      throw e;
     }
     catch (Exception e)
     {
@@ -204,6 +221,31 @@ public abstract class AbstractKafkaIntegrationTest
     else if (pEventName.endsWith("_OUT"))
       return pEventName.substring(0, pEventName.length() - 4);
     return pEventName;
+  }
+
+  /**
+   * Searches the Kafka EventStream "ERRORS" for new error messages, caused by our chainID
+   *
+   * @param pChainID ChainID to filter events
+   * @return the first ErrorEvent found for this chainID
+   */
+  @Nullable
+  private ErrorEvent _findErrorEvent(@NotNull String pChainID)
+  {
+    try
+    {
+      return getResource().getKafkaTestUtils().consumeAllRecordsFromTopic("ERRORS", StringDeserializer.class, EventDeserializer.class)
+          .stream()
+          .map(ConsumerRecord::value)
+          .filter(pEvent -> pEvent instanceof ErrorEvent && pChainID.equals(pEvent.chainID))
+          .map(ErrorEvent.class::cast)
+          .findFirst()
+          .orElse(null);
+    }
+    catch (Exception e)
+    {
+      return null;
+    }
   }
 
 }
