@@ -1,0 +1,12 @@
+# IntelliJ
+/.idea/*
+!/.idea/codeStyles
+*.ipr
+*.iml
+*.iws
+
+# Maven
+target
+
+# PostgreSQL
+.postgresql
