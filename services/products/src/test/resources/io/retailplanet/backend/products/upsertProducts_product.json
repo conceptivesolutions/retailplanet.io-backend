@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Testprodukt1",
+    "id": "TESTID1",
+    "category": "test",
+    "url": "http://localhost/test",
+    "price": 14,
+    "previews": [
+      "1",
+      "3"
+    ],
+    "availability": {
+      "market1": {
+        "type": "AVAILABLE",
+        "quantity": 2
+      },
+      "market2": {
+        "type": "NOT_AVAILABLE"
+      }
+    }
+  },
+  {
+    "name": "Testprodukt3",
+    "id": "TESTID3",
+    "category": "test",
+    "url": "http://localhost/test",
+    "price": 14,
+    "previews": [
+      "1kjhkjhkjh",
+      "3ewqewqewq"
+    ],
+    "availability": {
+      "market555": {
+        "type": "AVAILABLE",
+        "quantity": 9999
+      },
+      "market1": {
+        "type": "NOT_AVAILABLE"
+      }
+    }
+  }
+]
