@@ -25,14 +25,15 @@ import java.util.UUID;
 public class IntegrationTest_ProductsService extends AbstractKafkaIntegrationTest
 {
   @RegisterExtension
+  @SuppressWarnings("WeakerAccess")
   public static final SharedKafkaTestResource sharedKafkaTestResource = new ServiceKafkaTestResource();
   private static final String _UPSERT_CONTENT = FileUtility.toString(IntegrationTest_ProductsService.class.getResource("upsertProducts_product.json"));
 
   @Inject
-  public MockedEventFacade eventFacade;
+  private MockedEventFacade eventFacade;
 
   @Test
-  public void testProductUpsertEvent()
+  void testProductUpsertEvent()
   {
     ProductUpsertEvent event = _createUpsertEvent();
     DocumentUpsertEvent result = send(IEvents.IN_PRODUCTS_UPSERT, event, eventFacade.getDocumentUpsertEvent());
@@ -44,13 +45,13 @@ public class IntegrationTest_ProductsService extends AbstractKafkaIntegrationTes
   }
 
   @Test
-  public void testProductUpsertEvent_null()
+  void testProductUpsertEvent_null()
   {
     Assertions.assertThrows(NoEventReceivedException.class, () -> send(IEvents.IN_PRODUCTS_UPSERT, null, eventFacade.getDocumentUpsertEvent()));
   }
 
   @Test
-  public void testProductUpsertEvent_invalidContent()
+  void testProductUpsertEvent_invalidContent()
   {
     Assertions.assertThrows(NoEventReceivedException.class, () -> send(IEvents.IN_PRODUCTS_UPSERT, _createUpsertEvent().content(null), eventFacade.getDocumentUpsertEvent()));
     Assertions.assertThrows(NoEventReceivedException.class, () -> send(IEvents.IN_PRODUCTS_UPSERT, _createUpsertEvent().content(new byte[0]), eventFacade.getDocumentUpsertEvent()));
@@ -58,14 +59,14 @@ public class IntegrationTest_ProductsService extends AbstractKafkaIntegrationTes
   }
 
   @Test
-  public void testProductUpsertEvent_invalidSessionToken()
+  void testProductUpsertEvent_invalidSessionToken()
   {
     Assertions.assertThrows(NoEventReceivedException.class, () -> send(IEvents.IN_PRODUCTS_UPSERT, _createUpsertEvent().session_token(null), eventFacade.getDocumentUpsertEvent()));
     Assertions.assertThrows(NoEventReceivedException.class, () -> send(IEvents.IN_PRODUCTS_UPSERT, _createUpsertEvent().session_token(" "), eventFacade.getDocumentUpsertEvent()));
   }
 
   @Test
-  public void testProductUpsertEvent_invalidClientID()
+  void testProductUpsertEvent_invalidClientID()
   {
     Assertions.assertThrows(NoEventReceivedException.class, () -> send(IEvents.IN_PRODUCTS_UPSERT, _createUpsertEvent().clientID(null), eventFacade.getDocumentUpsertEvent()));
     Assertions.assertThrows(NoEventReceivedException.class, () -> send(IEvents.IN_PRODUCTS_UPSERT, _createUpsertEvent().clientID(" "), eventFacade.getDocumentUpsertEvent()));
