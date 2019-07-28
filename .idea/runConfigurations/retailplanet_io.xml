@@ -1,14 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="retailplanet.io" type="Multirun" factoryName="Multirun" separateTabs="false" startOneByOne="false" markFailedProcess="false" hideSuccessProcess="true" delayTime="0">
-    <runConfiguration name="elastic" type="JAR Application" />
-    <runConfiguration name="search" type="JAR Application" />
-    <runConfiguration name="businesstoken" type="JAR Application" />
-    <runConfiguration name="markets" type="JAR Application" />
-    <runConfiguration name="userauth" type="JAR Application" />
-    <runConfiguration name="products" type="JAR Application" />
-    <runConfiguration name="businessapi" type="JAR Application" />
-    <method v="2">
-      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="clean install quarkus:build" />
-    </method>
+  <configuration default="false" name="retailplanet.io" type="CompoundRunConfigurationType">
+    <toRun name="elastic (build)" type="JarApplication" />
+    <toRun name="markets (build)" type="JarApplication" />
+    <toRun name="businessapi (build)" type="JarApplication" />
+    <toRun name="userauth (build)" type="JarApplication" />
+    <toRun name="search (build)" type="JarApplication" />
+    <toRun name="products (build)" type="JarApplication" />
+    <toRun name="businesstoken (build)" type="JarApplication" />
+    <method v="2" />
   </configuration>
 </component>

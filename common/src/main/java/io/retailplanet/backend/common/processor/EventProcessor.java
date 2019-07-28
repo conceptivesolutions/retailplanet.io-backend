@@ -159,7 +159,6 @@ public class EventProcessor extends AbstractProcessor
     map.put("quarkus.jaeger.service-name", pContainer.groupID);
     map.put("quarkus.jaeger.sampler-type", "const");
     map.put("quarkus.jaeger.sampler-param", "1");
-    map.put("quarkus.jaeger.endpoint", "${OPENTRACING_SERVERS:localhost}");
     map.put("mp.opentracing.server.operation-name-provider", "http-path");
 
     pIncomingEvents.forEach(pEv -> map.putAll(pEv.toMap(pContainer.groupID, defaultValues)));

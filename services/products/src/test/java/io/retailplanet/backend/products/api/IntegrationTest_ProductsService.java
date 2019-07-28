@@ -1,4 +1,4 @@
-package io.retailplanet.backend.products;
+package io.retailplanet.backend.products.api;
 
 import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
 import io.quarkus.test.junit.QuarkusTest;
