@@ -44,7 +44,10 @@ public class ProductsService
       byte[] binContent = pEvent.content;
       String sessionToken = pEvent.session_token; //todo validate session token
       if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID) || Utility.isNullOrEmptyTrimmedString(sessionToken))
+      {
+        eventFacade.notifyError(pEvent, "Invalid Event");
         return;
+      }
 
       try
       {
