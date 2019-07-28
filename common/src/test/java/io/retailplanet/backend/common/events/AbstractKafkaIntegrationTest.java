@@ -24,7 +24,7 @@ public abstract class AbstractKafkaIntegrationTest
 {
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(AbstractKafkaIntegrationTest.class);
-  private static final int _RECEIVE_TIMEOUT_MS = 2500;
+  private static final int _RECEIVE_RETRY_COUNT = 10;
   private static final int _RECEIVE_WAIT_MS = 250;
   private static final AtomicBoolean _RUNNING = new AtomicBoolean();
   private static final AtomicReference<KafkaProducer<String, AbstractEvent<?>>> _PRODUCER = new AtomicReference<>();
@@ -74,7 +74,7 @@ public abstract class AbstractKafkaIntegrationTest
       send(pEventName, pEvent);
 
       // Poll events
-      for (int i = 0; i < (_RECEIVE_TIMEOUT_MS / _RECEIVE_WAIT_MS); i++)
+      for (int i = 0; i < _RECEIVE_RETRY_COUNT; i++)
       {
         T value = pEventSupplier.getValue();
 
