@@ -2,6 +2,7 @@ package io.retailplanet.backend.common.events;
 
 import io.opentracing.Tracer;
 import io.reactivex.*;
+import io.retailplanet.backend.common.events.exceptions.ErrorEventException;
 import io.smallrye.reactive.messaging.annotations.Emitter;
 import io.smallrye.reactive.messaging.annotations.*;
 import org.jetbrains.annotations.*;
@@ -38,13 +39,26 @@ public abstract class AbstractEventFacade implements IAbstractEventFacade
   }
 
   @Override
+  public void notifyError(@Nullable AbstractEvent<?> pSourceEvent, @NotNull String pMessage)
+  {
+    ErrorEvent event = pSourceEvent == null ? new ErrorEvent() : pSourceEvent.createAnswer(ErrorEvent.class);
+    event = event.error(new Exception(pMessage));
+
+    // log
+    LoggerFactory.getLogger(getClass()).error("ErrorEvent was raised", new ErrorEventException(pMessage));
+
+    // send
+    errorsEmitter.send(event);
+  }
+
+  @Override
   public void notifyError(@Nullable AbstractEvent<?> pSourceEvent, @NotNull String pMessage, @NotNull Throwable pThrowable)
   {
     ErrorEvent event = pSourceEvent == null ? new ErrorEvent() : pSourceEvent.createAnswer(ErrorEvent.class);
     event = event.error(new Exception(pMessage, pThrowable));
 
     // log
-    LoggerFactory.getLogger(getClass()).error(pMessage, pThrowable);
+    LoggerFactory.getLogger(getClass()).error("ErrorEvent was raised", new ErrorEventException(pMessage, pThrowable));
 
     // send
     errorsEmitter.send(event);
