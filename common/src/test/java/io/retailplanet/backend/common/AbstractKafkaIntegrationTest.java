@@ -1,6 +1,7 @@
-package io.retailplanet.backend.common.events;
+package io.retailplanet.backend.common;
 
 import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
+import io.retailplanet.backend.common.events.*;
 import io.retailplanet.backend.common.util.Value;
 import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -79,8 +80,16 @@ public abstract class AbstractKafkaIntegrationTest
         T value = pEventSupplier.getValue();
 
         // Valid response?
-        if (pEventSupplier.isValueSet() && (pEvent != null && (value == null || Objects.equals(pEvent.chainID, value.chainID)))) //validate chainID
-          return pEventSupplier.getValueAndReset();
+        if (pEventSupplier.isValueSet())
+        {
+          Boolean validChainID = pEvent != null && value != null ? Objects.equals(pEvent.chainID, value.chainID) : null;
+          if (validChainID == null || validChainID)
+            // chainID is valid
+            return pEventSupplier.getValueAndReset();
+          else
+            // chainID invalid
+            _LOGGER.warn("Received event with unexpected chainID (should: " + pEvent.chainID + " but was " + value.chainID + ")");
+        }
 
         // Error event?
         if (pEvent != null)

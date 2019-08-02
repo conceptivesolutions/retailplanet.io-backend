@@ -2,6 +2,7 @@ package io.retailplanet.backend.products.api;
 
 import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.retailplanet.backend.common.*;
 import io.retailplanet.backend.common.events.*;
 import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
 import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
