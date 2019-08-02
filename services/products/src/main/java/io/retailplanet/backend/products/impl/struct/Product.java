@@ -106,10 +106,11 @@ public class Product
     if (additionalInfos != null)
       productObj.put(ADDITIONAL_INFO, additionalInfos);
 
-    productObj.put(AVAILABILITY, availability.entrySet().stream()
-        .map(pEntry -> pEntry.getValue().toJSON()
-            .put(IIndexStructure.IAvailability.MARKETID, pEntry.getKey()))
-        .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
+    if (availability != null)
+      productObj.put(AVAILABILITY, availability.entrySet().stream()
+          .map(pEntry -> pEntry.getValue().toJSON()
+              .put(IIndexStructure.IAvailability.MARKETID, pEntry.getKey()))
+          .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
 
     return productObj;
   }
@@ -131,7 +132,7 @@ public class Product
     product.created = index.getInteger(UPDATED, 0);
     product.url = index.getString(URL);
     product.category = index.getString(CATEGORY);
-    product.previews = index.getJsonArray(PREVIEWS).getList();
+    product.previews = index.getJsonArray(PREVIEWS, new JsonArray()).getList();
     product.additionalInfos = (Map) index.getJsonObject(ADDITIONAL_INFO, new JsonObject()).getMap();
     product.availability = index.getJsonArray(AVAILABILITY, new JsonArray()).stream()
         .map(JsonObject.class::cast)

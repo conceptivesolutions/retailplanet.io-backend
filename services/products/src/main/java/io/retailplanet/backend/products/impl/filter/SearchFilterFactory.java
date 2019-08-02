@@ -29,7 +29,9 @@ class SearchFilterFactory implements ISearchFilterFactory
       {
         case "geo":
           List<Object> arguments = (List<Object>) pArgumentObject;
-          return new GeoSearchFilter(eventFacade, Collections.singletonList(ProductAvailability.TYPE.AVAILABLE), (double) arguments.get(0), (double) arguments.get(1), (int) arguments.get(2)); //todo availability
+          return new GeoSearchFilter(eventFacade, Collections.singletonList(ProductAvailability.TYPE.AVAILABLE),
+                                     Double.parseDouble(String.valueOf(arguments.get(0))), Double.parseDouble(String.valueOf(arguments.get(1))),
+                                     Integer.parseInt(String.valueOf(arguments.get(2)))); //todo availability
 
         default:
           throw new IllegalArgumentException("Type " + pType + " as search filter not found");

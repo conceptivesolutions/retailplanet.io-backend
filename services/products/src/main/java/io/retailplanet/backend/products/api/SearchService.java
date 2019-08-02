@@ -2,6 +2,7 @@ package io.retailplanet.backend.products.api;
 
 import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
 import io.retailplanet.backend.common.events.search.*;
+import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.products.impl.events.*;
 import io.retailplanet.backend.products.impl.filter.*;
 import io.retailplanet.backend.products.impl.struct.*;
@@ -43,6 +44,13 @@ public class SearchService
       return;
 
     eventFacade.trace(pEvent, () -> {
+      // validate event
+      if (Utility.isNullOrEmptyTrimmedString(pEvent.query) || pEvent.offset == null || pEvent.length == null)
+      {
+        eventFacade.notifyError(pEvent, "Invalid Event");
+        return;
+      }
+
       // Build request
       DocumentSearchEvent searchEvent = pEvent.createAnswer(DocumentSearchEvent.class)
           .indices(IIndexStructure.INDEX_TYPE)
@@ -52,7 +60,7 @@ public class SearchService
 
       // send
       eventFacade.sendDocumentSearchEvent(searchEvent)
-          .map(pResult -> pResult.createAnswer(SearchProductsResultEvent.class)
+          .map(pResult -> pEvent.createAnswer(SearchProductsResultEvent.class)
               .filters(new HashMap<>())
               .maxSize(pResult.count())
               .elements(pResult.hits().stream()
