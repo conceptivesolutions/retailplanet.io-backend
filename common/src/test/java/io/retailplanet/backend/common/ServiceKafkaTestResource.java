@@ -1,4 +1,4 @@
-package io.retailplanet.backend.common.events;
+package io.retailplanet.backend.common;
 
 import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
 import org.jetbrains.annotations.NotNull;
@@ -18,9 +18,14 @@ public class ServiceKafkaTestResource extends SharedKafkaTestResource
   @Override
   public void beforeAll(ExtensionContext context) throws Exception
   {
+    // Shut up kafka / zookeeper!
+    System.setProperty("quarkus.log.category.\"kafka\".level", "SEVERE");
+    System.setProperty("quarkus.log.category.\"org.apache.zookeeper.server\".level", "SEVERE");
+
     super.beforeAll(context);
 
     _setEnvVariable("KAFKA_SERVERS", getKafkaConnectString());
+    _setEnvVariable("LOG_LEVEL", "SEVERE");
   }
 
   /**
