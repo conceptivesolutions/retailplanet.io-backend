@@ -1,17 +1,18 @@
 package io.retailplanet.backend.common;
 
-import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
 import io.retailplanet.backend.common.events.*;
 import io.retailplanet.backend.common.util.Value;
 import org.apache.kafka.clients.admin.*;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.errors.CoordinatorNotAvailableException;
 import org.apache.kafka.common.serialization.*;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jetbrains.annotations.*;
+import org.junit.jupiter.api.*;
 import org.slf4j.*;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -23,15 +24,61 @@ import java.util.concurrent.atomic.*;
  */
 public abstract class AbstractKafkaIntegrationTest
 {
-
   private static final Logger _LOGGER = LoggerFactory.getLogger(AbstractKafkaIntegrationTest.class);
   private static final int _RECEIVE_RETRY_COUNT = 10;
   private static final int _RECEIVE_WAIT_MS = 250;
   private static final AtomicBoolean _RUNNING = new AtomicBoolean();
-  private static final AtomicReference<KafkaProducer<String, AbstractEvent<?>>> _PRODUCER = new AtomicReference<>();
+  private static final AtomicReference<KafkaProducer<String, AbstractEvent>> _PRODUCER_REF = new AtomicReference<>();
+  private static final AtomicReference<AdminClient> _ADMINCLIENT_REF = new AtomicReference<>();
+  private static final Map<String, ErrorEvent> _ERRORS = new HashMap<>();
 
   @ConfigProperty(name = "retailplanet.service.group.id")
   private String serviceID;
+
+  @BeforeEach
+  void setUp()
+  {
+    String kafka_servers = System.getProperty("KAFKA_SERVERS");
+
+    // Build Admin Client
+    if (_ADMINCLIENT_REF.get() == null)
+    {
+      Map<String, Object> properties = new HashMap<>();
+      properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka_servers);
+      _ADMINCLIENT_REF.set(AdminClient.create(properties));
+    }
+
+    // Build Producer
+    if (_PRODUCER_REF.get() == null)
+    {
+      Map<String, Object> properties = new HashMap<>();
+      properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka_servers);
+      _PRODUCER_REF.set(new KafkaProducer<>(properties, new StringSerializer(), new EventSerializer()));
+    }
+
+    // Build error consumer
+    Map<String, Object> properties = new HashMap<>();
+    properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka_servers);
+    properties.put(ConsumerConfig.GROUP_ID_CONFIG, "error-consumer");
+    KafkaConsumer<String, AbstractEvent> consumer = new KafkaConsumer<>(properties, new StringDeserializer(), new EventDeserializer());
+    consumer.subscribe(Collections.singletonList("ERRORS"));
+
+    // Read error strean
+    CompletableFuture.runAsync(() -> {
+      while (!Thread.currentThread().isInterrupted())
+        consumer.poll(Duration.ofMillis(250))
+            .records("ERRORS")
+            .forEach(pRecord -> {
+              AbstractEvent event = pRecord.value();
+              assert event instanceof ErrorEvent;
+              _ERRORS.put(event.chainID, (ErrorEvent) event);
+            });
+    }, Executors.newSingleThreadExecutor())
+        .whenComplete((pVoid, pEx) -> {
+          if (pEx != null)
+            Assertions.fail(pEx);
+        });
+  }
 
   /**
    * Sends a message to kafka
@@ -47,7 +94,11 @@ public abstract class AbstractKafkaIntegrationTest
       if (topic == null)
         throw new IllegalArgumentException("topic " + pEventName + " is not valid");
 
-      getProducer()
+      // only if running
+      _awaitServiceRunning();
+
+      // send
+      _PRODUCER_REF.get()
           .send(new ProducerRecord<>(topic, pEvent))
           .get(5, TimeUnit.SECONDS);
     }
@@ -94,7 +145,7 @@ public abstract class AbstractKafkaIntegrationTest
         // Error event?
         if (pEvent != null)
         {
-          ErrorEvent errorEvent = _findErrorEvent(pEvent.chainID);
+          ErrorEvent errorEvent = _ERRORS.get(pEvent.chainID);
           if (errorEvent != null)
             throw new ErrorEventReceivedException(errorEvent);
         }
@@ -117,30 +168,9 @@ public abstract class AbstractKafkaIntegrationTest
   }
 
   /**
-   * @return Producer which can send messages to the underlying kafka system
-   */
-  @NotNull
-  protected KafkaProducer<String, AbstractEvent<?>> getProducer()
-  {
-    awaitServiceRunning();
-
-    synchronized (_PRODUCER)
-    {
-      KafkaProducer<String, AbstractEvent<?>> prod = _PRODUCER.get();
-      if (prod == null)
-      {
-        prod = getResource().getKafkaTestUtils().getKafkaProducer(StringSerializer.class, EventSerializer.class);
-        _PRODUCER.set(prod);
-      }
-
-      return prod;
-    }
-  }
-
-  /**
    * Blocking method to check, if there are all services up and running correctly
    */
-  protected void awaitServiceRunning()
+  private void _awaitServiceRunning()
   {
     synchronized (_RUNNING)
     {
@@ -148,7 +178,7 @@ public abstract class AbstractKafkaIntegrationTest
       if (_RUNNING.get())
         return;
 
-      AdminClient adminClient = getResource().getKafkaTestUtils().getAdminClient();
+      AdminClient adminClient = _ADMINCLIENT_REF.get();
 
       try
       {
@@ -159,9 +189,9 @@ public abstract class AbstractKafkaIntegrationTest
         {
           try
           {
-            ConsumerGroupDescription describedGroup = adminClient.describeConsumerGroups(Collections.singletonList(getServiceID()))
+            ConsumerGroupDescription describedGroup = adminClient.describeConsumerGroups(Collections.singletonList(_getServiceID()))
                 .describedGroups()
-                .get(getServiceID())
+                .get(_getServiceID())
                 .get();
 
             Collection<MemberDescription> members = describedGroup.members();
@@ -202,16 +232,10 @@ public abstract class AbstractKafkaIntegrationTest
    * @return the serviceID for the current service containing this IntegrationTest
    */
   @NotNull
-  protected String getServiceID()
+  private String _getServiceID()
   {
     return serviceID;
   }
-
-  /**
-   * @return The shared KafkaTestResource, to test against kafka backend
-   */
-  @NotNull
-  protected abstract SharedKafkaTestResource getResource();
 
   /**
    * Converts an event name to a kafka topic name
@@ -230,31 +254,6 @@ public abstract class AbstractKafkaIntegrationTest
     else if (pEventName.endsWith("_OUT"))
       return pEventName.substring(0, pEventName.length() - 4);
     return pEventName;
-  }
-
-  /**
-   * Searches the Kafka EventStream "ERRORS" for new error messages, caused by our chainID
-   *
-   * @param pChainID ChainID to filter events
-   * @return the first ErrorEvent found for this chainID
-   */
-  @Nullable
-  private ErrorEvent _findErrorEvent(@NotNull String pChainID)
-  {
-    try
-    {
-      return getResource().getKafkaTestUtils().consumeAllRecordsFromTopic("ERRORS", StringDeserializer.class, EventDeserializer.class)
-          .stream()
-          .map(ConsumerRecord::value)
-          .filter(pEvent -> pEvent instanceof ErrorEvent && pChainID.equals(pEvent.chainID))
-          .map(ErrorEvent.class::cast)
-          .findFirst()
-          .orElse(null);
-    }
-    catch (Exception e)
-    {
-      return null;
-    }
   }
 
 }

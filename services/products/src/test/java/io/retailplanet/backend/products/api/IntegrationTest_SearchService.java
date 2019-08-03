@@ -1,6 +1,6 @@
 package io.retailplanet.backend.products.api;
 
-import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.retailplanet.backend.common.*;
 import io.retailplanet.backend.common.events.*;
@@ -13,7 +13,7 @@ import io.retailplanet.backend.products.impl.struct.*;
 import io.vertx.core.json.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -26,12 +26,10 @@ import java.util.stream.Collectors;
  * @see io.retailplanet.backend.products.api.SearchService
  */
 @QuarkusTest
-public class IntegrationTest_SearchService extends AbstractKafkaIntegrationTest
+@Testcontainers
+@QuarkusTestResource(KafkaTestResource.class)
+class IntegrationTest_SearchService extends AbstractKafkaIntegrationTest
 {
-
-  @RegisterExtension
-  @SuppressWarnings("WeakerAccess")
-  public static final SharedKafkaTestResource sharedKafkaTestResource = new ServiceKafkaTestResource();
 
   @Inject
   private MockedEventFacade eventFacade;
@@ -84,13 +82,6 @@ public class IntegrationTest_SearchService extends AbstractKafkaIntegrationTest
     Assertions.assertThrows(ErrorEventReceivedException.class, () -> send(IEvents.IN_SEARCH_PRODUCTS, _createSearchProductsEvent().length(0), eventFacade.getDocumentUpsertEvent()));
     Assertions.assertThrows(ErrorEventReceivedException.class, () -> send(IEvents.IN_SEARCH_PRODUCTS, _createSearchProductsEvent().length(Integer.MIN_VALUE), eventFacade.getDocumentUpsertEvent()));
     Assertions.assertThrows(ErrorEventReceivedException.class, () -> send(IEvents.IN_SEARCH_PRODUCTS, _createSearchProductsEvent().length(Integer.MAX_VALUE), eventFacade.getDocumentUpsertEvent()));
-  }
-
-  @Override
-  @NotNull
-  protected SharedKafkaTestResource getResource()
-  {
-    return sharedKafkaTestResource;
   }
 
   @NotNull

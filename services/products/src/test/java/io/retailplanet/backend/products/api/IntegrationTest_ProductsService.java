@@ -1,6 +1,6 @@
 package io.retailplanet.backend.products.api;
 
-import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.retailplanet.backend.common.*;
 import io.retailplanet.backend.common.events.*;
@@ -11,7 +11,7 @@ import io.retailplanet.backend.products.impl.events.*;
 import io.retailplanet.backend.products.impl.struct.IIndexStructure;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.inject.Inject;
 import java.util.UUID;
@@ -23,11 +23,10 @@ import java.util.UUID;
  * @see io.retailplanet.backend.products.api.ProductsService
  */
 @QuarkusTest
-public class IntegrationTest_ProductsService extends AbstractKafkaIntegrationTest
+@Testcontainers
+@QuarkusTestResource(KafkaTestResource.class)
+class IntegrationTest_ProductsService extends AbstractKafkaIntegrationTest
 {
-  @RegisterExtension
-  @SuppressWarnings("WeakerAccess")
-  public static final SharedKafkaTestResource sharedKafkaTestResource = new ServiceKafkaTestResource();
   private static final String _UPSERT_CONTENT = FileUtility.toString(IntegrationTest_ProductsService.class.getResource("upsertProducts_product.json"));
 
   @Inject
@@ -71,13 +70,6 @@ public class IntegrationTest_ProductsService extends AbstractKafkaIntegrationTes
   {
     Assertions.assertThrows(ErrorEventReceivedException.class, () -> send(IEvents.IN_PRODUCTS_UPSERT, _createUpsertEvent().clientID(null), eventFacade.getDocumentUpsertEvent()));
     Assertions.assertThrows(ErrorEventReceivedException.class, () -> send(IEvents.IN_PRODUCTS_UPSERT, _createUpsertEvent().clientID(" "), eventFacade.getDocumentUpsertEvent()));
-  }
-
-  @NotNull
-  @Override
-  protected SharedKafkaTestResource getResource()
-  {
-    return sharedKafkaTestResource;
   }
 
   /**
