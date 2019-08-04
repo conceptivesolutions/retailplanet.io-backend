@@ -2,6 +2,7 @@ package io.retailplanet.backend.common;
 
 import io.retailplanet.backend.common.events.*;
 import io.retailplanet.backend.common.util.Value;
+import io.retailplanet.backend.common.util.i18n.MapUtil;
 import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.*;
@@ -42,25 +43,15 @@ public abstract class AbstractKafkaIntegrationTest
 
     // Build Admin Client
     if (_ADMINCLIENT_REF.get() == null)
-    {
-      Map<String, Object> properties = new HashMap<>();
-      properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka_servers);
-      _ADMINCLIENT_REF.set(AdminClient.create(properties));
-    }
+      _ADMINCLIENT_REF.set(AdminClient.create(MapUtil.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka_servers)));
 
     // Build Producer
     if (_PRODUCER_REF.get() == null)
-    {
-      Map<String, Object> properties = new HashMap<>();
-      properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka_servers);
-      _PRODUCER_REF.set(new KafkaProducer<>(properties, new StringSerializer(), new EventSerializer()));
-    }
+      _PRODUCER_REF.set(new KafkaProducer<>(MapUtil.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka_servers), new StringSerializer(), new EventSerializer()));
 
     // Build error consumer
-    Map<String, Object> properties = new HashMap<>();
-    properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka_servers);
-    properties.put(ConsumerConfig.GROUP_ID_CONFIG, "error-consumer");
-    KafkaConsumer<String, AbstractEvent> consumer = new KafkaConsumer<>(properties, new StringDeserializer(), new EventDeserializer());
+    KafkaConsumer<String, AbstractEvent> consumer = new KafkaConsumer<>(MapUtil.of(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka_servers, ConsumerConfig.GROUP_ID_CONFIG, "error-consumer"),
+                                                                        new StringDeserializer(), new EventDeserializer());
     consumer.subscribe(Collections.singletonList("ERRORS"));
 
     // Read error strean

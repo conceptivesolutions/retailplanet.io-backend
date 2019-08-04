@@ -1,10 +1,11 @@
 package io.retailplanet.backend.common;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import io.retailplanet.backend.common.util.i18n.MapUtil;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * Resource to start and stop kafka servers in quarkus tests
@@ -23,10 +24,10 @@ public class KafkaTestResource implements QuarkusTestResourceLifecycleManager
     kafkaContainer = new KafkaContainer("5.2.1");
     kafkaContainer.start();
 
-    HashMap<String, String> map = new HashMap<>();
-    map.put("KAFKA_SERVERS", kafkaContainer.getBootstrapServers());
-    map.put("LOG_LEVEL", "SEVERE");
-    return map;
+    return MapUtil.of(
+        "KAFKA_SERVERS", kafkaContainer.getBootstrapServers(),
+        "LOG_LEVEL", "SEVERE"
+    );
   }
 
   @Override
