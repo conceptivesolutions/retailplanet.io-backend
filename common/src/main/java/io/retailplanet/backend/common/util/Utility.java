@@ -4,6 +4,7 @@ import org.jetbrains.annotations.*;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 /**
  * @author w.glanzer, 17.06.2019
@@ -72,6 +73,24 @@ public class Utility
     {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * Returns either pValue, if not null, or consumes the value of the given supplier
+   *
+   * @param pValue          Value
+   * @param pDefaultValueFn Value-Creator
+   * @return Value, not <tt>null</tt>
+   */
+  @NotNull
+  public static <T> T notNull(@Nullable T pValue, @NotNull Supplier<T> pDefaultValueFn)
+  {
+    if (pValue != null)
+      return pValue;
+    T value = pDefaultValueFn.get();
+    if (value == null)
+      throw new NullPointerException("The defaultValueFn must not return null");
+    return value;
   }
 
 }

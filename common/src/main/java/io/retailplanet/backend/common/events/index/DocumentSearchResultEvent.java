@@ -3,7 +3,7 @@ package io.retailplanet.backend.common.events.index;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.retailplanet.backend.common.events.AbstractEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 import java.util.List;
 
@@ -65,6 +65,7 @@ public class DocumentSearchResultEvent extends AbstractEvent<DocumentSearchResul
   /**
    * @return the value of the "hits" field
    */
+  @Nullable
   public List<Object> hits()
   {
     return hits;

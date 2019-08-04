@@ -1,8 +1,9 @@
 package io.retailplanet.backend.products.api;
 
-import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
+import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.search.*;
 import io.retailplanet.backend.common.util.Utility;
+import io.retailplanet.backend.common.util.i18n.ListUtil;
 import io.retailplanet.backend.products.impl.events.*;
 import io.retailplanet.backend.products.impl.filter.*;
 import io.retailplanet.backend.products.impl.struct.*;
@@ -59,15 +60,31 @@ public class SearchService
           .length(pEvent.length);
 
       // send
+      // noinspection ResultOfMethodCallIgnored
       eventFacade.sendDocumentSearchEvent(searchEvent)
-          .map(pResult -> pEvent.createAnswer(SearchProductsResultEvent.class)
-              .filters(new HashMap<>())
-              .maxSize(pResult.count())
-              .elements(pResult.hits().stream()
-                            .map(this::_searchResultToProduct)
-                            .collect(Collectors.toList())))
-          .subscribe(eventFacade::sendSearchProductsResultEvent, pEx -> eventFacade.notifyError(pEvent, pEx));
+          .subscribe(pResult -> _answerSearchProductsEvent(pEvent, pResult),
+                     pEx -> eventFacade.notifyError(pEvent, pEx));
     });
+  }
+
+  /**
+   * Answers the SearchProductsEvent with the results of the given DocumentSearchResultEvent
+   *
+   * @param pSourceEvent                 Source event the user started
+   * @param pSearchProductsInIndexResult Search in index
+   */
+  private void _answerSearchProductsEvent(@NotNull SearchProductsEvent pSourceEvent, @NotNull DocumentSearchResultEvent pSearchProductsInIndexResult)
+  {
+    long count = pSearchProductsInIndexResult.hits() != null ? Math.max(0, pSearchProductsInIndexResult.count()) : 0;
+    List<Object> collect = Utility.notNull(pSearchProductsInIndexResult.hits(), ListUtil::of).stream()
+        .map(this::_searchResultToProduct)
+        .collect(Collectors.toList());
+
+    // send answer
+    eventFacade.sendSearchProductsResultEvent(pSourceEvent.createAnswer(SearchProductsResultEvent.class)
+                                                  .filters(new HashMap<>()) //todo filters
+                                                  .maxSize(count)
+                                                  .elements(collect));
   }
 
   /**

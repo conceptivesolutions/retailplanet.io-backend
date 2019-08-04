@@ -8,6 +8,7 @@ import io.retailplanet.backend.common.events.answer.IEventAnswerFacade;
 import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.market.*;
 import io.retailplanet.backend.common.events.search.*;
+import io.retailplanet.backend.common.util.i18n.ListUtil;
 import io.retailplanet.backend.products.impl.events.*;
 import io.retailplanet.backend.products.impl.struct.*;
 import io.vertx.core.json.*;
@@ -65,6 +66,38 @@ class IntegrationTest_SearchService extends AbstractKafkaIntegrationTest
   void testSearchProducts_null()
   {
     Assertions.assertThrows(NoEventReceivedException.class, () -> send(IEvents.IN_SEARCH_PRODUCTS, null, eventFacade.getDocumentUpsertEvent()));
+  }
+
+  @Test
+  void testSearchProducts_invalidDocumentSearchResultEvent_NullOrEmptyHits()
+  {
+    IEventAnswerFacade.writeAccess(eventFacade)
+        .reset()
+        .answerWith(SearchMarketsEvent.class, _createSearchMarketResultEventForSearchProductsEvent())
+        .answerWith(DocumentSearchEvent.class, new DocumentSearchResultEvent()
+            .hits(null)
+            .count(15));
+
+    // NULL hits should result in a "valid" ProductSearchResult, because we simply found nothing
+    SearchProductsResultEvent result = send(IEvents.IN_SEARCH_PRODUCTS, _createSearchProductsEvent(), eventFacade.getSearchProductsResultEvent());
+    Assertions.assertNotNull(result);
+    Assertions.assertNotNull(result.elements);
+    Assertions.assertTrue(result.elements.isEmpty());
+    Assertions.assertEquals(0, result.maxSize);
+
+    IEventAnswerFacade.writeAccess(eventFacade)
+        .reset()
+        .answerWith(SearchMarketsEvent.class, _createSearchMarketResultEventForSearchProductsEvent())
+        .answerWith(DocumentSearchEvent.class, new DocumentSearchResultEvent()
+            .hits(ListUtil.of())
+            .count(-1));
+
+    // EMPTY hits should result in a "valid" ProductSearchResult, because we simply found nothing
+    result = send(IEvents.IN_SEARCH_PRODUCTS, _createSearchProductsEvent(), eventFacade.getSearchProductsResultEvent());
+    Assertions.assertNotNull(result);
+    Assertions.assertNotNull(result.elements);
+    Assertions.assertTrue(result.elements.isEmpty());
+    Assertions.assertEquals(0, result.maxSize);
   }
 
   @Test
