@@ -3,6 +3,7 @@ package io.retailplanet.backend.elasticsearch.impl.filters;
 import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import org.jetbrains.annotations.*;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -27,7 +28,14 @@ public interface IFilterFactory
       return Collections.emptyList();
     List<IQueryBuilder> result = new ArrayList<>();
     for (DocumentSearchEvent.Filter filter : pFilters)
-      result.add(interpretFilter(filter.name(), filter.content()));
+    {
+      String name = filter.name();
+      String[] content = filter.content();
+      if (name == null || content == null)
+        LoggerFactory.getLogger(IFilterFactory.class).info("Skipping filter, because name or content were NULL " + filter);
+      else
+        result.add(interpretFilter(name, content));
+    }
     return result;
   }
 

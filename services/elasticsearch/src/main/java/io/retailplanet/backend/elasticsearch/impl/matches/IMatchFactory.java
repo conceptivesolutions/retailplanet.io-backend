@@ -3,6 +3,7 @@ package io.retailplanet.backend.elasticsearch.impl.matches;
 import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import org.jetbrains.annotations.*;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -30,7 +31,12 @@ public interface IMatchFactory
       List<IQueryBuilder> inners = null;
       if (innerMatches != null)
         inners = interpretMatches(innerMatches);
-      result.add(interpretMatch(filter.name(), filter.nestedPath(), inners, filter.content()));
+      String matchType = filter.name();
+      String[] content = filter.content();
+      if (matchType == null || content == null)
+        LoggerFactory.getLogger(IMatchFactory.class).info("Skipping match, because content or matchType were NULL" + filter);
+      else
+        result.add(interpretMatch(matchType, filter.nestedPath(), inners, content));
     }
     return result;
   }

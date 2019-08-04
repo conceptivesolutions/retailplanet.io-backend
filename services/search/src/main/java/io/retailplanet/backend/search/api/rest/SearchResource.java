@@ -50,9 +50,9 @@ public class SearchResource
         .map(pResult -> new SearchResult()
             .offset(offset)
             .length(length)
-            .maxSize(pResult.maxSize)
-            .filters(pResult.filters)
-            .elements(pResult.elements))
+            .maxSize(pResult.maxSize())
+            .filters(pResult.filters())
+            .elements(pResult.elements()))
         .subscribe(pResponse::resume, pResponse::resume);
   }
 

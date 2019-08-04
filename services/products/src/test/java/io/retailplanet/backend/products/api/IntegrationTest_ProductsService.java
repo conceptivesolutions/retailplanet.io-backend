@@ -39,7 +39,7 @@ class IntegrationTest_ProductsService extends AbstractKafkaIntegrationTest
     DocumentUpsertEvent result = send(IEvents.IN_PRODUCTS_UPSERT, event, eventFacade.getDocumentUpsertEvent());
 
     Assertions.assertNotNull(result);
-    Assertions.assertEquals(result.clientID(), event.clientID);
+    Assertions.assertEquals(result.clientID(), event.clientID());
     Assertions.assertEquals(result.type(), IIndexStructure.INDEX_TYPE);
     Assertions.assertNotNull(result.doc());
   }

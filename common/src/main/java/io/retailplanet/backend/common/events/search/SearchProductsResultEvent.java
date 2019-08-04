@@ -3,7 +3,7 @@ package io.retailplanet.backend.common.events.search;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.retailplanet.backend.common.events.AbstractEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 
@@ -20,25 +20,33 @@ public class SearchProductsResultEvent extends AbstractEvent<SearchProductsResul
    * Maximum count of all results
    */
   @JsonProperty
-  public long maxSize;
+  long maxSize;
 
   /**
    * Map containing all possible filters on the client side (with additional information)
    */
   @JsonProperty
-  public Map<String, String[]> filters;
+  Map<String, String[]> filters;
 
   /**
    * Current result page
    */
   @JsonProperty
-  public List<Object> elements;
+  List<Object> elements;
 
   @NotNull
   public SearchProductsResultEvent maxSize(long pMaxSize)
   {
     maxSize = pMaxSize;
     return this;
+  }
+
+  /**
+   * @return value of 'maxSize' field
+   */
+  public long maxSize()
+  {
+    return maxSize;
   }
 
   @NotNull
@@ -48,11 +56,29 @@ public class SearchProductsResultEvent extends AbstractEvent<SearchProductsResul
     return this;
   }
 
+  /**
+   * @return value of 'filters' field
+   */
+  @Nullable
+  public Map<String, String[]> filters()
+  {
+    return filters;
+  }
+
   @NotNull
   public SearchProductsResultEvent elements(List<Object> pElements)
   {
     elements = pElements;
     return this;
+  }
+
+  /**
+   * @return value of 'elements' field
+   */
+  @Nullable
+  public List<Object> elements()
+  {
+    return elements;
   }
 
 }

@@ -51,8 +51,8 @@ public class TokenResource
     eventFacade.sendTokenCreateEvent(event)
         .map(pEvent -> {
           // Result token
-          String token = pEvent.session_token;
-          Instant validity = pEvent.valid_until;
+          String token = pEvent.session_token();
+          Instant validity = pEvent.valid_until();
           if (token != null)
             return Response.ok(new JsonObject()
                                    .put("session_token", token)

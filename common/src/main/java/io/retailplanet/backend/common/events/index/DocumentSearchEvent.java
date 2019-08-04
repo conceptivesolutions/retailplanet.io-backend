@@ -3,7 +3,7 @@ package io.retailplanet.backend.common.events.index;
 import com.fasterxml.jackson.annotation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.retailplanet.backend.common.events.AbstractEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 import java.util.stream.*;
@@ -57,6 +57,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
   /**
    * @return value of 'indexTypes' field
    */
+  @Nullable
   public List<String> indexTypes()
   {
     return indexTypes;
@@ -78,6 +79,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
   /**
    * @return value of 'query' field
    */
+  @Nullable
   public Query query()
   {
     return query;
@@ -99,6 +101,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
   /**
    * @return value of 'offset' field
    */
+  @Nullable
   public Integer offset()
   {
     return offset;
@@ -120,6 +123,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
   /**
    * @return value of 'length' field
    */
+  @Nullable
   public Integer length()
   {
     return length;
@@ -162,6 +166,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     /**
      * @return value of 'matches' field
      */
+    @Nullable
     public List<Match> matches()
     {
       return matches;
@@ -185,6 +190,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     /**
      * @return value of 'filters' field
      */
+    @Nullable
     public List<Filter> filters()
     {
       return filters;
@@ -223,6 +229,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     /**
      * @return value of 'innerMatches' field
      */
+    @Nullable
     public List<Match> innerMatches()
     {
       return innerMatches;
@@ -231,6 +238,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     /**
      * @return value of 'name' field
      */
+    @Nullable
     public String name()
     {
       return name;
@@ -239,6 +247,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     /**
      * @return value of 'content' field
      */
+    @Nullable
     public String[] content()
     {
       return content;
@@ -247,6 +256,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     /**
      * @return value of 'nestedPath' field
      */
+    @Nullable
     public String nestedPath()
     {
       return nestedPath;
@@ -340,6 +350,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     /**
      * @return value of 'name' field
      */
+    @Nullable
     public String name()
     {
       return name;
@@ -348,6 +359,7 @@ public class DocumentSearchEvent extends AbstractEvent<DocumentSearchEvent>
     /**
      * @return value of 'content' field
      */
+    @Nullable
     public String[] content()
     {
       return content;

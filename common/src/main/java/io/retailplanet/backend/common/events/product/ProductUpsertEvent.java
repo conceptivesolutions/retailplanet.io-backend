@@ -3,7 +3,7 @@ package io.retailplanet.backend.common.events.product;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.retailplanet.backend.common.events.AbstractAuthorizedEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 /**
  * A Product should be inserted / updated
@@ -18,25 +18,34 @@ public class ProductUpsertEvent extends AbstractAuthorizedEvent<ProductUpsertEve
    * ID of the client this product belongs to
    */
   @JsonProperty
-  public String clientID;
+  String clientID;
 
   /**
    * currently used session token
    */
   @JsonProperty
-  public String session_token;
+  String session_token;
 
   /**
    * Product upsertion content (base64, zipped)
    */
   @JsonProperty
-  public byte[] content;
+  byte[] content;
 
   @NotNull
   public ProductUpsertEvent clientID(String pClientID)
   {
     clientID = pClientID;
     return this;
+  }
+
+  /**
+   * @return value of 'clientID' field
+   */
+  @Nullable
+  public String clientID()
+  {
+    return clientID;
   }
 
   @NotNull
@@ -46,10 +55,28 @@ public class ProductUpsertEvent extends AbstractAuthorizedEvent<ProductUpsertEve
     return this;
   }
 
+  /**
+   * @return value of 'session_token' field
+   */
+  @Nullable
+  public String session_token()
+  {
+    return session_token;
+  }
+
   @NotNull
   public ProductUpsertEvent content(byte[] pContent)
   {
     content = pContent;
     return this;
+  }
+
+  /**
+   * @return value of 'content' field
+   */
+  @Nullable
+  public byte[] content()
+  {
+    return content;
   }
 }

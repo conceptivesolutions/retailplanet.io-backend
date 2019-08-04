@@ -3,7 +3,7 @@ package io.retailplanet.backend.common.events.index;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.retailplanet.backend.common.events.AbstractEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 /**
  * Event: Indexed document should be inserted / updated
@@ -42,6 +42,7 @@ public class DocumentUpsertEvent extends AbstractEvent<DocumentUpsertEvent>
   /**
    * @return value of 'clientID' field
    */
+  @Nullable
   public String clientID()
   {
     return clientID;
@@ -57,6 +58,7 @@ public class DocumentUpsertEvent extends AbstractEvent<DocumentUpsertEvent>
   /**
    * @return value of 'type' field
    */
+  @Nullable
   public String type()
   {
     return type;
@@ -72,6 +74,7 @@ public class DocumentUpsertEvent extends AbstractEvent<DocumentUpsertEvent>
   /**
    * @return value of 'doc' field
    */
+  @Nullable
   public Object doc()
   {
     return doc;

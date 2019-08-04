@@ -3,7 +3,7 @@ package io.retailplanet.backend.common.events.token;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.retailplanet.backend.common.events.AbstractAuthorizedEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 /**
  * Event: Token should be created
@@ -18,19 +18,28 @@ public class TokenCreateEvent extends AbstractAuthorizedEvent<TokenCreateEvent>
    * ID of the client who issued this token
    */
   @JsonProperty
-  public String clientID;
+  String clientID;
 
   /**
    * API token of the client
    */
   @JsonProperty
-  public String token;
+  String token;
 
   @NotNull
   public TokenCreateEvent clientID(String pClientID)
   {
     clientID = pClientID;
     return this;
+  }
+
+  /**
+   * @return value of 'clientID' field
+   */
+  @Nullable
+  public String clientID()
+  {
+    return clientID;
   }
 
   @NotNull
@@ -40,4 +49,12 @@ public class TokenCreateEvent extends AbstractAuthorizedEvent<TokenCreateEvent>
     return this;
   }
 
+  /**
+   * @return value of 'token' field
+   */
+  @Nullable
+  public String token()
+  {
+    return token;
+  }
 }

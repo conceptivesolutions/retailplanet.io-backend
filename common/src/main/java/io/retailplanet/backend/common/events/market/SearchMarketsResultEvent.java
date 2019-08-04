@@ -3,9 +3,9 @@ package io.retailplanet.backend.common.events.market;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.retailplanet.backend.common.events.AbstractEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Event fired, when a market search event was completed sucessfully
@@ -29,10 +29,10 @@ public class SearchMarketsResultEvent extends AbstractEvent<SearchMarketsResultE
   /**
    * @return value of 'marketIDs' field
    */
-  @NotNull
+  @Nullable
   public List<String> marketIDs()
   {
-    return marketIDs == null ? Collections.emptyList() : marketIDs;
+    return marketIDs;
   }
 
 }

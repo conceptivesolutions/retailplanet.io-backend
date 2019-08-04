@@ -48,7 +48,7 @@ public class BusinessTokenService
       return null;
 
     return eventFacade.trace(pEvent, () -> {
-      String clientid = pEvent.clientID;
+      String clientid = pEvent.clientID();
       if (Utility.isNullOrEmptyTrimmedString(clientid))
         return null;
 
@@ -75,9 +75,9 @@ public class BusinessTokenService
       return;
 
     eventFacade.trace(pEvent, () -> {
-      String clientid = pEvent.clientID;
-      String token = pEvent.session_token;
-      Instant validUntil = pEvent.valid_until == null ? Instant.MIN : pEvent.valid_until;
+      String clientid = pEvent.clientID();
+      String token = pEvent.session_token();
+      Instant validUntil = pEvent.valid_until() == null ? Instant.MIN : pEvent.valid_until();
       if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(token))
         return null;
 
@@ -102,13 +102,13 @@ public class BusinessTokenService
 
     eventFacade.trace(pEvent, () -> {
       // Invalidate given session_token
-      String token = pEvent.session_token;
+      String token = pEvent.session_token();
       if (token != null)
         tokenCache.invalidateToken(token);
       else
       {
         // Invalidate all tokens for a specific client
-        String clientid = pEvent.clientID;
+        String clientid = pEvent.clientID();
         if (clientid != null)
           tokenCache.invalidateAllTokens(clientid);
         else

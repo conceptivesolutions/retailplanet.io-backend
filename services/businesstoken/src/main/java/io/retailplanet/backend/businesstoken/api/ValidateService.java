@@ -42,7 +42,7 @@ public class ValidateService
       return null;
 
     return eventFacade.trace(pEvent, () -> {
-      String session_token = pEvent.session_token;
+      String session_token = pEvent.session_token();
       if (Utility.isNullOrEmptyTrimmedString(session_token))
         return null;
 
@@ -77,7 +77,7 @@ public class ValidateService
       return null;
 
     return eventFacade.trace(pEvent, () -> {
-      String session_token = pEvent.session_token;
+      String session_token = pEvent.session_token();
       if (Utility.isNullOrEmptyTrimmedString(session_token))
         return null;
 

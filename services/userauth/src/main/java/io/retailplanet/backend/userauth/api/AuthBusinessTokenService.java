@@ -37,8 +37,8 @@ public class AuthBusinessTokenService
       return null;
 
     return eventFacade.trace(pCreateEvent, () -> {
-      String clientid = pCreateEvent.clientID;
-      String token = pCreateEvent.token;
+      String clientid = pCreateEvent.clientID();
+      String token = pCreateEvent.token();
 
       // validate
       if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(token))

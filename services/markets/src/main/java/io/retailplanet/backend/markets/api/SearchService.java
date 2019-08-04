@@ -34,8 +34,8 @@ public class SearchService
     eventFacade.trace(pEvent, () -> {
       DocumentSearchEvent searchEvent;
 
-      if (pEvent.geoSearch != null)
-        searchEvent = _createGeoSearchEvent(pEvent, pEvent.geoSearch);
+      if (pEvent.geoSearch() != null)
+        searchEvent = _createGeoSearchEvent(pEvent, pEvent.geoSearch());
       else
       {
         eventFacade.notifyError(pEvent, new IllegalArgumentException("Failed to parse search event " + pEvent + ". No search pattern matched."));

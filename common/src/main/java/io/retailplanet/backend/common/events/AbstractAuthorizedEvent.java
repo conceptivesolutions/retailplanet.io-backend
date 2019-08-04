@@ -14,13 +14,21 @@ public abstract class AbstractAuthorizedEvent<S extends AbstractAuthorizedEvent<
 {
 
   @JsonProperty(defaultValue = "false")
-  public boolean authorized;
+  boolean authorized;
 
   @NotNull
   public S authorized(boolean pAuthorized)
   {
     authorized = pAuthorized;
     return (S) this;
+  }
+
+  /**
+   * @return value of 'authorized' field
+   */
+  public boolean authorized()
+  {
+    return authorized;
   }
 
 }

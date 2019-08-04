@@ -54,12 +54,14 @@ class IntegrationTest_SearchService extends AbstractKafkaIntegrationTest
 
     // ... validate SearchProductsResultEvent
     Assertions.assertNotNull(searchProductsResultEvent);
-    Assertions.assertNotNull(searchProductsResultEvent.elements);
-    Assertions.assertTrue(searchProductsResultEvent.elements.stream().anyMatch(pObj -> _checkProductEquality(pObj, product1)), "product1 not found");
-    Assertions.assertTrue(searchProductsResultEvent.elements.stream().anyMatch(pObj -> _checkProductEquality(pObj, product2)), "product2 not found");
-    Assertions.assertTrue(searchProductsResultEvent.elements.stream().anyMatch(pObj -> _checkProductEquality(pObj, product3)), "product3 not found");
-    Assertions.assertTrue(searchProductsResultEvent.elements.stream().anyMatch(pObj -> _checkProductEquality(pObj, product4)), "product4 not found");
-    Assertions.assertEquals(4, searchProductsResultEvent.maxSize);
+    Assertions.assertEquals(4, searchProductsResultEvent.maxSize());
+
+    List<Object> elements = searchProductsResultEvent.elements();
+    Assertions.assertNotNull(elements);
+    Assertions.assertTrue(elements.stream().anyMatch(pObj -> _checkProductEquality(pObj, product1)), "product1 not found");
+    Assertions.assertTrue(elements.stream().anyMatch(pObj -> _checkProductEquality(pObj, product2)), "product2 not found");
+    Assertions.assertTrue(elements.stream().anyMatch(pObj -> _checkProductEquality(pObj, product3)), "product3 not found");
+    Assertions.assertTrue(elements.stream().anyMatch(pObj -> _checkProductEquality(pObj, product4)), "product4 not found");
   }
 
   @Test
@@ -81,9 +83,9 @@ class IntegrationTest_SearchService extends AbstractKafkaIntegrationTest
     // NULL hits should result in a "valid" ProductSearchResult, because we simply found nothing
     SearchProductsResultEvent result = send(IEvents.IN_SEARCH_PRODUCTS, _createSearchProductsEvent(), eventFacade.getSearchProductsResultEvent());
     Assertions.assertNotNull(result);
-    Assertions.assertNotNull(result.elements);
-    Assertions.assertTrue(result.elements.isEmpty());
-    Assertions.assertEquals(0, result.maxSize);
+    Assertions.assertNotNull(result.elements());
+    Assertions.assertTrue(result.elements().isEmpty());
+    Assertions.assertEquals(0, result.maxSize());
 
     IEventAnswerFacade.writeAccess(eventFacade)
         .reset()
@@ -95,9 +97,9 @@ class IntegrationTest_SearchService extends AbstractKafkaIntegrationTest
     // EMPTY hits should result in a "valid" ProductSearchResult, because we simply found nothing
     result = send(IEvents.IN_SEARCH_PRODUCTS, _createSearchProductsEvent(), eventFacade.getSearchProductsResultEvent());
     Assertions.assertNotNull(result);
-    Assertions.assertNotNull(result.elements);
-    Assertions.assertTrue(result.elements.isEmpty());
-    Assertions.assertEquals(0, result.maxSize);
+    Assertions.assertNotNull(result.elements());
+    Assertions.assertTrue(result.elements().isEmpty());
+    Assertions.assertEquals(0, result.maxSize());
   }
 
   @Test

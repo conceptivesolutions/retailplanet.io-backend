@@ -45,10 +45,15 @@ public class SearchService
       return;
 
     eventFacade.trace(pEvent, () -> {
+      Integer offset = pEvent.offset();
+      Integer length = pEvent.length();
+
       // validate event
-      if (Utility.isNullOrEmptyTrimmedString(pEvent.query) || pEvent.offset == null || pEvent.length == null)
+      if (Utility.isNullOrEmptyTrimmedString(pEvent.query()) ||
+          offset == null || offset < 0 || offset == Integer.MAX_VALUE ||
+          length == null || length <= 0 || length > 100)
       {
-        eventFacade.notifyError(pEvent, "Invalid Event");
+        eventFacade.notifyError(pEvent, "Invalid Event (offset: " + offset + ", length: " + length + ")");
         return;
       }
 
@@ -56,8 +61,8 @@ public class SearchService
       DocumentSearchEvent searchEvent = pEvent.createAnswer(DocumentSearchEvent.class)
           .indices(IIndexStructure.INDEX_TYPE)
           .query(_buildIndexQuery(pEvent))
-          .offset(pEvent.offset)
-          .length(pEvent.length);
+          .offset(offset)
+          .length(length);
 
       // send
       // noinspection ResultOfMethodCallIgnored
@@ -111,8 +116,8 @@ public class SearchService
   private DocumentSearchEvent.Query _buildIndexQuery(@NotNull SearchProductsEvent pEvent)
   {
     DocumentSearchEvent.Query query = new DocumentSearchEvent.Query()
-        .matches(DocumentSearchEvent.Match.equal(IIndexStructure.IProduct.NAME, pEvent.query, DocumentSearchEvent.Operator.OR));
-    _enrichWithFilters(query, pEvent.filter);
+        .matches(DocumentSearchEvent.Match.equal(IIndexStructure.IProduct.NAME, Objects.requireNonNull(pEvent.query()), DocumentSearchEvent.Operator.OR));
+    _enrichWithFilters(query, pEvent.filter());
     return query;
   }
 

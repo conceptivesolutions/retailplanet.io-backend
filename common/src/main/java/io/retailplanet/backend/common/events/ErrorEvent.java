@@ -18,7 +18,7 @@ public class ErrorEvent extends AbstractEvent<ErrorEvent>
 {
 
   @JsonProperty(required = true)
-  public SerializedExceptionContent content;
+  SerializedExceptionContent content;
 
   @NotNull
   public ErrorEvent error(@NotNull Throwable pError)

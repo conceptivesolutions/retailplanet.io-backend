@@ -67,8 +67,6 @@ public class IndexServiceWrite
       {
         _LOGGER.error("Failed to update index with type " + type + " for client " + clientid, e);
       }
-
-      return;
     });
   }
 

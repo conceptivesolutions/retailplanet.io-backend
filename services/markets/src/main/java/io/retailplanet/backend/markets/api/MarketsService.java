@@ -38,8 +38,8 @@ public class MarketsService
       return;
 
     eventFacade.trace(pEvent, () -> {
-      String clientID = pEvent.clientID;
-      byte[] binContent = pEvent.content;
+      String clientID = pEvent.clientID();
+      byte[] binContent = pEvent.content();
       if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID))
         return;
 
