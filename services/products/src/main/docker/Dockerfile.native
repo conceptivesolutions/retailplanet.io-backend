@@ -8,4 +8,4 @@ RUN chmod 775 /work
 
 # Expose default ports
 EXPOSE 8080
-CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=8080", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", "$JVM_OPTS"]
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0 -Dquarkus.http.port=8080 -Djava.util.logging.manager=org.jboss.logmanager.LogManager $JVM_OPTS"]
