@@ -115,6 +115,10 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <enableHttpUrlHandler>true</enableHttpUrlHandler>
+          <enableHttpsUrlHandler>true</enableHttpsUrlHandler>
+        </configuration>
       </plugin>
 
       <!-- Jandex Maven Plugin to generate jandex index for reflection purposes -->
@@ -169,6 +173,8 @@
                   <nativeImageXmx>2G</nativeImageXmx>
                   <containerRuntime>docker</containerRuntime>
                   <additionalBuildArgs>-H:IncludeResources=io/retailplanet/backend/.*</additionalBuildArgs>
+                  <enableHttpUrlHandler>true</enableHttpUrlHandler>
+                  <enableHttpsUrlHandler>true</enableHttpsUrlHandler>
                 </configuration>
               </execution>
             </executions>
