@@ -24,6 +24,12 @@
       <artifactId>quarkus-resteasy-jsonb</artifactId>
     </dependency>
 
+    <!-- health check -->
+    <dependency>
+      <groupId>io.retailplanet.backend.modules</groupId>
+      <artifactId>health_client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
 </project>

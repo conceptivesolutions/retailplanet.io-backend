@@ -25,6 +25,13 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jdbc-h2</artifactId>
     </dependency>
+
+    <!-- health check -->
+    <dependency>
+      <groupId>io.retailplanet.backend.modules</groupId>
+      <artifactId>health_client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
 </project>
