@@ -20,7 +20,7 @@ import java.time.*;
 public class KafkaMetricCollector implements Runnable
 {
 
-  private static final Duration _INTERVAL = Duration.ofSeconds(30);
+  private static final Duration _INTERVAL = Duration.ofSeconds(15);
   private static final Logger _LOGGER = LoggerFactory.getLogger(KafkaMetricCollector.class);
 
   @Inject
@@ -45,10 +45,14 @@ public class KafkaMetricCollector implements Runnable
       try
       {
         Thread.sleep(_INTERVAL.toMillis());
+
+        long time = System.currentTimeMillis();
         KafkaMetricCollector.this.getRoundtripTime();
+        _LOGGER.info("Metric: RoundtripTime: " + (System.currentTimeMillis() - time) + "ms");
       }
-      catch (Exception ignored)
+      catch (Exception e)
       {
+        _LOGGER.error("Failed to calculate roundtrip time", e);
       }
     }
   }
@@ -59,15 +63,8 @@ public class KafkaMetricCollector implements Runnable
   @Timed(name = "roundtripTime", description = "Describes how long a kafka messages takes from a service to kafka and back", unit = MetricUnits.MILLISECONDS)
   protected void getRoundtripTime()
   {
-    try
-    {
-      //noinspection ResultOfMethodCallIgnored
-      eventFacade.sendMetricsEvent(new KafkaMetricEvent().started(Instant.now())).blockingGet();
-    }
-    catch (Exception e)
-    {
-      _LOGGER.error("Failed to calculate roundtrip time", e);
-    }
+    //noinspection ResultOfMethodCallIgnored
+    eventFacade.sendMetricsEvent(new KafkaMetricEvent().started(Instant.now())).blockingGet();
   }
 
 }
