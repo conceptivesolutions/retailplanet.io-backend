@@ -10,16 +10,7 @@
     <version>2.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>products</artifactId>
-  <name>retailplanet.io: Service: Products</name>
-
-  <dependencies>
-    <!-- metrics -->
-    <dependency>
-      <groupId>io.retailplanet.backend.modules</groupId>
-      <artifactId>metrics_client</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
+  <artifactId>metrics</artifactId>
+  <name>retailplanet.io: Service: Metrics</name>
 
 </project>

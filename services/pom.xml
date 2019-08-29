@@ -50,7 +50,7 @@
         <module>businessapi</module>
         <module>businesstoken</module>
         <module>elasticsearch</module>
-        <module>health</module>
+        <module>metrics</module>
         <module>markets</module>
         <module>products</module>
         <module>search</module>
@@ -62,7 +62,7 @@
       <modules>
         <module>businessapi</module>
         <module>elasticsearch</module>
-        <module>health</module>
+        <module>metrics</module>
         <module>markets</module>
         <module>products</module>
         <module>search</module>

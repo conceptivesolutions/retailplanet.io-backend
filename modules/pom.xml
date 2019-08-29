@@ -44,7 +44,7 @@
   </dependencies>
 
   <modules>
-    <module>health_client</module>
+    <module>metrics_client</module>
   </modules>
 
 </project>

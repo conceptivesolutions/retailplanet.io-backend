@@ -85,7 +85,7 @@ public class EventProcessor extends AbstractProcessor
   {
     return ListUtil.of(
         new _IncomingEvent("ERRORS_IN", "ERRORS", "latest", "io.retailplanet.backend.common.events.EventDeserializer"),
-        new _IncomingEvent("Health_RESPONSE_IN", "Health_RESPONSE", "latest", "io.retailplanet.backend.common.events.EventDeserializer")
+        new _IncomingEvent("Metrics_RESPONSE_IN", "Metrics_RESPONSE", "latest", "io.retailplanet.backend.common.events.EventDeserializer")
     );
   }
 
@@ -97,7 +97,7 @@ public class EventProcessor extends AbstractProcessor
   {
     return ListUtil.of(
         new _OutgoingEvent("ERRORS_OUT", "ERRORS", "io.retailplanet.backend.common.events.EventSerializer"),
-        new _OutgoingEvent("Health_REQUEST_OUT", "Health_REQUEST", "io.retailplanet.backend.common.events.EventSerializer")
+        new _OutgoingEvent("Metrics_REQUEST_OUT", "Metrics_REQUEST", "io.retailplanet.backend.common.events.EventSerializer")
     );
   }
 

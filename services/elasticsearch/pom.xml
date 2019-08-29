@@ -25,10 +25,10 @@
       <version>7.0.1</version>
     </dependency>
 
-    <!-- health check -->
+    <!-- metrics -->
     <dependency>
       <groupId>io.retailplanet.backend.modules</groupId>
-      <artifactId>health_client</artifactId>
+      <artifactId>metrics_client</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
