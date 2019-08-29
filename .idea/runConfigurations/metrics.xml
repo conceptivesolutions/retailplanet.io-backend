@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="health" type="JarApplication" folderName="w/o maven">
-    <option name="JAR_PATH" value="$PROJECT_DIR$/services/health/target/health-2.0-SNAPSHOT-runner.jar" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/services/health/target" />
+  <configuration default="false" name="metrics" type="JarApplication" folderName="w/o maven">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/services/metrics/target/metrics-2.0-SNAPSHOT-runner.jar" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/services/metrics/target" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <envs>
       <env name="KAFKA_SERVERS" value="localhost:9092" />

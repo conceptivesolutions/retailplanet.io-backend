@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="retailplanet.io" type="CompoundRunConfigurationType">
     <toRun name="elastic (build)" type="JarApplication" />
-    <toRun name="health (build)" type="JarApplication" />
+    <toRun name="metrics (build)" type="JarApplication" />
     <toRun name="markets (build)" type="JarApplication" />
     <toRun name="businessapi (build)" type="JarApplication" />
     <toRun name="userauth (build)" type="JarApplication" />
