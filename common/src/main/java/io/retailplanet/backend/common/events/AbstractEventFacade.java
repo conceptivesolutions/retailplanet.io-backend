@@ -1,6 +1,6 @@
 package io.retailplanet.backend.common.events;
 
-import io.opentracing.Tracer;
+import io.opentracing.*;
 import io.reactivex.*;
 import io.retailplanet.backend.common.events.exceptions.ErrorEventException;
 import io.smallrye.reactive.messaging.annotations.Emitter;
@@ -99,7 +99,15 @@ public abstract class AbstractEventFacade implements IAbstractEventFacade
           pEv.startTrace(tracer);
           return pEv;
         })
-        .doOnError(pEx -> tracer.scopeManager().active().close())
+        .doOnError(pEx -> {
+          ScopeManager sm = tracer == null ? null : tracer.scopeManager();
+          if (sm != null)
+          {
+            Scope active = sm.active();
+            if (active != null)
+              active.close();
+          }
+        })
         .doOnSuccess(AbstractEvent::finishTrace);
   }
 
