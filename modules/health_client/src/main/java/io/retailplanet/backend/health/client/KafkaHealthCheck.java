@@ -2,10 +2,13 @@ package io.retailplanet.backend.health.client;
 
 import io.retailplanet.backend.common.events.health.KafkaHealthCheckEvent;
 import org.eclipse.microprofile.health.*;
+import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.*;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.*;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.time.*;
 
@@ -24,10 +27,21 @@ public class KafkaHealthCheck implements HealthCheck
   @Inject
   private HealthEventFacade eventFacade;
 
+  private Thread collectorThread;
+
+  public void init(@SuppressWarnings("unused") @Observes @Initialized(ApplicationScoped.class) Object pInit)
+  {
+    if (collectorThread != null)
+      return;
+    collectorThread = new Thread(new _MetricCollector(), "tRoundtripMetricCollector");
+    collectorThread.setDaemon(true);
+    collectorThread.start();
+  }
+
   @Override
   public HealthCheckResponse call()
   {
-    Duration roundtripTime = _getRoundtripTime();
+    Duration roundtripTime = getRoundtripTime();
     HealthCheckResponseBuilder builder = HealthCheckResponse.named("RoundtripCheck");
 
     if (roundtripTime == null)
@@ -48,7 +62,8 @@ public class KafkaHealthCheck implements HealthCheck
    * @return the roundtrip time, from here to kafka answer service and back
    */
   @Nullable
-  private Duration _getRoundtripTime()
+  @Timed(name = "roundtripTime", description = "Describes how long a kafka messages takes from a service to kafka and back", unit = MetricUnits.MILLISECONDS)
+  protected Duration getRoundtripTime()
   {
     try
     {
@@ -64,4 +79,25 @@ public class KafkaHealthCheck implements HealthCheck
     }
   }
 
+  /**
+   * Runnable that calls _getRoundtripTime to collect metrics
+   */
+  private class _MetricCollector implements Runnable
+  {
+    @Override
+    public void run()
+    {
+      while (!Thread.currentThread().isInterrupted())
+      {
+        try
+        {
+          Thread.sleep(30_000);
+          KafkaHealthCheck.this.getRoundtripTime();
+        }
+        catch (InterruptedException ignored)
+        {
+        }
+      }
+    }
+  }
 }
