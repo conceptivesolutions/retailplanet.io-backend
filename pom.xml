@@ -105,23 +105,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-maven-plugin</artifactId>
-        <version>${quarkus.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <enableHttpUrlHandler>true</enableHttpUrlHandler>
-          <enableHttpsUrlHandler>true</enableHttpsUrlHandler>
-        </configuration>
-      </plugin>
-
       <!-- Jandex Maven Plugin to generate jandex index for reflection purposes -->
       <!-- https://stackoverflow.com/questions/55513502/how-to-create-a-jandex-index-in-quarkus-for-classes-in-a-external-module/55513723#55513723 -->
       <plugin>
@@ -155,35 +138,6 @@
   </build>
 
   <profiles>
-
-    <!-- Native is a profile to compile quarkus instances with GRAAL_VM to native executables -->
-    <profile>
-      <id>build.native</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-maven-plugin</artifactId>
-            <version>${quarkus.version}</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>native-image</goal>
-                </goals>
-                <configuration>
-                  <nativeImageXmx>2G</nativeImageXmx>
-                  <containerRuntime>docker</containerRuntime>
-                  <additionalBuildArgs>-H:IncludeResources=io/retailplanet/backend/.*</additionalBuildArgs>
-                  <enableHttpUrlHandler>true</enableHttpUrlHandler>
-                  <enableHttpsUrlHandler>true</enableHttpsUrlHandler>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
     <!-- Include IntegrationTests only, if this profile is active -->
     <profile>
       <id>test.integration</id>

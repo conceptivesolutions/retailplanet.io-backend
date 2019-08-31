@@ -58,6 +58,7 @@
       </modules>
     </profile>
     <profile>
+      <!-- Native is a profile to compile quarkus instances with GRAAL_VM to native executables -->
       <id>build.native</id>
       <modules>
         <module>businessapi</module>
@@ -68,7 +69,51 @@
         <module>search</module>
         <module>userauth</module>
       </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-maven-plugin</artifactId>
+            <version>${quarkus.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>native-image</goal>
+                </goals>
+                <configuration>
+                  <nativeImageXmx>2G</nativeImageXmx>
+                  <containerRuntime>docker</containerRuntime>
+                  <additionalBuildArgs>-H:IncludeResources=io/retailplanet/backend/.*</additionalBuildArgs>
+                  <enableHttpUrlHandler>true</enableHttpUrlHandler>
+                  <enableHttpsUrlHandler>true</enableHttpsUrlHandler>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-maven-plugin</artifactId>
+        <version>${quarkus.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <enableHttpUrlHandler>true</enableHttpUrlHandler>
+          <enableHttpsUrlHandler>true</enableHttpsUrlHandler>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
