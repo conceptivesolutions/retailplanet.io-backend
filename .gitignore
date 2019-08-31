@@ -17,3 +17,4 @@ release.properties
 .h2
 .kafka
 .elastic
+services/businesstoken/ObjectStore
