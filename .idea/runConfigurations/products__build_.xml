@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="products (build)" type="JarApplication" folderName="w/ maven">
     <option name="JAR_PATH" value="$PROJECT_DIR$/services/products/target/products-2.0-SNAPSHOT-runner.jar" />
-    <option name="VM_PARAMETERS" value="-Dquarkus.http.port=8081 " />
+    <option name="VM_PARAMETERS" value="-Dquarkus.http.port=8086" />
     <option name="PROGRAM_PARAMETERS" value="$PROJECT_DIR$/services/products/target/classes $PROJECT_DIR$/services/products/target/wiring-classes" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/services/products" />
     <option name="ALTERNATIVE_JRE_PATH" />
