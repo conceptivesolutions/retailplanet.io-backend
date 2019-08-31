@@ -1,11 +1,5 @@
-FROM fabric8/java-alpine-openjdk8-jre
-MAINTAINER w.glanzer@conceptive.io
-
-ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager $JVM_OPTS"
-ENV AB_ENABLED=jmx_exporter
+FROM images.conceptive.io/retailplanet.backend.base:latest
 
 # Copy all files to /deployments
 COPY target/lib/* /deployments/lib/
 COPY target/*-runner.jar /deployments/app.jar
-
-ENTRYPOINT [ "/deployments/run-java.sh" ]

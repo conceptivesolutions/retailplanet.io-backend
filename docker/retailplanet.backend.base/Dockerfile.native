@@ -1,0 +1,7 @@
+FROM registry.access.redhat.com/ubi8/ubi-minimal
+MAINTAINER w.glanzer@conceptive.io
+
+WORKDIR /work/
+
+EXPOSE 8080
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=8080", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", "$JVM_OPTS"]
