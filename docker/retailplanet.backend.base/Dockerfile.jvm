@@ -1,7 +1,17 @@
 FROM fabric8/java-alpine-openjdk8-jre
 MAINTAINER w.glanzer@conceptive.io
 
-ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager $JVM_OPTS"
+ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Dquarkus.http.port=8080 -Djava.util.logging.manager=org.jboss.logmanager.LogManager $JVM_OPTS"
 ENV AB_ENABLED=jmx_exporter
 
-ENTRYPOINT [ "/deployments/run-java.sh" ]
+# Define startup command
+ENV STARTUP_CMD="/deployments/run-java.sh"
+
+# Add startup script
+ADD startup.sh /deployments/startup.sh
+RUN chmod +x /deployments/startup.sh
+
+# Expose port
+EXPOSE 8080
+
+ENTRYPOINT [ "/deployments/startup.sh" ]

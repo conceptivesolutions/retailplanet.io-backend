@@ -3,5 +3,14 @@ MAINTAINER w.glanzer@conceptive.io
 
 WORKDIR /work/
 
+# Define startup command
+ENV STARTUP_CMD="./application -Dquarkus.http.host=0.0.0.0 -Dquarkus.http.port=8080 -Djava.util.logging.manager=org.jboss.logmanager.LogManager $JVM_OPTS"
+
+# Add startup script
+ADD startup.sh /work/startup.sh
+RUN chmod +x /work/startup.sh
+
+# Expose port
 EXPOSE 8080
-CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=8080", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", "$JVM_OPTS"]
+
+ENTRYPOINT [ "/work/startup.sh" ]
