@@ -1,6 +1,7 @@
 package io.retailplanet.backend.common.events.metric;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.retailplanet.backend.common.events.AbstractEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,6 +12,7 @@ import java.time.Instant;
  *
  * @author w.glanzer, 28.08.2019
  */
+@RegisterForReflection
 public class KafkaMetricEvent extends AbstractEvent<KafkaMetricEvent>
 {
 
