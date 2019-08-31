@@ -56,7 +56,6 @@
   </dependencyManagement>
 
   <modules>
-    <module>common</module>
     <module>modules</module>
     <module>services</module>
   </modules>

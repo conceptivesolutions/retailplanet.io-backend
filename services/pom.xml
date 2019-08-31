@@ -18,12 +18,12 @@
   <dependencies>
     <!-- Retailplanet: Common -->
     <dependency>
-      <groupId>io.retailplanet.backend</groupId>
+      <groupId>io.retailplanet.backend.modules</groupId>
       <artifactId>common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.retailplanet.backend</groupId>
+      <groupId>io.retailplanet.backend.modules</groupId>
       <artifactId>common</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
