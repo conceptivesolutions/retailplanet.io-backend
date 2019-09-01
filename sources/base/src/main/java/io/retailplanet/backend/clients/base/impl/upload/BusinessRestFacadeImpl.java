@@ -3,10 +3,12 @@ package io.retailplanet.backend.clients.base.impl.upload;
 import com.google.common.collect.Maps;
 import com.mashape.unirest.http.*;
 import io.retailplanet.backend.clients.base.api.*;
+import io.retailplanet.backend.common.util.Utility;
 import org.jetbrains.annotations.NotNull;
 import org.json.*;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,27 +24,41 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
   private static final String _BUSINESS = "/business";
   private String host;
   private String sessionToken;
+  private Instant sessionTokenValidity;
 
   @Override
   public void productsInit(@NotNull String pHost, @NotNull String pClientID, @NotNull String pClientToken) throws Exception
   {
-    _setHost(pHost);
+    host = pHost;
 
-    // Init
-    sessionToken = Unirest.get(host + _BUSINESS + "/token/generate")
+    // Validate host
+    if (Utility.isNullOrEmptyTrimmedString(host))
+      throw new IllegalArgumentException("Hostname must not be null");
+
+    // Init a new session token
+    JSONObject tokenObj = Unirest.get(host + _BUSINESS + "/token/generate")
         .queryString("clientid", pClientID)
         .queryString("token", pClientToken)
         .asJson()
         .getBody()
-        .getObject()
-        .getString("session_token");
+        .getObject();
+
+    sessionToken = tokenObj.getString("session_token");
+    sessionTokenValidity = Instant.parse(tokenObj.getString("valid_until"));
+
+    // Validate session token
+    if (Utility.isNullOrEmptyTrimmedString(sessionToken))
+      throw new IllegalArgumentException("Failed to retrieve sessionToken. The backend returned null or an empty string");
+
+    // Ensure validity
+    _ensureSessionTokenValidity();
   }
 
   @Override
   public void products(@NotNull List<CrawledProduct> pProducts) throws Exception
   {
-    // revalidate host and sessiontoken
-    _setHost(host);
+    // Ensure sesstion token validity
+    _ensureSessionTokenValidity();
 
     // to jsonNode
     JSONArray root = new JSONArray();
@@ -64,8 +80,8 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
   @Override
   public void markets(@NotNull List<CrawledMarket> pMarkets) throws Exception
   {
-    // revalidate host and sessiontoken
-    _setHost(host);
+    // Ensure sesstion token validity
+    _ensureSessionTokenValidity();
 
     // to jsonNode
     JSONArray root = new JSONArray();
@@ -132,17 +148,12 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
   }
 
   /**
-   * Sets a new hostname
-   *
-   * @param pHost Host
+   * Checks the current sessiontoken validity time and throws an exception, if it is invalid
    */
-  private void _setHost(@NotNull String pHost)
+  private void _ensureSessionTokenValidity()
   {
-    if (sessionToken != null && !Objects.equals(host, pHost))
-      throw new RuntimeException("Another request is already running. The RestFacade could only be used to execute one call at the same time!");
-    if (pHost.trim().isEmpty())
-      throw new IllegalArgumentException("Hostname must not be empty");
-    host = pHost;
+    if (Instant.now().isAfter(sessionTokenValidity))
+      throw new IllegalArgumentException("Session token expired. " + sessionTokenValidity);
   }
 
 }
