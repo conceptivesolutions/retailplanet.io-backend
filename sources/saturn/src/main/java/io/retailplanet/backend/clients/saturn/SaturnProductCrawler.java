@@ -5,6 +5,7 @@ import com.mashape.unirest.http.JsonNode;
 import io.retailplanet.backend.clients.base.api.CrawledProduct;
 import io.retailplanet.backend.clients.base.impl.util.*;
 import io.retailplanet.backend.clients.base.spi.IProductCrawler;
+import io.retailplanet.backend.common.util.i18n.ListUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.*;
 import org.json.JSONObject;
@@ -23,34 +24,30 @@ import java.util.function.Consumer;
 import java.util.stream.*;
 
 /**
- * Product-Crawler speziell für Saturn
+ * Product-Crawler for Saturn
  *
  * @author w.glanzer, 12.01.2019
  */
 @ApplicationScoped
 public class SaturnProductCrawler implements IProductCrawler
 {
-
   private static final Logger _LOGGER = LoggerFactory.getLogger(SaturnProductCrawler.class);
   private static final String _BASE_URL = "https://www.saturn.de";
   private static final SSLSocketFactory _SOCKET_FACTORY = SSLUtility.createTrustAllContext().getSocketFactory();
 
-  /* Gibt an wie oft versucht werden soll, eine Verbindung aufzubauen und das Document zu lesen */
-  private static final int _CON_MAX_TRIES = 50;
-  /* Gibt die Zeit in ms an die zwischen den Retrys gewartet wird */
-  private static final int _CON_RETRY_TIMEOUT = 10000;
-  /* ExecutorService der die gerade aktiven Requests an die IDataSource enthält */
   private final ExecutorService _REQUESTS_EXECUTOR = Executors.newFixedThreadPool(32);
   private final Semaphore _CONCURRENT_REQUESTS = new Semaphore(32);
-  /* Liste aus Kategorien, die beim aktuellen Suchlauf gefailt ist */
-  private final List<String> errors = new ArrayList<>();
+  private final List<String> failedCategories = new ArrayList<>();
 
   @Override
   public void read(@NotNull Consumer<CrawledProduct> pProductConsumer)
   {
     try
     {
+      List<String> ignoredURLs = _getIgnoredCategoryURLs();
+
       List<Pair<String, String>> urlPairs = _getCategories()
+          .filter(pPair -> !ignoredURLs.contains(pPair.getRight()))
           .collect(Collectors.toList());
 
       for (Pair<String, String> urlPair : urlPairs)
@@ -58,10 +55,16 @@ public class SaturnProductCrawler implements IProductCrawler
     }
     finally
     {
-      errors.clear();
+      failedCategories.clear();
     }
   }
 
+  /**
+   * Starts to fetch products from a specific url
+   *
+   * @param pProductPair     Category / URL to fetch
+   * @param pProductConsumer Consumer for the retreived products
+   */
   private void _fetchProducts(@NotNull Pair<String, String> pProductPair, @NotNull Consumer<CrawledProduct> pProductConsumer)
   {
     String categoryName = pProductPair.getLeft();
@@ -104,7 +107,7 @@ public class SaturnProductCrawler implements IProductCrawler
 
       CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get();
 
-      // Fertig -> Loggen
+      // Log success
       _LOGGER.info("Fetch Products | " + url + " | " + size.get());
     }
     catch (Exception e)
@@ -172,15 +175,15 @@ public class SaturnProductCrawler implements IProductCrawler
         }
       }
 
-      // Auf alle Asynchronen Tasks warten
+      // Wait for all tasks
       CompletableFuture.allOf(asyncTasksToWaitOn.toArray(new CompletableFuture[0])).get();
 
-      // Fertig -> Log-Ausgabe
+      // Log success
       _LOGGER.info("Found " + resultList.size() + " categories");
 
-      // Stream sortiert
+      // Return only "real" categories
       return resultList.stream()
-          .filter(pPair -> pPair.getRight().contains("/category/")) // Nur dann sind es wirkliche dursuchbare Kategorien
+          .filter(pPair -> pPair.getRight().contains("/category/"))
           .sorted(Comparator.comparing(Pair::getKey));
     }
     catch (Exception e)
@@ -229,7 +232,7 @@ public class SaturnProductCrawler implements IProductCrawler
   }
 
   /**
-   * @return Anzahl der Pages
+   * @return Current page count
    */
   private int _getPageCount(String pURL)
   {
@@ -237,7 +240,7 @@ public class SaturnProductCrawler implements IProductCrawler
     {
       Element paginationEle = _fetchDocument(Jsoup.connect(pURL)).getElementsByClass("pagination-next").get(0).parent();
       String sizeString = paginationEle.getElementsByTag("li").last().previousElementSibling().attr("data-value");
-      return Integer.valueOf(sizeString);
+      return Integer.parseInt(sizeString);
     }
     catch (Exception e)
     {
@@ -252,7 +255,7 @@ public class SaturnProductCrawler implements IProductCrawler
 
     try
     {
-      if (errors.contains(pCategoryURL))
+      if (failedCategories.contains(pCategoryURL))
         return Stream.empty();
 
       _LOGGER.info("Fetching Products | " + pCategoryURL + " | Page: " + (pPage + 1) + "/" + pMaxPages);
@@ -272,10 +275,10 @@ public class SaturnProductCrawler implements IProductCrawler
     {
     }
 
-    // -> Fehler
-    if (!errors.contains(pCategoryURL))
+    // -> Failure
+    if (!failedCategories.contains(pCategoryURL))
     {
-      errors.add(pCategoryURL);
+      failedCategories.add(pCategoryURL);
       if (doc != null)
         _LOGGER.info("Failed to retrieve elements for category: " + doc.body());
       _LOGGER.error("Failed to retrieve elements for category: " + pCategoryURL + " | Page: " + (pPage + 1) + "/" + pMaxPages);
@@ -289,7 +292,7 @@ public class SaturnProductCrawler implements IProductCrawler
   {
     return RetryManager.retry(() -> pConnection
         .sslSocketFactory(_SOCKET_FACTORY)
-        .get(), _CON_MAX_TRIES, _CON_RETRY_TIMEOUT, null, _LOGGER);
+        .get(), 50, 10000, null, _LOGGER);
   }
 
   @Nullable
@@ -326,7 +329,7 @@ public class SaturnProductCrawler implements IProductCrawler
   }
 
   /**
-   * @return Liefert die ECHTE ID (catEntryId) zu einem Produkt
+   * @return Returns the "real" id of a product (catEntryId)
    */
   @NotNull
   private String _getID(@NotNull Element pElement)
@@ -348,28 +351,7 @@ public class SaturnProductCrawler implements IProductCrawler
   }
 
   /**
-   * @return Sucht den "alten" Preis, wenn gerade im Angebot
-   */
-  @Nullable
-  private Float _findOldPrice(@NotNull Element pElement)
-  {
-    Elements oldPrice = pElement.getElementsByClass("price-old");
-    if (!oldPrice.isEmpty())
-    {
-      try
-      {
-        return _parsePrice(oldPrice.get(0).ownText());
-      }
-      catch (NumberFormatException nfe)
-      {
-        _LOGGER.error("Failed to parse old price for element " + pElement, nfe);
-      }
-    }
-    return null;
-  }
-
-  /**
-   * @return Liefert alle Vorschaubilder
+   * @return All preview picture urls
    */
   @NotNull
   private Set<String> _getPreviews(@NotNull Element pElement)
@@ -386,7 +368,7 @@ public class SaturnProductCrawler implements IProductCrawler
   }
 
   /**
-   * @return Sucht nach zusätzlichen Informationen
+   * @return All additional information
    */
   @NotNull
   private Map<String, String> _getAdditionalInfos(@NotNull Element pElement)
@@ -428,17 +410,6 @@ public class SaturnProductCrawler implements IProductCrawler
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
-  /**
-   * @return Wandelt einen Preis (499,-, 500,50, etc.) in ein Float um
-   */
-  private float _parsePrice(@NotNull String pPrice) throws NumberFormatException
-  {
-    if (pPrice.endsWith("-"))
-      pPrice = pPrice.substring(0, pPrice.length() - 1);
-    pPrice = pPrice.replaceAll(",", ".");
-    return Float.parseFloat(pPrice);
-  }
-
   @NotNull
   private String _getURLFromElement(@NotNull Element pElement, @NotNull String pRefContainer)
   {
@@ -450,6 +421,12 @@ public class SaturnProductCrawler implements IProductCrawler
     if (url.contains("#"))
       url = url.substring(0, url.indexOf('#'));
     return url;
+  }
+
+  @NotNull
+  private List<String> _getIgnoredCategoryURLs()
+  {
+    return ListUtil.of();
   }
 
 }
