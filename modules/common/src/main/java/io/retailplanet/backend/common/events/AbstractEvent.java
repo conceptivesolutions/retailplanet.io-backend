@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractEvent<S extends AbstractEvent<S>>
 {
   /* Specifies how long an event lives in milliseconds */
-  public static final long TTL = 1500;
+  public static final long TTL = 3000;
 
   private static final boolean _TRACE_ENABLED = !Utility.isNullOrEmptyTrimmedString(System.getenv("OPENTRACING_SERVERS"));
   private static final String _REFERENCE_TYPE_KEY = "__REF_TYPE";
