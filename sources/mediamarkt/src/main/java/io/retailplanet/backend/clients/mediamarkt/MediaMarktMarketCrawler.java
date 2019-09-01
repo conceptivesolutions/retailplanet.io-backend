@@ -4,18 +4,15 @@ import com.google.common.base.Stopwatch;
 import com.mashape.unirest.http.*;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.retailplanet.backend.clients.base.api.*;
-import io.retailplanet.backend.clients.base.impl.util.*;
+import io.retailplanet.backend.clients.base.impl.util.RetryManager;
 import io.retailplanet.backend.clients.base.spi.IMarketCrawler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.HttpClients;
 import org.jetbrains.annotations.NotNull;
 import org.json.*;
 import org.slf4j.*;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -30,14 +27,6 @@ public class MediaMarktMarketCrawler implements IMarketCrawler
   private static final String _BASE_URL = "https://www.mediamarkt.de";
   private static final String _MEDIAMARKT_AVAILABILITY_URL = "/de/market-selector-list-availability.json";
 
-  @Inject
-  public MediaMarktMarketCrawler()
-  {
-    Unirest.setHttpClient(HttpClients.custom()
-                              .setSSLSocketFactory(new SSLConnectionSocketFactory(SSLUtility.createTrustAllContext()))
-                              .build());
-  }
-
   @NotNull
   @Override
   public List<CrawledMarket> getMarkets()
@@ -46,13 +35,7 @@ public class MediaMarktMarketCrawler implements IMarketCrawler
 
     try
     {
-      JSONObject response = RetryManager.retry(() -> {
-        HttpResponse<String> stringResponse = Unirest.get(_BASE_URL + _MEDIAMARKT_AVAILABILITY_URL)
-            .queryString("catEntryId", "0")
-            .asString();
-        return _marketToJSON(stringResponse.getBody());
-      }, 10, 1000, null, _LOGGER);
-
+      JSONObject response = RetryManager.retry(() -> _getAvailabilities("0"), 10, 1000, null, _LOGGER);
       JSONArray markets = response.getJSONArray("markets");
       for (Object market : markets)
       {
@@ -93,17 +76,13 @@ public class MediaMarktMarketCrawler implements IMarketCrawler
       executor.execute(() -> {
         try
         {
-          HttpResponse<JsonNode> response = RetryManager.retry(() -> Unirest.get(_BASE_URL + _MEDIAMARKT_AVAILABILITY_URL)
-              .queryString("catEntryId", product.getID())
-              .asJson(), 10, 1000, null, _LOGGER);
-
-          JSONArray availabilities = response.getBody().getObject()
+          JSONArray availabilities = RetryManager.retry(() -> _getAvailabilities(product.getID()), 10, 1000, null, _LOGGER)
               .getJSONArray("availabilities");
           for (Object availability : availabilities)
           {
             String outletID = ((JSONObject) availability).getString("id");
             String level = ((JSONObject) availability).getString("level");
-            product.availability(outletID, _getType(level), null);
+            product.availability(outletID, _getType(level), null); //todo quantity
           }
         }
         catch (UnirestException e)
@@ -128,14 +107,35 @@ public class MediaMarktMarketCrawler implements IMarketCrawler
     }
   }
 
+  /**
+   * Returns all availabilities to a specific product id
+   *
+   * @param pCatEntryId product ID (defined as catEntryId)
+   * @return JsonObject
+   */
+  @NotNull
+  private JSONObject _getAvailabilities(@NotNull String pCatEntryId) throws UnirestException
+  {
+    HttpResponse<String> stringResponse = Unirest.get(_BASE_URL + _MEDIAMARKT_AVAILABILITY_URL)
+        .queryString("catEntryId", pCatEntryId)
+        .asString();
+    return _marketToJSON(stringResponse.getBody());
+  }
+
+  /**
+   * Returns the availability type for a specific level
+   *
+   * @param pLevel Level returned by page
+   * @return availability
+   */
   @NotNull
   private static CrawledProduct.Availability _getType(@NotNull String pLevel)
   {
     switch (pLevel)
     {
       case "0":
-      case "1": // auf lager
-      case "2": // geringer bestand
+      case "1":
+      case "2":
         return CrawledProduct.Availability.AVAILABLE;
       case "3":
       case "4":
@@ -146,8 +146,8 @@ public class MediaMarktMarketCrawler implements IMarketCrawler
   }
 
   /**
-   * Wandelt den übergebenen Market-String in ein JsonObject um.
-   * WTF, das JSON ist manchmal ungültig -> gültig machen
+   * Transforms the current market string to a JsonObject.
+   * WTF, the JSON is sometimes invalid -> make it valid
    *
    * @param pString JSON
    * @return JSONObject

@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.stream.*;
 
 /**
- * Product-Crawler speziell für MediaMarkt
+ * Product-Crawler implementation for MediaMarkt
  *
  * @author w.glanzer, 06.01.2019
  */
@@ -35,15 +35,9 @@ public class MediaMarktProductCrawler implements IProductCrawler
   private static final String _BASE_URL = "https://www.mediamarkt.de";
   private static final SSLSocketFactory _SOCKET_FACTORY = SSLUtility.createTrustAllContext().getSocketFactory();
 
-  /* Gibt an wie oft versucht werden soll, eine Verbindung aufzubauen und das Document zu lesen */
-  private static final int _CON_MAX_TRIES = 50;
-  /* Gibt die Zeit in ms an die zwischen den Retrys gewartet wird */
-  private static final int _CON_RETRY_TIMEOUT = 10000;
-  /* ExecutorService der die gerade aktiven Requests an die IDataSource enthält */
   private final ExecutorService _REQUESTS_EXECUTOR = Executors.newFixedThreadPool(4);
   private final Semaphore _CONCURRENT_REQUESTS = new Semaphore(4);
-  /* Liste aus Kategorien, die beim aktuellen Suchlauf gefailt ist */
-  private final List<String> errors = new ArrayList<>();
+  private final List<String> failedCategories = new ArrayList<>();
 
   @Override
   public void read(@NotNull Consumer<CrawledProduct> pProductConsumer)
@@ -61,10 +55,16 @@ public class MediaMarktProductCrawler implements IProductCrawler
     }
     finally
     {
-      errors.clear();
+      failedCategories.clear();
     }
   }
 
+  /**
+   * Starts to fetch products from a specific url
+   *
+   * @param pProductPair     Category / URL to fetch
+   * @param pProductConsumer Consumer for the retreived products
+   */
   private void _fetchProducts(@NotNull Pair<String, String> pProductPair, @NotNull Consumer<CrawledProduct> pProductConsumer)
   {
     String categoryName = pProductPair.getLeft();
@@ -107,7 +107,7 @@ public class MediaMarktProductCrawler implements IProductCrawler
 
       CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get();
 
-      // Fertig -> Loggen
+      // Log success
       _LOGGER.info("Fetch Products | " + url + " | " + size.get());
     }
     catch (Exception e)
@@ -175,15 +175,15 @@ public class MediaMarktProductCrawler implements IProductCrawler
         }
       }
 
-      // Auf alle Asynchronen Tasks warten
+      // Wait for all tasks
       CompletableFuture.allOf(asyncTasksToWaitOn.toArray(new CompletableFuture[0])).get();
 
-      // Fertig -> Log-Ausgabe
+      // Log success
       _LOGGER.info("Found " + resultList.size() + " categories");
 
-      // Stream sortiert
+      // Return only "real" categories
       return resultList.stream()
-          .filter(pPair -> pPair.getRight().contains("/category/")) // Nur dann sind es wirkliche dursuchbare Kategorien
+          .filter(pPair -> pPair.getRight().contains("/category/"))
           .sorted(Comparator.comparing(Pair::getKey));
     }
     catch (Exception e)
@@ -232,7 +232,7 @@ public class MediaMarktProductCrawler implements IProductCrawler
   }
 
   /**
-   * @return Anzahl der Pages
+   * @return Current page count
    */
   private int _getPageCount(String pURL)
   {
@@ -240,7 +240,7 @@ public class MediaMarktProductCrawler implements IProductCrawler
     {
       Element paginationEle = _fetchDocument(Jsoup.connect(pURL)).getElementsByClass("pagination-next").get(0).parent();
       String sizeString = paginationEle.getElementsByTag("li").last().previousElementSibling().attr("data-value");
-      return Integer.valueOf(sizeString);
+      return Integer.parseInt(sizeString);
     }
     catch (Exception e)
     {
@@ -255,7 +255,7 @@ public class MediaMarktProductCrawler implements IProductCrawler
 
     try
     {
-      if (errors.contains(pCategoryURL))
+      if (failedCategories.contains(pCategoryURL))
         return Stream.empty();
 
       _LOGGER.info("Fetching Products | " + pCategoryURL + " | Page: " + (pPage + 1) + "/" + pMaxPages);
@@ -275,10 +275,10 @@ public class MediaMarktProductCrawler implements IProductCrawler
     {
     }
 
-    // -> Fehler
-    if (!errors.contains(pCategoryURL))
+    // -> Failure
+    if (!failedCategories.contains(pCategoryURL))
     {
-      errors.add(pCategoryURL);
+      failedCategories.add(pCategoryURL);
       if (doc != null)
         _LOGGER.info("Failed to retrieve elements for category: " + doc.body());
       _LOGGER.error("Failed to retrieve elements for category: " + pCategoryURL + " | Page: " + (pPage + 1) + "/" + pMaxPages);
@@ -292,7 +292,7 @@ public class MediaMarktProductCrawler implements IProductCrawler
   {
     return RetryManager.retry(() -> pConnection
         .sslSocketFactory(_SOCKET_FACTORY)
-        .get(), _CON_MAX_TRIES, _CON_RETRY_TIMEOUT, null, _LOGGER);
+        .get(), 50, 10000, null, _LOGGER);
   }
 
   @Nullable
@@ -329,7 +329,7 @@ public class MediaMarktProductCrawler implements IProductCrawler
   }
 
   /**
-   * @return Liefert die ECHTE ID (catEntryId) zu einem Produkt
+   * @return Returns the "real" id of a product (catEntryId)
    */
   @NotNull
   private String _getID(@NotNull Element pElement)
@@ -351,7 +351,7 @@ public class MediaMarktProductCrawler implements IProductCrawler
   }
 
   /**
-   * @return Liefert alle Vorschaubilder
+   * @return All preview picture urls
    */
   @NotNull
   private Set<String> _getPreviews(@NotNull Element pElement)
@@ -368,7 +368,7 @@ public class MediaMarktProductCrawler implements IProductCrawler
   }
 
   /**
-   * @return Sucht nach zusätzlichen Informationen
+   * @return All additional information
    */
   @NotNull
   private Map<String, String> _getAdditionalInfos(@NotNull Element pElement)
