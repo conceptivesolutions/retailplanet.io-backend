@@ -67,7 +67,7 @@ class MainCrawlingThread extends Thread
     try
     {
       // Init upload
-      uploadFacade.productsInit(host, clientID, clientToken);
+      uploadFacade.init(host, clientID, clientToken);
     }
     catch (Exception e)
     {
@@ -85,8 +85,8 @@ class MainCrawlingThread extends Thread
       // Wait for tasks to finish
       CompletableFuture.allOf(uploadTasks.toArray(new CompletableFuture[0])).get(10800, TimeUnit.SECONDS);
 
-      // Execute flush on Backend
-      uploadFacade.productsFlush();
+      // Finish
+      uploadFacade.finish();
     }
     catch (Exception e)
     {

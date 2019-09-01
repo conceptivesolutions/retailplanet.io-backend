@@ -26,7 +26,7 @@ public interface IBusinessRestFacade
      * @param pClientID    ClientID
      * @param pClientToken ClientToken
      */
-    void productsInit(@NotNull String pHost, @NotNull String pClientID, @NotNull String pClientToken) throws Exception;
+    void init(@NotNull String pHost, @NotNull String pClientID, @NotNull String pClientToken) throws Exception;
 
     /**
      * Upload Products
@@ -43,9 +43,9 @@ public interface IBusinessRestFacade
     void markets(@NotNull List<CrawledMarket> pMarkets) throws Exception;
 
     /**
-     * Flush Products in Backend and write them to storage
+     * Finishes the current transaction
      */
-    void productsFlush() throws Exception; //todo we do not have a flush mechanism
+    void finish() throws Exception;
 
   }
 

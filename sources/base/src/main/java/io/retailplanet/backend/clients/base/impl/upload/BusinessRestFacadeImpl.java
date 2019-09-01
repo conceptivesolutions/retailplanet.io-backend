@@ -27,7 +27,7 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
   private Instant sessionTokenValidity;
 
   @Override
-  public void productsInit(@NotNull String pHost, @NotNull String pClientID, @NotNull String pClientToken) throws Exception
+  public void init(@NotNull String pHost, @NotNull String pClientID, @NotNull String pClientToken) throws Exception
   {
     host = pHost;
 
@@ -101,11 +101,11 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
   }
 
   @Override
-  public void productsFlush() throws Exception
+  public void finish() throws Exception
   {
     try
     {
-      // Flush
+      // Finish
       HttpResponse<String> response = Unirest.delete(host + _BUSINESS + "/token/" + sessionToken)
           .asString();
       if (response.getStatus() != 200)
@@ -115,6 +115,7 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
     {
       // invalidate session token
       sessionToken = null;
+      sessionTokenValidity = null;
     }
   }
 
@@ -152,6 +153,8 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
    */
   private void _ensureSessionTokenValidity()
   {
+    if (sessionTokenValidity == null)
+      throw new NullPointerException("sessionTokenValidity is null");
     if (Instant.now().isAfter(sessionTokenValidity))
       throw new IllegalArgumentException("Session token expired. " + sessionTokenValidity);
   }
