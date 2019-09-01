@@ -5,10 +5,12 @@ import io.retailplanet.backend.common.events.AbstractEventFacade;
 import io.retailplanet.backend.common.events.market.MarketUpsertEvent;
 import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
 import io.retailplanet.backend.common.events.token.*;
+import io.retailplanet.backend.common.util.EventUtility;
 import io.smallrye.reactive.messaging.annotations.Emitter;
 import io.smallrye.reactive.messaging.annotations.*;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 /**
@@ -56,5 +58,13 @@ class EventFacadeImpl extends AbstractEventFacade implements IEventFacade
   public void sendTokenInvalidatedEvent(@NotNull TokenInvalidatedEvent pEvent)
   {
     send(pEvent, tokenInvalidateEmitter);
+  }
+
+  @Override
+  @PostConstruct
+  public void init()
+  {
+    super.init();
+    tokenCreatedFlowable = tokenCreatedFlowable.as(EventUtility::replayEvents);
   }
 }

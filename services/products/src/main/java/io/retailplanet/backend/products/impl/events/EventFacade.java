@@ -5,10 +5,12 @@ import io.retailplanet.backend.common.events.AbstractEventFacade;
 import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.market.*;
 import io.retailplanet.backend.common.events.search.SearchProductsResultEvent;
+import io.retailplanet.backend.common.util.EventUtility;
 import io.smallrye.reactive.messaging.annotations.Emitter;
 import io.smallrye.reactive.messaging.annotations.*;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 /**
@@ -59,6 +61,15 @@ class EventFacade extends AbstractEventFacade implements IEventFacade
   public void sendSearchProductsResultEvent(@NotNull SearchProductsResultEvent pEvent)
   {
     send(pEvent, resultEmitter);
+  }
+
+  @Override
+  @PostConstruct
+  public void init()
+  {
+    super.init();
+    searchMarketsResultFlowable = searchMarketsResultFlowable.as(EventUtility::replayEvents);
+    searchInIndexResult = searchInIndexResult.as(EventUtility::replayEvents);
   }
 
 }

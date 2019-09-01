@@ -3,11 +3,13 @@ package io.retailplanet.backend.common.events;
 import io.opentracing.*;
 import io.reactivex.*;
 import io.retailplanet.backend.common.events.exceptions.ErrorEventException;
+import io.retailplanet.backend.common.util.EventUtility;
 import io.smallrye.reactive.messaging.annotations.Emitter;
 import io.smallrye.reactive.messaging.annotations.*;
 import org.jetbrains.annotations.*;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.function.Supplier;
 
@@ -77,6 +79,12 @@ public abstract class AbstractEventFacade implements IAbstractEventFacade
     {
       pEvent.finishTrace();
     }
+  }
+
+  @PostConstruct
+  public void init()
+  {
+    errorsFlowable = errorsFlowable.as(EventUtility::replayEvents);
   }
 
   @SafeVarargs

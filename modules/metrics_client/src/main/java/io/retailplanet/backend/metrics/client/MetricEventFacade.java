@@ -3,10 +3,12 @@ package io.retailplanet.backend.metrics.client;
 import io.reactivex.*;
 import io.retailplanet.backend.common.events.AbstractEventFacade;
 import io.retailplanet.backend.common.events.metric.KafkaMetricEvent;
+import io.retailplanet.backend.common.util.EventUtility;
 import io.smallrye.reactive.messaging.annotations.Emitter;
 import io.smallrye.reactive.messaging.annotations.*;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 /**
@@ -26,6 +28,14 @@ public class MetricEventFacade extends AbstractEventFacade
   public Single<KafkaMetricEvent> sendMetricsEvent(@NotNull KafkaMetricEvent pEvent)
   {
     return send(pEvent, metricRequestEmitter, metricResponseFlowable);
+  }
+
+  @Override
+  @PostConstruct
+  public void init()
+  {
+    super.init();
+    metricResponseFlowable = metricResponseFlowable.as(EventUtility::replayEvents);
   }
 
 }

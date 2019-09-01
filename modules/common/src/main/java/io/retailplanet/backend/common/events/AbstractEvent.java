@@ -17,6 +17,9 @@ import java.util.concurrent.TimeUnit;
 @RegisterForReflection
 public abstract class AbstractEvent<S extends AbstractEvent<S>>
 {
+  /* Specifies how long an event lives in milliseconds */
+  public static final long TTL = 1500;
+
   private static final boolean _TRACE_ENABLED = !Utility.isNullOrEmptyTrimmedString(System.getenv("OPENTRACING_SERVERS"));
   private static final String _REFERENCE_TYPE_KEY = "__REF_TYPE";
 
@@ -112,7 +115,7 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
   final <T extends AbstractEvent> Single<T> waitForAnswer(@NotNull Flowable<ErrorEvent> pErrors, @NotNull Flowable<? extends T>... pFlowables)
   {
     return Flowable.merge(Flowable.merge(Arrays.asList(pFlowables)), pErrors)
-        .timeout(1500, TimeUnit.MILLISECONDS)
+        .timeout(TTL, TimeUnit.MILLISECONDS)
         .filter(pEvent -> pEvent.chainID.trim().equals(chainID))
         .map(pEvent -> {
           if (pEvent instanceof ErrorEvent)
