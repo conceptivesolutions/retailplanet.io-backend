@@ -5,11 +5,10 @@ import io.opentracing.*;
 import io.opentracing.propagation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.reactivex.*;
-import io.retailplanet.backend.common.metrics.IMetricEventFacade;
+import io.retailplanet.backend.common.metrics.*;
 import io.retailplanet.backend.common.util.Utility;
 import org.jetbrains.annotations.NotNull;
 
-import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -32,12 +31,10 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
   @JsonProperty
   public Map<String, String> traceContext;
 
-  @Inject
-  protected IMetricEventFacade metricEventFacade;
-
   /* Topic, where this event comes from */
   String receivedTopic;
 
+  private final IMetricEventFacade metricEventFacade = MetricEventFacade.getInstance();
   private Span computingSpan;
 
   public <T extends AbstractEvent> T createAnswer(Class<T> pClazz)
