@@ -2,6 +2,8 @@ package io.retailplanet.backend.elasticsearch.impl.facades;
 
 import io.retailplanet.backend.elasticsearch.impl.struct.IIndexStructProvider;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.*;
@@ -27,6 +29,14 @@ class ElasticFacadeReadWriteImpl extends ElasticFacadeReadImpl
 {
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(ElasticFacadeReadWriteImpl.class);
+
+  @Inject
+  @Metric(name = "documentUpserts")
+  private Counter metricDocumentUpserts;
+
+  @Inject
+  @Metric(name = "documentUpserts_failed")
+  private Counter metricDocumentUpsertsFailed;
 
   @Inject
   private IIndexStructProvider structProvider;
@@ -135,7 +145,7 @@ class ElasticFacadeReadWriteImpl extends ElasticFacadeReadImpl
   /**
    * BulkProcessorListener-Impl
    */
-  private static class _BulkListener implements ActionListener<BulkResponse>
+  private class _BulkListener implements ActionListener<BulkResponse>
   {
     @Override
     public void onResponse(BulkResponse response)
@@ -147,6 +157,10 @@ class ElasticFacadeReadWriteImpl extends ElasticFacadeReadImpl
           successfullcount--;
           _LOGGER.debug("Item failed to update " + item.getId(), item.getFailure().getCause());
         }
+
+      // update metrics
+      metricDocumentUpserts.inc(successfullcount);
+      metricDocumentUpsertsFailed.inc(response.getItems().length - successfullcount);
 
       _LOGGER.info(successfullcount + " items successfully updated, " + (response.getItems().length - successfullcount) + " failed, took " + response.getTook());
     }

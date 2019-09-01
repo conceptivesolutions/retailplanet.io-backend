@@ -3,6 +3,7 @@ package io.retailplanet.backend.elasticsearch.impl.facades;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import io.retailplanet.backend.elasticsearch.impl.util.QueryUtility;
 import io.vertx.core.json.*;
+import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.*;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -30,6 +31,7 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
 
   @NotNull
   @Override
+  @Counted(name = "search")
   public ISearchResult search(@Nullable List<String> pIndexTypes, @NotNull List<IQueryBuilder> pMatches, @NotNull List<IQueryBuilder> pFilters,
                               @Nullable Integer pOffset, @Nullable Integer pLength) throws Exception
   {
