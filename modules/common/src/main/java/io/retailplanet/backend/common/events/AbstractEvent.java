@@ -5,9 +5,11 @@ import io.opentracing.*;
 import io.opentracing.propagation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.reactivex.*;
+import io.retailplanet.backend.common.metrics.IMetricEventFacade;
 import io.retailplanet.backend.common.util.Utility;
 import org.jetbrains.annotations.NotNull;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,9 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
   /* Current execution context for OpenTracing propagation */
   @JsonProperty
   public Map<String, String> traceContext;
+
+  @Inject
+  protected IMetricEventFacade metricEventFacade;
 
   /* Topic, where this event comes from */
   String receivedTopic;
@@ -122,7 +127,8 @@ public abstract class AbstractEvent<S extends AbstractEvent<S>>
             throw ((ErrorEvent) pEvent).error();
           return (T) pEvent;
         })
-        .firstOrError();
+        .firstOrError()
+        .doOnError(metricEventFacade::fireAnswerReceiveError);
   }
 
 }
