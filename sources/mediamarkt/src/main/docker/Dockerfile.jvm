@@ -1,5 +1,7 @@
 FROM images.conceptive.io/retailplanet.backend.base:latest
 
+RUN apk add --no-cache nss
+
 # Copy all files to /deployments
 COPY target/lib/* /deployments/lib/
 COPY target/*-runner.jar /deployments/app.jar
