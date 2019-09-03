@@ -16,3 +16,4 @@ docker pull images.conceptive.io/retailplanet.backend.search.native:latest
 docker pull images.conceptive.io/retailplanet.backend.markets.native:latest
 docker pull images.conceptive.io/retailplanet.backend.products.native:latest
 docker pull images.conceptive.io/retailplanet.backend.userauth.native:latest
+docker pull images.conceptive.io/retailplanet.backend.metrics.native:latest

@@ -136,3 +136,11 @@ services:
       - kafka
     environment:
       KAFKA_SERVERS: kafka:9092
+
+  # Metrics-Service
+  metrics:
+    image: images.conceptive.io/retailplanet.backend.metrics.native:latest
+    links:
+      - kafka
+    environment:
+      KAFKA_SERVERS: kafka:9092
