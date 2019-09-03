@@ -2,6 +2,7 @@ package io.retailplanet.backend.products.impl.struct;
 
 import com.fasterxml.jackson.annotation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.retailplanet.backend.common.util.Utility;
 import io.vertx.core.json.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -104,7 +105,11 @@ public class Product
       productObj.put(PREVIEWS, previews);
 
     if (additionalInfos != null)
-      productObj.put(ADDITIONAL_INFO, additionalInfos);
+      productObj.put(ADDITIONAL_INFO, additionalInfos.entrySet().stream()
+          .map(pEntry -> new JsonObject()
+              .put(IIndexStructure.IAdditionalInfo.NAME, pEntry.getKey())
+              .put(IIndexStructure.IAdditionalInfo.VALUE, pEntry.getValue()))
+          .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
 
     if (availability != null)
       productObj.put(AVAILABILITY, availability.entrySet().stream()
@@ -133,7 +138,17 @@ public class Product
     product.url = index.getString(URL);
     product.category = index.getString(CATEGORY);
     product.previews = index.getJsonArray(PREVIEWS, new JsonArray()).getList();
-    product.additionalInfos = (Map) index.getJsonObject(ADDITIONAL_INFO, new JsonObject()).getMap();
+    product.additionalInfos = index.getJsonArray(ADDITIONAL_INFO, new JsonArray()).stream()
+        .map(JsonObject.class::cast)
+        .map(pEntry -> {
+          String name = pEntry.getString(IIndexStructure.IAdditionalInfo.NAME);
+          String value = pEntry.getString(IIndexStructure.IAdditionalInfo.VALUE);
+          if (Utility.isNullOrEmptyTrimmedString(name))
+            return null;
+          return new AbstractMap.SimpleImmutableEntry<>(name, value);
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     product.availability = index.getJsonArray(AVAILABILITY, new JsonArray()).stream()
         .map(JsonObject.class::cast)
         .map(pEntry -> {

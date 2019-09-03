@@ -50,4 +50,13 @@ public interface IIndexStructure
     String QUANTITY = "quantity";
   }
 
+  /**
+   * All necessary fields to query the additional info of a product
+   */
+  interface IAdditionalInfo
+  {
+    String NAME = "name";
+    String VALUE = "value";
+  }
+
 }
