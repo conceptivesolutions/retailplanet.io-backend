@@ -9,6 +9,7 @@ import io.retailplanet.backend.common.metrics.*;
 import io.retailplanet.backend.common.util.Utility;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractEvent<S extends AbstractEvent<S>>
 {
   /* Specifies how long an event lives in milliseconds */
-  public static final long TTL = 3000;
+  public static final long TTL = Utility.isDevMode() ? Duration.ofHours(24).toMillis() : Duration.ofSeconds(3).toMillis();
 
   private static final boolean _TRACE_ENABLED = !Utility.isNullOrEmptyTrimmedString(System.getenv("OPENTRACING_SERVERS"));
   private static final String _REFERENCE_TYPE_KEY = "__REF_TYPE";
