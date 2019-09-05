@@ -1,4 +1,4 @@
-package io.retailplanet.backend.search.api.rest;
+package io.retailplanet.backend.search.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
