@@ -1,14 +1,14 @@
 package io.retailplanet.backend.metrics.client.health;
 
-import io.retailplanet.backend.common.events.metric.MetricEvent;
-import io.retailplanet.backend.metrics.client.MetricEventFacade;
+import io.retailplanet.backend.metrics.client.IMetricServerService;
 import org.eclipse.microprofile.health.*;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.time.*;
+import java.time.Duration;
 
 /**
  * HealthCheck which sends messages and waits for an answer from the corresponding answer service
@@ -23,7 +23,8 @@ public class HealthCheck implements org.eclipse.microprofile.health.HealthCheck
   private static final Logger _LOGGER = LoggerFactory.getLogger(HealthCheck.class);
 
   @Inject
-  private MetricEventFacade eventFacade;
+  @RestClient
+  private IMetricServerService metricServerService;
 
   @Override
   public HealthCheckResponse call()
@@ -53,10 +54,7 @@ public class HealthCheck implements org.eclipse.microprofile.health.HealthCheck
   {
     try
     {
-      MetricEvent source = new MetricEvent()
-          .started(Instant.now());
-      MetricEvent result = eventFacade.sendMetricsEvent(source).blockingGet();
-      return Duration.between(source.started(), result.answered());
+      return Duration.ofMillis(metricServerService.ping());
     }
     catch (Exception e)
     {
