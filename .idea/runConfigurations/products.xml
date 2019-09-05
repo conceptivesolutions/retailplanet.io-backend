@@ -7,7 +7,6 @@
     <option name="ALTERNATIVE_JRE_PATH" />
     <envs>
       <env name="ELASTIC_SERVERS" value="localhost:9200" />
-      <env name="KAFKA_SERVERS" value="localhost:9092" />
       <env name="OPENTRACING_SERVERS" value="http://localhost:14268/api/traces" />
       <env name="LOG_LEVEL" value="INFO" />
       <env name="LOG_FILE" value="false" />

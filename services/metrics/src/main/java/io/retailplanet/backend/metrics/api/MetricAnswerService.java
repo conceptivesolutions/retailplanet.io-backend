@@ -1,6 +1,6 @@
 package io.retailplanet.backend.metrics.api;
 
-import io.retailplanet.backend.common.events.metric.KafkaMetricEvent;
+import io.retailplanet.backend.common.events.metric.MetricEvent;
 import io.retailplanet.backend.metrics.impl.events.IEvents;
 import io.smallrye.reactive.messaging.annotations.Broadcast;
 import org.eclipse.microprofile.reactive.messaging.*;
@@ -21,7 +21,7 @@ public class MetricAnswerService
   @Incoming(IEvents.IN_METRICS_REQUEST)
   @Outgoing(IEvents.OUT_METRICS_RESPONSE)
   @Broadcast
-  public KafkaMetricEvent answerMetricsEvent(@Nullable KafkaMetricEvent pEvent)
+  public MetricEvent answerMetricsEvent(@Nullable MetricEvent pEvent)
   {
     if (pEvent == null)
       return null;

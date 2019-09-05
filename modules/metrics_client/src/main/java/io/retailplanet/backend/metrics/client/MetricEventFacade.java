@@ -2,7 +2,7 @@ package io.retailplanet.backend.metrics.client;
 
 import io.reactivex.*;
 import io.retailplanet.backend.common.events.AbstractEventFacade;
-import io.retailplanet.backend.common.events.metric.KafkaMetricEvent;
+import io.retailplanet.backend.common.events.metric.MetricEvent;
 import io.retailplanet.backend.common.util.EventUtility;
 import io.smallrye.reactive.messaging.annotations.Emitter;
 import io.smallrye.reactive.messaging.annotations.*;
@@ -19,13 +19,13 @@ public class MetricEventFacade extends AbstractEventFacade
 {
 
   @Stream("Metrics_REQUEST_OUT")
-  protected Emitter<KafkaMetricEvent> metricRequestEmitter;
+  protected Emitter<MetricEvent> metricRequestEmitter;
 
   @Stream("Metrics_RESPONSE_IN")
-  protected Flowable<KafkaMetricEvent> metricResponseFlowable;
+  protected Flowable<MetricEvent> metricResponseFlowable;
 
   @NotNull
-  public Single<KafkaMetricEvent> sendMetricsEvent(@NotNull KafkaMetricEvent pEvent)
+  public Single<MetricEvent> sendMetricsEvent(@NotNull MetricEvent pEvent)
   {
     return send(pEvent, metricRequestEmitter, metricResponseFlowable);
   }

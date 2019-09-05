@@ -1,6 +1,6 @@
 package io.retailplanet.backend.metrics.client.health;
 
-import io.retailplanet.backend.common.events.metric.KafkaMetricEvent;
+import io.retailplanet.backend.common.events.metric.MetricEvent;
 import io.retailplanet.backend.metrics.client.MetricEventFacade;
 import org.eclipse.microprofile.health.*;
 import org.jetbrains.annotations.Nullable;
@@ -11,16 +11,16 @@ import javax.inject.Inject;
 import java.time.*;
 
 /**
- * HealthCheck which sends kafka messages and waits for an answer from the corresponding answer service
+ * HealthCheck which sends messages and waits for an answer from the corresponding answer service
  *
  * @author w.glanzer, 28.08.2019
  */
 @Readiness
 @ApplicationScoped
-public class KafkaHealthCheck implements HealthCheck
+public class HealthCheck implements org.eclipse.microprofile.health.HealthCheck
 {
 
-  private static final Logger _LOGGER = LoggerFactory.getLogger(KafkaHealthCheck.class);
+  private static final Logger _LOGGER = LoggerFactory.getLogger(HealthCheck.class);
 
   @Inject
   private MetricEventFacade eventFacade;
@@ -46,16 +46,16 @@ public class KafkaHealthCheck implements HealthCheck
   /**
    * Calculates the current roundtrip time
    *
-   * @return the roundtrip time, from here to kafka answer service and back
+   * @return the roundtrip time, from here to the answer service and back
    */
   @Nullable
   protected Duration getRoundtripTime()
   {
     try
     {
-      KafkaMetricEvent source = new KafkaMetricEvent()
+      MetricEvent source = new MetricEvent()
           .started(Instant.now());
-      KafkaMetricEvent result = eventFacade.sendMetricsEvent(source).blockingGet();
+      MetricEvent result = eventFacade.sendMetricsEvent(source).blockingGet();
       return Duration.between(source.started(), result.answered());
     }
     catch (Exception e)

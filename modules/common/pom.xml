@@ -27,12 +27,6 @@
       <artifactId>rxjava</artifactId>
     </dependency>
 
-    <!-- Kafka Clients -->
-    <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka-clients</artifactId>
-    </dependency>
-
     <!-- Apache Commons -->
     <dependency>
       <groupId>commons-io</groupId>
@@ -44,12 +38,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-core</artifactId>
-    </dependency>
-
-    <!-- Provider for service annotations -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
     </dependency>
 
     <!-- Metrics -->

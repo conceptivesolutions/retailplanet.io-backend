@@ -13,7 +13,7 @@ import java.time.Instant;
  * @author w.glanzer, 28.08.2019
  */
 @RegisterForReflection
-public class KafkaMetricEvent extends AbstractEvent<KafkaMetricEvent>
+public class MetricEvent extends AbstractEvent<MetricEvent>
 {
 
   @JsonProperty
@@ -31,7 +31,7 @@ public class KafkaMetricEvent extends AbstractEvent<KafkaMetricEvent>
   }
 
   @NotNull
-  public KafkaMetricEvent answered(Instant pAnswered)
+  public MetricEvent answered(Instant pAnswered)
   {
     answered = pAnswered;
     return this;
@@ -46,7 +46,7 @@ public class KafkaMetricEvent extends AbstractEvent<KafkaMetricEvent>
   }
 
   @NotNull
-  public KafkaMetricEvent started(Instant pStarted)
+  public MetricEvent started(Instant pStarted)
   {
     started = pStarted;
     return this;

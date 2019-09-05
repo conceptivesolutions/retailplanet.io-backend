@@ -28,11 +28,7 @@ public class PreRunningHook
       _LOGGER.info("Starting sevice in development mode");
     else
     {
-      String groupID = System.getenv("KAFKA_GROUP_ID");
-      if (Utility.isNullOrEmptyTrimmedString(groupID))
-        throw new IllegalArgumentException("KAFKA_GROUP_ID has to be set in production environment");
-
-      _LOGGER.info("Starting service in production mode [->] group.id = " + groupID);
+      _LOGGER.info("Starting service in production mode");
     }
   }
 

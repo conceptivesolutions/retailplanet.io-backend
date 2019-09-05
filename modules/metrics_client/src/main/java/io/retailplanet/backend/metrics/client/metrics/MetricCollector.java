@@ -1,6 +1,6 @@
 package io.retailplanet.backend.metrics.client.metrics;
 
-import io.retailplanet.backend.common.events.metric.KafkaMetricEvent;
+import io.retailplanet.backend.common.events.metric.MetricEvent;
 import io.retailplanet.backend.metrics.client.MetricEventFacade;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Gauge;
@@ -12,15 +12,15 @@ import javax.inject.Inject;
 import java.time.Instant;
 
 /**
- * Collectors metrics for interaction with kafka
+ * Collectors metrics for interaction with other services
  *
  * @author w.glanzer, 29.08.2019
  */
 @ApplicationScoped
-public class KafkaMetricCollector
+public class MetricCollector
 {
 
-  private static final Logger _LOGGER = LoggerFactory.getLogger(KafkaMetricCollector.class);
+  private static final Logger _LOGGER = LoggerFactory.getLogger(MetricCollector.class);
 
   @Inject
   private MetricEventFacade eventFacade;
@@ -35,10 +35,10 @@ public class KafkaMetricCollector
   /**
    * Calculates the current roundtrip time
    */
-  @Gauge(name = "roundtripTime", description = "Describes how long a kafka messages takes from a service to kafka and back", unit = MetricUnits.MILLISECONDS)
+  @Gauge(name = "roundtripTime", description = "Describes how long a messages takes from a service to another and back", unit = MetricUnits.MILLISECONDS)
   public long getRoundtripTime()
   {
-    KafkaMetricEvent answerEvent = eventFacade.sendMetricsEvent(new KafkaMetricEvent().started(Instant.now())).blockingGet();
+    MetricEvent answerEvent = eventFacade.sendMetricsEvent(new MetricEvent().started(Instant.now())).blockingGet();
     long result = System.currentTimeMillis() - answerEvent.started().toEpochMilli();
     _LOGGER.info("RoundtripTime: " + result + "ms");
     return result;
