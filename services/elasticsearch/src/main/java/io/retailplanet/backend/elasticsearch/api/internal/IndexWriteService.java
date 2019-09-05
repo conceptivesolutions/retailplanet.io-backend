@@ -1,18 +1,15 @@
-package io.retailplanet.backend.elasticsearch.api;
+package io.retailplanet.backend.elasticsearch.api.internal;
 
-import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
 import io.retailplanet.backend.common.util.Utility;
-import io.retailplanet.backend.elasticsearch.impl.events.*;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
 import io.vertx.core.json.*;
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.elasticsearch.common.xcontent.*;
-import org.jetbrains.annotations.*;
-import org.slf4j.*;
+import org.jetbrains.annotations.NotNull;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,52 +19,43 @@ import java.util.stream.Collectors;
  *
  * @author w.glanzer, 22.06.2019
  */
-@ApplicationScoped
-public class IndexServiceWrite
+@Path("/internal/elasticsearch")
+public class IndexWriteService
 {
-
-  private static final Logger _LOGGER = LoggerFactory.getLogger(IndexServiceWrite.class);
 
   @Inject
   private IIndexFacade indexFacade;
 
-  @Inject
-  private IEventFacade eventFacade;
-
   /**
-   * Executes the Index_DOCUMENT_UPSERT event, and inserts / updates documents in index
+   * Inserts / Updates documents in index
    *
-   * @param pEvent Event
+   * @param pClientID client that issued this write
+   * @param pType     indextype to write to
+   * @param pDocument document to insert
    */
-  @Incoming(IEvents.IN_INDEX_DOCUMENT_UPSERT)
-  public void documentUpsert(@Nullable DocumentUpsertEvent pEvent)
+  @PUT
+  public Response upsertDocument(@PathParam("clientID") String pClientID, @PathParam("type") String pType, Object pDocument) //todo specify Object
   {
-    if (pEvent == null)
-      return;
+    if (Utility.isNullOrEmptyTrimmedString(pClientID) || Utility.isNullOrEmptyTrimmedString(pType) || pDocument == null)
+      return Response.status(Response.Status.BAD_REQUEST).build();
 
-    eventFacade.trace(pEvent, () -> {
-      String clientid = pEvent.clientID();
-      String type = pEvent.type();
-      Object doc = pEvent.doc();
-      if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(type) || doc == null)
-        return;
+    try
+    {
+      indexFacade.upsertDocument(pClientID, pType, _getDocumentsFromDocField(pDocument).stream()
+          .map(pJsonObj -> {
+            String id = pJsonObj.getString("id");
+            if (id == null)
+              throw new IllegalArgumentException("JSONObject does not have ID value: " + pJsonObj);
+            pJsonObj.remove("id"); // remove id, because we already have it in elasticsearch structure afterwards
+            return Pair.of(id, _toContentBuilder(pJsonObj));
+          }));
+    }
+    catch (Exception e)
+    {
+      throw new RuntimeException("Failed to update index with type " + pType + " for client " + pClientID, e);
+    }
 
-      try
-      {
-        indexFacade.upsertDocument(clientid, type, _getDocumentsFromDocField(doc).stream()
-            .map(pJsonObj -> {
-              String id = pJsonObj.getString("id");
-              if (id == null)
-                throw new IllegalArgumentException("JSONObject does not have ID value: " + pJsonObj);
-              pJsonObj.remove("id"); // remove id, because we already have it in elasticsearch structure afterwards
-              return Pair.of(id, _toContentBuilder(pJsonObj));
-            }));
-      }
-      catch (Exception e)
-      {
-        _LOGGER.error("Failed to update index with type " + type + " for client " + clientid, e);
-      }
-    });
+    return Response.ok().build();
   }
 
   /**
