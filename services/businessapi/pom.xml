@@ -14,16 +14,6 @@
   <name>retailplanet.io: Service: BusinessAPI</name>
 
   <dependencies>
-    <!-- REST -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-jsonb</artifactId>
-    </dependency>
-
     <!-- metrics -->
     <dependency>
       <groupId>io.retailplanet.backend.modules</groupId>
