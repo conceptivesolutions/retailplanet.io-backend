@@ -1,16 +1,14 @@
 package io.retailplanet.backend.businesstoken.api;
 
 import io.retailplanet.backend.businesstoken.impl.cache.TokenCache;
-import io.retailplanet.backend.businesstoken.impl.events.*;
-import io.retailplanet.backend.common.events.token.*;
+import io.retailplanet.backend.businesstoken.impl.services.IUserAuthService;
 import io.retailplanet.backend.common.util.Utility;
-import io.smallrye.reactive.messaging.annotations.Broadcast;
-import org.eclipse.microprofile.reactive.messaging.*;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.*;
+import io.vertx.core.json.JsonObject;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import java.time.*;
 import java.util.UUID;
 
@@ -19,104 +17,71 @@ import java.util.UUID;
  *
  * @author w.glanzer, 10.06.2019
  */
-@ApplicationScoped
+@Path("/business/token")
 public class BusinessTokenService
 {
 
   /* Represents how long a token will be active by default */
   private static final Duration _TOKEN_LIFESPAN = Duration.ofHours(48);
-  private static final Logger _LOGGER = LoggerFactory.getLogger(BusinessTokenService.class);
-
-  @Inject
-  private IEventFacade eventFacade;
 
   @Inject
   private TokenCache tokenCache;
 
+  @Inject
+  @RestClient
+  private IUserAuthService userAuthService;
+
   /**
-   * Generates a new session_token for the BusinessToken_CREATE_AUTH-Event
+   * Generates a new session token for a specific client.
+   * If a previous session token was issued, it will be invalidated.
    *
-   * @param pEvent Event
-   * @return Result
+   * @param pClientID    ID of the requesting client
+   * @param pClientToken Token to authorize the client
    */
-  @Incoming(IEvents.IN_BUSINESSTOKEN_CREATE_AUTH)
-  @Outgoing(IEvents.OUT_BUSINESSTOKEN_CREATED)
-  @Broadcast
-  public TokenCreatedEvent generateTokenForBusinessTokenCreateAuthEvent(@Nullable TokenCreateEvent pEvent)
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/generate")
+  public Response generateToken(@QueryParam("clientid") String pClientID, @QueryParam("token") String pClientToken)
   {
-    if (pEvent == null)
-      return null;
+    // validate request
+    if (Utility.isNullOrEmptyTrimmedString(pClientID) || Utility.isNullOrEmptyTrimmedString(pClientToken))
+      return Response.status(Response.Status.BAD_REQUEST).build();
 
-    return eventFacade.trace(pEvent, () -> {
-      String clientid = pEvent.clientID();
-      if (Utility.isNullOrEmptyTrimmedString(clientid))
-        return null;
+    // check if user is allowed to create tokens
+    Response createAllowed = userAuthService.validate(pClientID, "BUSINESSTOKEN_CREATE");
+    if (createAllowed.getStatus() != Response.Status.OK.getStatusCode())
+      return Response.status(Response.Status.FORBIDDEN).build();
 
-      // Invalidate previous tokens from this client
-      eventFacade.sendTokenInvalidatedEvent(new TokenInvalidatedEvent().clientID(clientid));
+    // generate token and validity
+    String session_token = UUID.randomUUID().toString(); // todo
+    Instant validUntil = Instant.now().plus(_TOKEN_LIFESPAN);
 
-      // Generate new and send
-      return pEvent.createAnswer(TokenCreatedEvent.class)
-          .clientID(clientid)
-          .valid_until(Instant.now().plus(_TOKEN_LIFESPAN))
-          .session_token(UUID.randomUUID().toString());
-    });
+    // Only add valid tokens, because invalid are useless
+    if (validUntil.isAfter(Instant.now()))
+      tokenCache.putToken(pClientID, session_token, validUntil);
+
+    return Response.ok(new JsonObject()
+                           .put("session_token", session_token)
+                           .put("valid_until", validUntil)).build();
   }
 
   /**
-   * Processor for the BusinessToken_CREATED-Event
+   * Invalidates the given token
    *
-   * @param pEvent Event
+   * @param pSessionToken Token to be removed
    */
-  @Incoming(IEvents.IN_BUSINESSTOKEN_CREATED)
-  public void inBusinessTokenCreated(@Nullable TokenCreatedEvent pEvent)
+  @DELETE
+  @Path("{session_token}")
+  public Response invalidateToken(@PathParam("session_token") String pSessionToken)
   {
-    if (pEvent == null)
-      return;
+    // validate request
+    if (Utility.isNullOrEmptyTrimmedString(pSessionToken))
+      return Response.status(Response.Status.BAD_REQUEST).build();
 
-    eventFacade.trace(pEvent, () -> {
-      String clientid = pEvent.clientID();
-      String token = pEvent.session_token();
-      Instant validUntil = pEvent.valid_until() == null ? Instant.MIN : pEvent.valid_until();
-      if (Utility.isNullOrEmptyTrimmedString(clientid) || Utility.isNullOrEmptyTrimmedString(token))
-        return null;
+    // Invalidate given session_token
+    tokenCache.invalidateToken(pSessionToken);
 
-      // Only add valid tokens, because invalid are useless
-      if (validUntil.isAfter(Instant.now()))
-        tokenCache.putToken(clientid, token, validUntil);
-
-      return null;
-    });
-  }
-
-  /**
-   * Gets called, when a businesstoken was invalidated (mostly by user)
-   *
-   * @param pEvent Token
-   */
-  @Incoming(IEvents.IN_BUSINESSTOKEN_INVALIDATED)
-  public void invalidateBusinessToken(@Nullable TokenInvalidatedEvent pEvent)
-  {
-    if (pEvent == null)
-      return;
-
-    eventFacade.trace(pEvent, () -> {
-      // Invalidate given session_token
-      String token = pEvent.session_token();
-      if (token != null)
-        tokenCache.invalidateToken(token);
-      else
-      {
-        // Invalidate all tokens for a specific client
-        String clientid = pEvent.clientID();
-        if (clientid != null)
-          tokenCache.invalidateAllTokens(clientid);
-        else
-          _LOGGER.warn("Failed to invalidate token for request: " + pEvent.toString());
-      }
-
-      return null;
-    });
+    return Response.ok().build();
   }
 
 }
