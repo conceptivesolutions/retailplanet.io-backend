@@ -1,8 +1,7 @@
 package io.retailplanet.backend.products.impl.filter;
 
 import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
-import io.retailplanet.backend.common.events.market.*;
-import io.retailplanet.backend.products.impl.events.IEventFacade;
+import io.retailplanet.backend.products.impl.services.IMarketSearchService;
 import io.retailplanet.backend.products.impl.struct.*;
 import org.jetbrains.annotations.*;
 
@@ -19,15 +18,15 @@ import static io.retailplanet.backend.common.events.index.DocumentSearchEvent.Ma
 class GeoSearchFilter implements ISearchFilter
 {
 
-  private final IEventFacade eventFacade;
+  private final IMarketSearchService marketSearchService;
   private final List<ProductAvailability.TYPE> availabilities;
   private final double lat;
   private final double lon;
   private final int distance;
 
-  GeoSearchFilter(@NotNull IEventFacade pEventFacade, @Nullable List<ProductAvailability.TYPE> pAvailabilities, double pLat, double pLon, int pDistance)
+  GeoSearchFilter(@NotNull IMarketSearchService pMarketSearchService, @Nullable List<ProductAvailability.TYPE> pAvailabilities, double pLat, double pLon, int pDistance)
   {
-    eventFacade = pEventFacade;
+    marketSearchService = pMarketSearchService;
     availabilities = pAvailabilities == null || pAvailabilities.isEmpty() ? null : pAvailabilities;
     lat = pLat;
     lon = pLon;
@@ -63,17 +62,8 @@ class GeoSearchFilter implements ISearchFilter
   {
     try
     {
-      SearchMarketsEvent ev = new SearchMarketsEvent()
-          .withGeoSearch(new SearchMarketsEvent.Geo()
-                             .lat(lat)
-                             .lon(lon)
-                             .distance(distance));
-
       // we have to block here, because we need the information
-      SearchMarketsResultEvent searchMarketsResultEvent = eventFacade.sendSearchMarketsEvent(ev).blockingGet();
-      if (searchMarketsResultEvent != null)
-        return searchMarketsResultEvent.marketIDs();
-      return null;
+      return marketSearchService.geoSearch(lat, lon, distance);
     }
     catch (Exception e)
     {

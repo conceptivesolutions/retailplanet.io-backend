@@ -1,18 +1,19 @@
-package io.retailplanet.backend.products.api;
+package io.retailplanet.backend.products.api.internal;
 
 import io.retailplanet.backend.common.events.index.*;
 import io.retailplanet.backend.common.events.search.*;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.common.util.i18n.ListUtil;
-import io.retailplanet.backend.products.impl.events.*;
 import io.retailplanet.backend.products.impl.filter.*;
+import io.retailplanet.backend.products.impl.services.IIndexReadService;
 import io.retailplanet.backend.products.impl.struct.*;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jetbrains.annotations.*;
 import org.slf4j.*;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,14 +22,15 @@ import java.util.stream.Collectors;
  *
  * @author w.glanzer, 12.07.2019
  */
-@ApplicationScoped
+@Path("/internal/products/search")
 public class SearchService
 {
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(SearchService.class);
 
   @Inject
-  private IEventFacade eventFacade;
+  @RestClient
+  private IIndexReadService indexReadService;
 
   @Inject
   private ISearchFilterFactory filterFactory;
@@ -38,38 +40,23 @@ public class SearchService
    *
    * @param pEvent Search event
    */
-  @Incoming(IEvents.IN_SEARCH_PRODUCTS)
-  public void searchProducts(@Nullable SearchProductsEvent pEvent)
+  @POST
+  public Response searchProducts(@Nullable SearchProductsEvent pEvent) //todo refactor event
   {
-    if (pEvent == null)
-      return;
+    Integer offset = pEvent.offset();
+    Integer length = pEvent.length();
 
-    eventFacade.trace(pEvent, () -> {
-      Integer offset = pEvent.offset();
-      Integer length = pEvent.length();
+    // validate event
+    if (Utility.isNullOrEmptyTrimmedString(pEvent.query()) ||
+        offset == null || offset < 0 || offset == Integer.MAX_VALUE ||
+        length == null || length <= 0 || length > 100)
+    {
+      Response.status(Response.Status.BAD_REQUEST).build();
+    }
 
-      // validate event
-      if (Utility.isNullOrEmptyTrimmedString(pEvent.query()) ||
-          offset == null || offset < 0 || offset == Integer.MAX_VALUE ||
-          length == null || length <= 0 || length > 100)
-      {
-        eventFacade.notifyError(pEvent, "Invalid Event (offset: " + offset + ", length: " + length + ")");
-        return;
-      }
+    DocumentSearchResultEvent searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), offset, length, _buildIndexQuery(pEvent));
 
-      // Build request
-      DocumentSearchEvent searchEvent = pEvent.createAnswer(DocumentSearchEvent.class)
-          .indices(IIndexStructure.INDEX_TYPE)
-          .query(_buildIndexQuery(pEvent))
-          .offset(offset)
-          .length(length);
-
-      // send
-      // noinspection ResultOfMethodCallIgnored
-      eventFacade.sendDocumentSearchEvent(searchEvent)
-          .subscribe(pResult -> _answerSearchProductsEvent(pEvent, pResult),
-                     pEx -> eventFacade.notifyError(pEvent, pEx));
-    });
+    return Response.ok(_answerSearchProductsEvent(pEvent, searchResult)).build();
   }
 
   /**
@@ -78,7 +65,7 @@ public class SearchService
    * @param pSourceEvent                 Source event the user started
    * @param pSearchProductsInIndexResult Search in index
    */
-  private void _answerSearchProductsEvent(@NotNull SearchProductsEvent pSourceEvent, @NotNull DocumentSearchResultEvent pSearchProductsInIndexResult)
+  private SearchProductsResultEvent _answerSearchProductsEvent(@NotNull SearchProductsEvent pSourceEvent, @NotNull DocumentSearchResultEvent pSearchProductsInIndexResult)
   {
     long count = pSearchProductsInIndexResult.hits() != null ? Math.max(0, pSearchProductsInIndexResult.count()) : 0;
     List<Object> collect = Utility.notNull(pSearchProductsInIndexResult.hits(), ListUtil::of).stream()
@@ -86,10 +73,10 @@ public class SearchService
         .collect(Collectors.toList());
 
     // send answer
-    eventFacade.sendSearchProductsResultEvent(pSourceEvent.createAnswer(SearchProductsResultEvent.class)
-                                                  .filters(new HashMap<>()) //todo filters
-                                                  .maxSize(count)
-                                                  .elements(collect));
+    return pSourceEvent.createAnswer(SearchProductsResultEvent.class)
+        .filters(new HashMap<>()) //todo filters
+        .maxSize(count)
+        .elements(collect);
   }
 
   /**
