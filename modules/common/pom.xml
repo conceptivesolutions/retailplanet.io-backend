@@ -40,6 +40,16 @@
       <artifactId>quarkus-core</artifactId>
     </dependency>
 
+    <!-- Rest-Client -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-jsonb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-client</artifactId>
+    </dependency>
+
     <!-- Metrics -->
     <dependency>
       <groupId>io.quarkus</groupId>
