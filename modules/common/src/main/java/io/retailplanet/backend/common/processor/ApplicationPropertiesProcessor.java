@@ -24,7 +24,7 @@ public class ApplicationPropertiesProcessor extends AbstractProcessor
 {
 
   private static final String _BUILD_TIMESTAMP_ENV = "BUILD_TIMESTAMP";
-  private static final boolean _BUILD_DEV_MODE = Utility.isNullOrEmptyTrimmedString(_BUILD_TIMESTAMP_ENV);
+  private static final boolean _DEV_MODE = Utility.isNullOrEmptyTrimmedString(System.getenv(_BUILD_TIMESTAMP_ENV));
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
@@ -36,7 +36,7 @@ public class ApplicationPropertiesProcessor extends AbstractProcessor
 
     // Defaults
     content.put("io.retailplanet.backend.metrics.client.IMetricServerService/mp-rest/url", _toURL(URL.ETarget.METRICS));
-    if (!_BUILD_DEV_MODE)
+    if (!_DEV_MODE)
       content.put("build.timestamp", System.getenv(_BUILD_TIMESTAMP_ENV));
 
     // URLs
@@ -62,7 +62,7 @@ public class ApplicationPropertiesProcessor extends AbstractProcessor
   @NotNull
   private String _toURL(@NotNull URL.ETarget pTarget)
   {
-    return _BUILD_DEV_MODE ? pTarget.getLocalURL() : pTarget.getProductionURL();
+    return _DEV_MODE ? pTarget.getLocalURL() : pTarget.getProductionURL();
   }
 
   /**

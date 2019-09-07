@@ -34,7 +34,7 @@ public class Utility
       props.load(new InputStreamReader(propStream));
       return Instant.ofEpochMilli(Long.parseLong(props.getProperty("build.timestamp")));
     }
-    catch (IOException e)
+    catch (Exception e)
     {
       return null;
     }
