@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("/internal/elasticsearch")
 @RegisterRestClient
-@URL(targetModule = "elasticsearch")
+@URL(targetModule = URL.ETarget.ELASTICSEARCH)
 public interface IIndexWriteService
 {
 

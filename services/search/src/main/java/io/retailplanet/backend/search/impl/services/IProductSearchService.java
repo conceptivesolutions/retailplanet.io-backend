@@ -12,7 +12,7 @@ import javax.ws.rs.*;
  */
 @Path("internal/products/search")
 @RegisterRestClient
-@URL(targetModule = "products")
+@URL(targetModule = URL.ETarget.PRODUCTS)
 public interface IProductSearchService
 {
 

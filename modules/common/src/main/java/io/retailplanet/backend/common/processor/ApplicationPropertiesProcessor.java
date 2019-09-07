@@ -1,5 +1,6 @@
 package io.retailplanet.backend.common.processor;
 
+import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.common.util.i18n.MapUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,6 +35,7 @@ public class ApplicationPropertiesProcessor extends AbstractProcessor
     Map<String, String> content = new HashMap<>();
 
     // Defaults
+    content.put("io.retailplanet.backend.metrics.client.IMetricServerService/mp-rest/url", _toURL(URL.ETarget.METRICS));
     if (!_BUILD_DEV_MODE)
       content.put("build.timestamp", System.getenv(_BUILD_TIMESTAMP_ENV));
 
@@ -54,9 +56,13 @@ public class ApplicationPropertiesProcessor extends AbstractProcessor
     URL urlAnno = pElement.getAnnotation(URL.class);
     if (urlAnno == null)
       throw new IllegalArgumentException("An RestClient has to be annotated with @URL to specify the target in application.properties");
+    return MapUtil.of(pElement.asType().toString() + "/mp-rest/url", _toURL(urlAnno.targetModule()));
+  }
 
-    String url = "http://" + urlAnno.targetModule() + urlAnno.baseURL();
-    return MapUtil.of(pElement.asType().toString() + "/mp-rest/url", url);
+  @NotNull
+  private String _toURL(@NotNull URL.ETarget pTarget)
+  {
+    return _BUILD_DEV_MODE ? pTarget.getLocalURL() : pTarget.getProductionURL();
   }
 
   /**

@@ -10,7 +10,7 @@ import javax.ws.rs.*;
  */
 @Path("/internal/validate")
 @RegisterRestClient
-@URL(targetModule = "businesstoken")
+@URL(targetModule = URL.ETarget.BUSINESSTOKEN)
 public interface ISessionTokenValidateService
 {
 

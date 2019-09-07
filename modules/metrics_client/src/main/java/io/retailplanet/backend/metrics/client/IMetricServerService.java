@@ -14,7 +14,7 @@ import javax.ws.rs.*;
  */
 @Path("/internal/metrics")
 @RegisterRestClient
-@URL(targetModule = "metrics")
+@URL(targetModule = URL.ETarget.METRICS)
 public interface IMetricServerService
 {
 

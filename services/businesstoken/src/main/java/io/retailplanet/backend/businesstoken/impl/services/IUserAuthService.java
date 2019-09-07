@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("/internal/userauth")
 @RegisterRestClient
-@URL(targetModule = "userauth")
+@URL(targetModule = URL.ETarget.USERAUTH)
 public interface IUserAuthService
 {
 

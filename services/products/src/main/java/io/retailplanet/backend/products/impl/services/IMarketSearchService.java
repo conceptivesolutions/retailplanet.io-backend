@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Path("/internal/markets/search")
 @RegisterRestClient
-@URL(targetModule = "markets")
+@URL(targetModule = URL.ETarget.MARKETS)
 public interface IMarketSearchService
 {
 
