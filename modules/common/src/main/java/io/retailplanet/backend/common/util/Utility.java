@@ -3,6 +3,7 @@ package io.retailplanet.backend.common.util;
 import org.jetbrains.annotations.*;
 
 import java.io.*;
+import java.time.Instant;
 import java.util.Properties;
 import java.util.function.Supplier;
 
@@ -17,18 +18,26 @@ public class Utility
    */
   public static boolean isDevMode()
   {
-    String property = System.getenv("DEV");
-    if (property == null)
-      return true;
-    return !Boolean.FALSE.toString().equalsIgnoreCase(property);
+    return getBuildTime() == null;
   }
 
   /**
-   * @return Returns <tt>true</tt> if the current running unit test runs in DEV mode
+   * @return returns the build time
    */
-  public static boolean isUnitTestDevMode()
+  @Nullable
+  public static Instant getBuildTime()
   {
-    return System.getProperty("intellij.debug.agent", "").equalsIgnoreCase("true");
+    try (InputStream propStream = ClassLoader.getSystemResourceAsStream("application.properties"))
+    {
+      Properties props = new Properties();
+      assert propStream != null;
+      props.load(new InputStreamReader(propStream));
+      return Instant.ofEpochMilli(Long.parseLong(props.getProperty("build.timestamp")));
+    }
+    catch (IOException e)
+    {
+      return null;
+    }
   }
 
   /**
@@ -54,25 +63,6 @@ public class Utility
     StringWriter sw = new StringWriter();
     pError.printStackTrace(new PrintWriter(sw));
     return sw.toString();
-  }
-
-  /**
-   * @return Returns the name / id of the current service
-   */
-  @NotNull
-  public static String getServiceID()
-  {
-    try (InputStream propStream = ClassLoader.getSystemResourceAsStream("application.properties"))
-    {
-      Properties props = new Properties();
-      assert propStream != null;
-      props.load(new InputStreamReader(propStream));
-      return props.getProperty("retailplanet.service.group.id");
-    }
-    catch (IOException e)
-    {
-      throw new RuntimeException(e);
-    }
   }
 
   /**

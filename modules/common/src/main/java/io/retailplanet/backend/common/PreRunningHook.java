@@ -28,7 +28,7 @@ public class PreRunningHook
       _LOGGER.info("Starting sevice in development mode");
     else
     {
-      _LOGGER.info("Starting service in production mode");
+      _LOGGER.info("Starting service in production mode -> " + Utility.getBuildTime());
     }
   }
 

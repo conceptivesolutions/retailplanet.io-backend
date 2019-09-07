@@ -22,6 +22,9 @@ import java.util.*;
 public class ApplicationPropertiesProcessor extends AbstractProcessor
 {
 
+  private static final String _BUILD_TIMESTAMP_ENV = "BUILD_TIMESTAMP";
+  private static final boolean _BUILD_DEV_MODE = Utility.isNullOrEmptyTrimmedString(_BUILD_TIMESTAMP_ENV);
+
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
   {
@@ -29,6 +32,10 @@ public class ApplicationPropertiesProcessor extends AbstractProcessor
       return false;
 
     Map<String, String> content = new HashMap<>();
+
+    // Defaults
+    if (!_BUILD_DEV_MODE)
+      content.put("build.timestamp", System.getenv(_BUILD_TIMESTAMP_ENV));
 
     // URLs
     for (TypeElement annotation : annotations)
