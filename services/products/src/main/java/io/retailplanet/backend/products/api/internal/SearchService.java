@@ -42,13 +42,14 @@ public class SearchService
   public Response searchProducts(@QueryParam("query") String pQuery, @QueryParam("sorting") String pSorting,
                                  @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength)
   {
-    // validate
-    if (Utility.isNullOrEmptyTrimmedString(pQuery) ||
-        pOffset == null || pOffset < 0 || pOffset == Integer.MAX_VALUE ||
-        pLength == null || pLength <= 0 || pLength > 100)
-    {
-      Response.status(Response.Status.BAD_REQUEST).build();
-    }
+    if (Utility.isNullOrEmptyTrimmedString(pQuery))
+      return Response.status(Response.Status.BAD_REQUEST).build();
+
+    if (pOffset == null || pOffset < 0 || pOffset == Integer.MAX_VALUE)
+      pOffset = 0;
+
+    if (pLength == null || pLength <= 0 || pLength > 100)
+      pLength = 20;
 
     Query query = new Query().matches(Match.equal(IIndexStructure.IProduct.NAME, pQuery, Match.Operator.OR));
     _enrichWithFilters(query, null); //todo filters
