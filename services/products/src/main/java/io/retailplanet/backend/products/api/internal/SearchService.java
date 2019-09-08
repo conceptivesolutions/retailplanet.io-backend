@@ -1,7 +1,7 @@
 package io.retailplanet.backend.products.api.internal;
 
-import io.retailplanet.backend.common.events.search.SearchProductsResultEvent;
 import io.retailplanet.backend.common.objects.index.*;
+import io.retailplanet.backend.common.objects.products.SearchResult;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.common.util.i18n.ListUtil;
 import io.retailplanet.backend.products.impl.filter.*;
@@ -53,7 +53,7 @@ public class SearchService
     Query query = new Query().matches(Match.equal(IIndexStructure.IProduct.NAME, pQuery, Match.Operator.OR));
     _enrichWithFilters(query, null); //todo filters
 
-    SearchResult searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), pOffset, pLength, query);
+    io.retailplanet.backend.common.objects.index.SearchResult searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), pOffset, pLength, query);
 
     long count = searchResult.hits() != null ? Math.max(0, searchResult.count()) : 0;
     List<Object> collect = Utility.notNull(searchResult.hits(), ListUtil::of).stream()
@@ -61,7 +61,7 @@ public class SearchService
         .collect(Collectors.toList());
 
     // send answer
-    return Response.ok(new SearchProductsResultEvent()
+    return Response.ok(new SearchResult()
                            .filters(new HashMap<>()) //todo filters
                            .maxSize(count)
                            .elements(collect)).build();

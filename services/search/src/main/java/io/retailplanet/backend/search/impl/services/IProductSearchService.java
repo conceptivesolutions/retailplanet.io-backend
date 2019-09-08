@@ -1,6 +1,6 @@
 package io.retailplanet.backend.search.impl.services;
 
-import io.retailplanet.backend.common.events.search.SearchProductsResultEvent;
+import io.retailplanet.backend.common.objects.products.SearchResult;
 import io.retailplanet.backend.common.processor.URL;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
@@ -19,7 +19,7 @@ public interface IProductSearchService
    * Executes product search
    */
   @POST
-  SearchProductsResultEvent searchProducts(@QueryParam("query") String pQuery, @QueryParam("sorting") String pSorting,
-                                           @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength);
+  SearchResult searchProducts(@QueryParam("query") String pQuery, @QueryParam("sorting") String pSorting,
+                              @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength);
 
 }
