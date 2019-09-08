@@ -73,7 +73,7 @@
                   <containerRuntime>docker</containerRuntime>
                   <additionalBuildArgs>-H:IncludeResources=io/retailplanet/backend/.*</additionalBuildArgs>
                   <enableHttpUrlHandler>true</enableHttpUrlHandler>
-                  <enableHttpsUrlHandler>true</enableHttpsUrlHandler>
+                  <enableJni>true</enableJni>
                 </configuration>
               </execution>
             </executions>
