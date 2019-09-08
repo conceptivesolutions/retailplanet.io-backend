@@ -1,12 +1,11 @@
 package io.retailplanet.backend.products.impl.struct;
 
 import com.google.common.collect.ImmutableMap;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.common.util.i18n.ListUtil;
 import org.jetbrains.annotations.NotNull;
 
-import javax.json.bind.annotation.*;
+import javax.json.bind.annotation.JsonbCreator;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -128,7 +127,7 @@ public class Product
     product.name = Utility.getString(pIndexObj, NAME);
     product.id = Utility.getString(pIndexObj, ID);
     product.price = Utility.getFloat(pIndexObj, PRICE, 0F);
-    product.created = Utility.getInteger(pIndexObj, UPDATED, 0);
+    product.created = Utility.getLong(pIndexObj, UPDATED, 0L);
     product.url = Utility.getString(pIndexObj, URL);
     product.category = Utility.getString(pIndexObj, CATEGORY);
     product.previews = Utility.getList(pIndexObj, PREVIEWS, ListUtil.of());

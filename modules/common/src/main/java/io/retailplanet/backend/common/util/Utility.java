@@ -146,6 +146,37 @@ public class Utility
   }
 
   /**
+   * Returns the value of pKey in pContainer as a long
+   *
+   * @param pContainer Container
+   * @param pKey       Key
+   * @return result as a long
+   */
+  @Nullable
+  public static Long getLong(@NotNull Map<String, Object> pContainer, @NotNull String pKey)
+  {
+    String value = getString(pContainer, pKey);
+    if (value != null)
+      return Long.valueOf(value);
+    return null;
+  }
+
+  /**
+   * Returns the value of pKey in pContainer as a long
+   *
+   * @param pContainer Container
+   * @param pKey       Key
+   * @param pDefault   Default value if no value is associated with pKey
+   * @return result as a long
+   */
+  @NotNull
+  public static Long getLong(@NotNull Map<String, Object> pContainer, @NotNull String pKey, @NotNull Long pDefault)
+  {
+    Long result = getLong(pContainer, pKey);
+    return result == null ? pDefault : result;
+  }
+
+  /**
    * Returns the value of pKey in pContainer as a float
    *
    * @param pContainer Container
