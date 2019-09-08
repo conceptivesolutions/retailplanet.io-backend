@@ -22,21 +22,22 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
 {
 
   private static final String _BUSINESS = "/business";
-  private String host;
   private String sessionToken;
   private Instant sessionTokenValidity;
+  private String tokenEndpoint;
+  private String productEndpoint;
+  private String marketEndpoint;
 
   @Override
-  public void init(@NotNull String pHost, @NotNull String pClientID, @NotNull String pClientToken) throws Exception
+  public void init(@NotNull String pTokenEndpoint, @NotNull String pProductEndpoint, @NotNull String pMarketEndpoint,
+                   @NotNull String pClientID, @NotNull String pClientToken) throws Exception
   {
-    host = pHost;
-
-    // Validate host
-    if (Utility.isNullOrEmptyTrimmedString(host))
-      throw new IllegalArgumentException("Hostname must not be null");
+    tokenEndpoint = pTokenEndpoint;
+    productEndpoint = pProductEndpoint;
+    marketEndpoint = pMarketEndpoint;
 
     // Init a new session token
-    JSONObject tokenObj = Unirest.get(host + _BUSINESS + "/token/generate")
+    JSONObject tokenObj = Unirest.get(tokenEndpoint + _BUSINESS + "/token/generate")
         .queryString("clientid", pClientID)
         .queryString("token", pClientToken)
         .asJson()
@@ -67,7 +68,7 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
         .forEach(root::put);
 
     // Execute
-    HttpResponse<String> response = Unirest.put(host + _BUSINESS + "/product")
+    HttpResponse<String> response = Unirest.put(productEndpoint + _BUSINESS + "/product")
         .header("Content-Encoding", "gzip")
         .header("Content-Type", "application/json")
         .header("session_token", sessionToken)
@@ -90,7 +91,7 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
         .forEach(root::put);
 
     // Execute
-    HttpResponse<String> response = Unirest.put(host + _BUSINESS + "/market")
+    HttpResponse<String> response = Unirest.put(marketEndpoint + _BUSINESS + "/market")
         .header("Content-Encoding", "gzip")
         .header("Content-Type", "application/json")
         .header("session_token", sessionToken)
@@ -106,7 +107,7 @@ public class BusinessRestFacadeImpl implements IBusinessRestFacade.IUpload
     try
     {
       // Finish
-      HttpResponse<String> response = Unirest.delete(host + _BUSINESS + "/token/" + sessionToken)
+      HttpResponse<String> response = Unirest.delete(tokenEndpoint + _BUSINESS + "/token/" + sessionToken)
           .asString();
       if (response.getStatus() != 200)
         throw new Exception(response.getStatusText());

@@ -22,11 +22,11 @@ public interface IBusinessRestFacade
     /**
      * Initiate Product Upload
      *
-     * @param pHost        Host
      * @param pClientID    ClientID
      * @param pClientToken ClientToken
      */
-    void init(@NotNull String pHost, @NotNull String pClientID, @NotNull String pClientToken) throws Exception;
+    void init(@NotNull String pTokenEndpoint, @NotNull String pProductEndpoint, @NotNull String pMarketEndpoint,
+              @NotNull String pClientID, @NotNull String pClientToken) throws Exception;
 
     /**
      * Upload Products
