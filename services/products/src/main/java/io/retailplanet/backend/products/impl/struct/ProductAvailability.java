@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jetbrains.annotations.NotNull;
 
-import javax.json.bind.annotation.*;
+import javax.json.bind.annotation.JsonbCreator;
 import java.util.Map;
 
 /**
@@ -14,10 +14,8 @@ import java.util.Map;
 public class ProductAvailability
 {
 
-  @JsonbProperty
   public TYPE type;
 
-  @JsonbProperty
   public int quantity;
 
   @JsonbCreator

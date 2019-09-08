@@ -1,32 +1,23 @@
 package io.retailplanet.backend.common.objects.index;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jetbrains.annotations.*;
 
-import javax.json.bind.annotation.*;
+import javax.json.bind.annotation.JsonbCreator;
 import java.util.*;
 import java.util.stream.*;
 
 /**
  * Contains all necessary information about any match methods
  */
-@RegisterForReflection
 public class Match
 {
-  @JsonbProperty
-  String name;
-
-  @JsonbProperty
-  String[] content;
-
-  @JsonbProperty
-  String nestedPath;
-
-  @JsonbProperty
-  List<Match> innerMatches;
+  public String name;
+  public String[] content;
+  public String nestedPath;
+  public List<Match> innerMatches;
 
   @JsonbCreator
-  Match()
+  public Match()
   {
   }
 

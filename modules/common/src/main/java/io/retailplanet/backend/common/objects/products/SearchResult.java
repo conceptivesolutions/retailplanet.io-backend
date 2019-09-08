@@ -2,7 +2,6 @@ package io.retailplanet.backend.common.objects.products;
 
 import org.jetbrains.annotations.*;
 
-import javax.json.bind.annotation.JsonbProperty;
 import java.util.*;
 
 /**
@@ -16,20 +15,17 @@ public class SearchResult
   /**
    * Maximum count of all results
    */
-  @JsonbProperty
-  long maxSize;
+  public long maxSize;
 
   /**
    * Map containing all possible filters on the client side (with additional information)
    */
-  @JsonbProperty
-  Map<String, String[]> filters;
+  public Map<String, String[]> filters;
 
   /**
    * Current result page
    */
-  @JsonbProperty
-  List<Object> elements;
+  public List<Object> elements;
 
   @NotNull
   public SearchResult maxSize(long pMaxSize)

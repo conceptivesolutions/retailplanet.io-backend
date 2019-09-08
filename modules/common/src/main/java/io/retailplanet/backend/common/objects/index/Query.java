@@ -2,7 +2,6 @@ package io.retailplanet.backend.common.objects.index;
 
 import org.jetbrains.annotations.*;
 
-import javax.json.bind.annotation.JsonbProperty;
 import java.util.*;
 
 /**
@@ -16,14 +15,12 @@ public class Query
    * This map contains all "match" queries.
    * If no matches are given, the "match_all" term is used.
    */
-  @JsonbProperty
-  List<Match> matches;
+  public List<Match> matches;
 
   /**
    * This list contains all filters which should be used to filter the result type
    */
-  @JsonbProperty
-  List<Filter> filters;
+  public List<Filter> filters;
 
   /**
    * Adds a new match to be used in this query term

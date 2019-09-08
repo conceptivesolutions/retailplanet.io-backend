@@ -2,7 +2,6 @@ package io.retailplanet.backend.common.objects.index;
 
 import org.jetbrains.annotations.*;
 
-import javax.json.bind.annotation.JsonbProperty;
 import java.util.List;
 
 /**
@@ -16,14 +15,12 @@ public class SearchResult
   /**
    * Contains the current count of result elements
    */
-  @JsonbProperty
-  long count;
+  public long count;
 
   /**
    * Contains the result elements
    */
-  @JsonbProperty
-  List<Object> hits;
+  public List<Object> hits;
 
   /**
    * Sets the "count" field

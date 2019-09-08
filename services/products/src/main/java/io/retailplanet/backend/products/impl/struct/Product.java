@@ -17,56 +17,47 @@ import static io.retailplanet.backend.products.impl.struct.IIndexStructure.IProd
  *
  * @author w.glanzer, 21.06.2019
  */
-@RegisterForReflection
 public class Product
 {
 
   /**
    * Name of the product
    */
-  @JsonbProperty
   public String name;
 
   /**
    * Product ID, not application unique - just within a market
    */
-  @JsonbProperty
   public String id;
 
   /**
    * Category
    */
-  @JsonbProperty
   public String category;
 
   /**
    * URL for more information
    */
-  @JsonbProperty
   public String url;
 
   /**
    * Current price
    */
-  @JsonbProperty
   public float price;
 
   /**
    * A list of all preview urls
    */
-  @JsonbProperty
   public List<String> previews;
 
   /**
    * Additional information about this product
    */
-  @JsonbProperty
   public Map<String, String> additionalInfos;
 
   /**
    * Availability in a specific market
    */
-  @JsonbProperty
   public Map<String, ProductAvailability> availability;
 
   /**

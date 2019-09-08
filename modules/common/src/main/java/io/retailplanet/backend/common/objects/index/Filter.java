@@ -2,7 +2,7 @@ package io.retailplanet.backend.common.objects.index;
 
 import org.jetbrains.annotations.*;
 
-import javax.json.bind.annotation.*;
+import javax.json.bind.annotation.JsonbCreator;
 
 /**
  * Contains all necessary information about any filter methods
@@ -11,14 +11,11 @@ import javax.json.bind.annotation.*;
  */
 public class Filter
 {
-  @JsonbProperty
-  String name;
-
-  @JsonbProperty
-  String[] content;
+  public String name;
+  public String[] content;
 
   @JsonbCreator
-  Filter()
+  public Filter()
   {
   }
 
