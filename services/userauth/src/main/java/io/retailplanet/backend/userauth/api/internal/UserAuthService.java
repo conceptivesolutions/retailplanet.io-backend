@@ -18,7 +18,7 @@ public class UserAuthService
    * @return Response, if allowed or not
    */
   @GET
-  public Response validate(@PathParam("clientID") String pClientID, @PathParam("scope") String pScope)
+  public Response validate(@QueryParam("clientID") String pClientID, @QueryParam("scope") String pScope)
   {
     return Response.ok().build(); //todo
   }

@@ -26,7 +26,7 @@ public class SessionTokenValidateService
    */
   @GET
   @Path("issuer")
-  public Response issuer(@PathParam("session_token") String pSessionToken)
+  public Response issuer(@QueryParam("session_token") String pSessionToken)
   {
     if (Utility.isNullOrEmptyTrimmedString(pSessionToken))
       return Response.status(Response.Status.NOT_FOUND).build();

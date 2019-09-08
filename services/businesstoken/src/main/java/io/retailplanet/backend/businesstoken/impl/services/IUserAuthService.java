@@ -23,6 +23,6 @@ public interface IUserAuthService
    * @return Response, if allowed or not
    */
   @GET
-  Response validate(@PathParam("clientID") String pClientID, @PathParam("scope") String pScope);
+  Response validate(@QueryParam("clientID") String pClientID, @QueryParam("scope") String pScope);
 
 }

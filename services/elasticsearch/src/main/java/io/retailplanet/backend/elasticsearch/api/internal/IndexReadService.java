@@ -37,8 +37,8 @@ public class IndexReadService
    * @param pQuery      Query
    */
   @POST
-  public DocumentSearchResultEvent search(@PathParam("types") List<String> pIndexTypes, @PathParam("offset") Integer pOffset,
-                                          @PathParam("length") Integer pLength, DocumentSearchEvent.Query pQuery) throws Exception //todo refactor event
+  public DocumentSearchResultEvent search(@QueryParam("types") List<String> pIndexTypes, @QueryParam("offset") Integer pOffset,
+                                          @QueryParam("length") Integer pLength, DocumentSearchEvent.Query pQuery) throws Exception //todo refactor event
   {
     List<IQueryBuilder> filters = filterFactory.interpretFilters(pQuery.filters());
     List<IQueryBuilder> matches = matchFactory.interpretMatches(pQuery.matches());

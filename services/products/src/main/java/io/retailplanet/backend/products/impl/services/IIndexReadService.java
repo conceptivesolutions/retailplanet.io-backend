@@ -25,7 +25,7 @@ public interface IIndexReadService
    * @param pQuery      Query
    */
   @POST
-  DocumentSearchResultEvent search(@PathParam("types") List<String> pIndexTypes, @PathParam("offset") Integer pOffset,
-                                   @PathParam("length") Integer pLength, DocumentSearchEvent.Query pQuery);
+  DocumentSearchResultEvent search(@QueryParam("types") List<String> pIndexTypes, @QueryParam("offset") Integer pOffset,
+                                   @QueryParam("length") Integer pLength, DocumentSearchEvent.Query pQuery);
 
 }

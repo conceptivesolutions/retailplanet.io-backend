@@ -34,7 +34,7 @@ public class IndexWriteService
    * @param pDocument document to insert
    */
   @PUT
-  public Response upsertDocument(@PathParam("clientID") String pClientID, @PathParam("type") String pType, Object pDocument) //todo specify Object
+  public Response upsertDocument(@QueryParam("clientID") String pClientID, @QueryParam("type") String pType, Object pDocument) //todo specify Object
   {
     if (Utility.isNullOrEmptyTrimmedString(pClientID) || Utility.isNullOrEmptyTrimmedString(pType) || pDocument == null)
       return Response.status(Response.Status.BAD_REQUEST).build();

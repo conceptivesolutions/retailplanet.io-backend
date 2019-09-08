@@ -33,7 +33,7 @@ public class SearchService
    * @param pDistance Distance in km
    */
   @POST
-  public List<String> geoSearch(@PathParam("lat") double pLat, @PathParam("lon") double pLon, @PathParam("dist") int pDistance)
+  public List<String> geoSearch(@QueryParam("lat") double pLat, @QueryParam("lon") double pLon, @QueryParam("dist") int pDistance)
   {
     //search in index
     DocumentSearchResultEvent searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), null, null, new DocumentSearchEvent.Query()

@@ -21,6 +21,6 @@ public interface ISessionTokenValidateService
    */
   @GET
   @Path("issuer")
-  String findIssuerByToken(@PathParam("session_token") String pSessionToken);
+  String findIssuerByToken(@QueryParam("session_token") String pSessionToken);
 
 }

@@ -23,6 +23,6 @@ public interface IIndexWriteService
    * @param pDocument document to insert
    */
   @PUT
-  Response upsertDocument(@PathParam("clientID") String pClientID, @PathParam("type") String pType, Object pDocument);
+  Response upsertDocument(@QueryParam("clientID") String pClientID, @QueryParam("type") String pType, Object pDocument);
 
 }

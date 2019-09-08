@@ -23,6 +23,6 @@ public interface IMarketSearchService
    * @param pDistance Distance in km
    */
   @POST
-  List<String> geoSearch(@PathParam("lat") double pLat, @PathParam("lon") double pLon, @PathParam("dist") int pDistance);
+  List<String> geoSearch(@QueryParam("lat") double pLat, @QueryParam("lon") double pLon, @QueryParam("dist") int pDistance);
 
 }
