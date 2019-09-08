@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author w.glanzer, 17.07.2019
  * @see ISearchFilter
- * @see io.retailplanet.backend.products.api.SearchService
  */
 public interface ISearchFilterFactory
 {
@@ -18,7 +17,6 @@ public interface ISearchFilterFactory
    * @param pType           Filter-Type
    * @param pArgumentObject Object, from SearchProductsEvent
    * @return the Filter
-   * @see io.retailplanet.backend.common.events.search.SearchProductsEvent
    */
   @NotNull
   ISearchFilter create(@NotNull String pType, @NotNull Object pArgumentObject) throws Exception;

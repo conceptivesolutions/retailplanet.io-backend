@@ -1,9 +1,8 @@
 package io.retailplanet.backend.search.impl.services;
 
-import io.retailplanet.backend.common.events.search.*;
+import io.retailplanet.backend.common.events.search.SearchProductsResultEvent;
 import io.retailplanet.backend.common.processor.URL;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import org.jetbrains.annotations.Nullable;
 
 import javax.ws.rs.*;
 
@@ -18,10 +17,9 @@ public interface IProductSearchService
 
   /**
    * Executes product search
-   *
-   * @param pEvent Search event
    */
   @POST
-  SearchProductsResultEvent searchProducts(@Nullable SearchProductsEvent pEvent);
+  SearchProductsResultEvent searchProducts(@QueryParam("query") String pQuery, @QueryParam("sorting") String pSorting,
+                                           @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength);
 
 }

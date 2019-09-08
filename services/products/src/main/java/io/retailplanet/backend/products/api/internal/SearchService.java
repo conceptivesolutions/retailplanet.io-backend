@@ -1,6 +1,6 @@
 package io.retailplanet.backend.products.api.internal;
 
-import io.retailplanet.backend.common.events.search.*;
+import io.retailplanet.backend.common.events.search.SearchProductsResultEvent;
 import io.retailplanet.backend.common.objects.index.*;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.common.util.i18n.ListUtil;
@@ -37,46 +37,34 @@ public class SearchService
 
   /**
    * Executes product search
-   *
-   * @param pEvent Search event
    */
   @POST
-  public Response searchProducts(@Nullable SearchProductsEvent pEvent) //todo refactor event
+  public Response searchProducts(@QueryParam("query") String pQuery, @QueryParam("sorting") String pSorting,
+                                 @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength)
   {
-    Integer offset = pEvent.offset();
-    Integer length = pEvent.length();
-
     // validate event
-    if (Utility.isNullOrEmptyTrimmedString(pEvent.query()) ||
-        offset == null || offset < 0 || offset == Integer.MAX_VALUE ||
-        length == null || length <= 0 || length > 100)
+    if (Utility.isNullOrEmptyTrimmedString(pQuery) ||
+        pOffset == null || pOffset < 0 || pOffset == Integer.MAX_VALUE ||
+        pLength == null || pLength <= 0 || pLength > 100)
     {
       Response.status(Response.Status.BAD_REQUEST).build();
     }
 
-    SearchResult searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), offset, length, _buildIndexQuery(pEvent));
+    Query query = new Query().matches(Match.equal(IIndexStructure.IProduct.NAME, pQuery, Match.Operator.OR));
+    _enrichWithFilters(query, null); //todo filters
 
-    return Response.ok(_answerSearchProductsEvent(pEvent, searchResult)).build();
-  }
+    SearchResult searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), pOffset, pLength, query);
 
-  /**
-   * Answers the SearchProductsEvent with the results of the given DocumentSearchResultEvent
-   *
-   * @param pSourceEvent                 Source event the user started
-   * @param pSearchProductsInIndexResult Search in index
-   */
-  private SearchProductsResultEvent _answerSearchProductsEvent(@NotNull SearchProductsEvent pSourceEvent, @NotNull SearchResult pSearchProductsInIndexResult)
-  {
-    long count = pSearchProductsInIndexResult.hits() != null ? Math.max(0, pSearchProductsInIndexResult.count()) : 0;
-    List<Object> collect = Utility.notNull(pSearchProductsInIndexResult.hits(), ListUtil::of).stream()
+    long count = searchResult.hits() != null ? Math.max(0, searchResult.count()) : 0;
+    List<Object> collect = Utility.notNull(searchResult.hits(), ListUtil::of).stream()
         .map(this::_searchResultToProduct)
         .collect(Collectors.toList());
 
     // send answer
-    return pSourceEvent.createAnswer(SearchProductsResultEvent.class)
-        .filters(new HashMap<>()) //todo filters
-        .maxSize(count)
-        .elements(collect);
+    return Response.ok(new SearchProductsResultEvent()
+                           .filters(new HashMap<>()) //todo filters
+                           .maxSize(count)
+                           .elements(collect)).build();
   }
 
   /**
@@ -91,21 +79,6 @@ public class SearchService
     if (pSearchResultObj instanceof Map)
       return Product.fromIndexJSON((Map<String, Object>) pSearchResultObj);
     throw new IllegalArgumentException("pSearchResult is not an instance of Map");
-  }
-
-  /**
-   * Creates the request index query to request specific products in index
-   *
-   * @param pEvent Source event
-   * @return Query to use in index request
-   */
-  @NotNull
-  private Query _buildIndexQuery(@NotNull SearchProductsEvent pEvent)
-  {
-    Query query = new Query()
-        .matches(Match.equal(IIndexStructure.IProduct.NAME, Objects.requireNonNull(pEvent.query()), Match.Operator.OR));
-    _enrichWithFilters(query, pEvent.filter());
-    return query;
   }
 
   /**

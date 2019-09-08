@@ -1,6 +1,6 @@
 package io.retailplanet.backend.search.api;
 
-import io.retailplanet.backend.common.events.search.*;
+import io.retailplanet.backend.common.events.search.SearchProductsResultEvent;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.search.impl.services.IProductSearchService;
 import io.vertx.core.json.JsonObject;
@@ -37,14 +37,7 @@ public class SearchResource
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
-    SearchProductsEvent event = new SearchProductsEvent()
-        .query(pQuery)
-        .sorting(pSorting)
-        .offset(offset)
-        .length(length)
-        .filter(pFilter);
-
-    SearchProductsResultEvent result = productSearchService.searchProducts(event);
+    SearchProductsResultEvent result = productSearchService.searchProducts(pQuery, pSorting, pOffset, pLength);
 
     return Response.ok(new SearchResult()
                            .offset(offset)
