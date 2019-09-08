@@ -1,7 +1,8 @@
 package io.retailplanet.backend.products.api.internal;
 
-import io.retailplanet.backend.common.events.index.*;
+import io.retailplanet.backend.common.events.index.DocumentSearchResultEvent;
 import io.retailplanet.backend.common.events.search.*;
+import io.retailplanet.backend.common.objects.index.*;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.common.util.i18n.ListUtil;
 import io.retailplanet.backend.products.impl.filter.*;
@@ -100,10 +101,10 @@ public class SearchService
    * @return Query to use in index request
    */
   @NotNull
-  private DocumentSearchEvent.Query _buildIndexQuery(@NotNull SearchProductsEvent pEvent)
+  private Query _buildIndexQuery(@NotNull SearchProductsEvent pEvent)
   {
-    DocumentSearchEvent.Query query = new DocumentSearchEvent.Query()
-        .matches(DocumentSearchEvent.Match.equal(IIndexStructure.IProduct.NAME, Objects.requireNonNull(pEvent.query()), DocumentSearchEvent.Operator.OR));
+    Query query = new Query()
+        .matches(Match.equal(IIndexStructure.IProduct.NAME, Objects.requireNonNull(pEvent.query()), Match.Operator.OR));
     _enrichWithFilters(query, pEvent.filter());
     return query;
   }
@@ -114,7 +115,7 @@ public class SearchService
    * @param pQuery   Query to enrich
    * @param pFilters Filters object
    */
-  private void _enrichWithFilters(@NotNull DocumentSearchEvent.Query pQuery, @Nullable Map<String, Object> pFilters)
+  private void _enrichWithFilters(@NotNull Query pQuery, @Nullable Map<String, Object> pFilters)
   {
     if (pFilters == null)
       return;

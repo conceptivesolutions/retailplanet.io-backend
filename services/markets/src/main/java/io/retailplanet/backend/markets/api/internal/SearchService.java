@@ -1,6 +1,7 @@
 package io.retailplanet.backend.markets.api.internal;
 
-import io.retailplanet.backend.common.events.index.*;
+import io.retailplanet.backend.common.events.index.DocumentSearchResultEvent;
+import io.retailplanet.backend.common.objects.index.*;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.common.util.i18n.ListUtil;
 import io.retailplanet.backend.markets.impl.services.IIndexReadService;
@@ -36,8 +37,8 @@ public class SearchService
   public List<String> geoSearch(@QueryParam("lat") double pLat, @QueryParam("lon") double pLon, @QueryParam("dist") int pDistance)
   {
     //search in index
-    DocumentSearchResultEvent searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), null, null, new DocumentSearchEvent.Query()
-        .filter(DocumentSearchEvent.Filter.geoDistance(IIndexStructure.IMarket.LOCATION, pLat, pLon, pDistance)));
+    DocumentSearchResultEvent searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), null, null, new Query()
+        .filter(Filter.geoDistance(IIndexStructure.IMarket.LOCATION, pLat, pLon, pDistance)));
 
     // result
     List<String> marketIDs = Collections.emptyList();

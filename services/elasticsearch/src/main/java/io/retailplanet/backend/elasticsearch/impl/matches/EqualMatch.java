@@ -1,6 +1,6 @@
 package io.retailplanet.backend.elasticsearch.impl.matches;
 
-import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
+import io.retailplanet.backend.common.objects.index.Match;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.*;
@@ -19,9 +19,9 @@ class EqualMatch implements IQueryBuilder
   private final String nestedPath;
   private final String fieldName;
   private final String fieldValue;
-  private final DocumentSearchEvent.Operator operator;
+  private final Match.Operator operator;
 
-  EqualMatch(@Nullable String pNestedPath, @NotNull String pFieldName, @NotNull String pFieldValue, @NotNull DocumentSearchEvent.Operator pOperator)
+  EqualMatch(@Nullable String pNestedPath, @NotNull String pFieldName, @NotNull String pFieldValue, @NotNull Match.Operator pOperator)
   {
     nestedPath = pNestedPath;
     fieldName = pFieldName;
@@ -34,7 +34,7 @@ class EqualMatch implements IQueryBuilder
   public QueryBuilder toQueryBuilder()
   {
     MatchQueryBuilder builder = QueryBuilders.matchQuery(fieldName, fieldValue)
-        .operator(operator == DocumentSearchEvent.Operator.AND ? Operator.AND : Operator.OR);
+        .operator(operator == Match.Operator.AND ? Operator.AND : Operator.OR);
     if (nestedPath != null)
       return QueryBuilders.nestedQuery(nestedPath, builder, ScoreMode.Avg)
           .innerHit(new InnerHitBuilder());

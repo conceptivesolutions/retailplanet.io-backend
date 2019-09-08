@@ -1,6 +1,6 @@
 package io.retailplanet.backend.elasticsearch.impl.matches;
 
-import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
+import io.retailplanet.backend.common.objects.index.Match;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import org.jetbrains.annotations.*;
 import org.slf4j.LoggerFactory;
@@ -20,14 +20,14 @@ public interface IMatchFactory
    * @return list of "real" matches objects
    */
   @NotNull
-  default List<IQueryBuilder> interpretMatches(@Nullable List<DocumentSearchEvent.Match> pMatches) throws Exception
+  default List<IQueryBuilder> interpretMatches(@Nullable List<Match> pMatches) throws Exception
   {
     if (pMatches == null)
       return Collections.emptyList();
     List<IQueryBuilder> result = new ArrayList<>();
-    for (DocumentSearchEvent.Match filter : pMatches)
+    for (Match filter : pMatches)
     {
-      List<DocumentSearchEvent.Match> innerMatches = filter.innerMatches();
+      List<Match> innerMatches = filter.innerMatches();
       List<IQueryBuilder> inners = null;
       if (innerMatches != null)
         inners = interpretMatches(innerMatches);
