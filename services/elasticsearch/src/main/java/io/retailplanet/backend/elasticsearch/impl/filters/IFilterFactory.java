@@ -18,7 +18,7 @@ public interface IFilterFactory
   /**
    * Interprets a list of filters
    *
-   * @param pFilters Filters retrieved by event
+   * @param pFilters Filters retrieved
    * @return list of "real" filter objects
    */
   @NotNull

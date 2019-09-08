@@ -15,7 +15,7 @@ public interface ISearchFilterFactory
    * Creates a new SearchFilter instance
    *
    * @param pType           Filter-Type
-   * @param pArgumentObject Object, from SearchProductsEvent
+   * @param pArgumentObject Object, from SearchProductsQuery
    * @return the Filter
    */
   @NotNull

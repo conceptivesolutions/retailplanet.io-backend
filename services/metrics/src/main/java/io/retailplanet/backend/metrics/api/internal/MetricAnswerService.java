@@ -3,7 +3,7 @@ package io.retailplanet.backend.metrics.api.internal;
 import javax.ws.rs.*;
 
 /**
- * Service to answer metric events, comparable to an echo service to get response times
+ * Service to answer metric calls, comparable to an echo service to get response times
  *
  * @author w.glanzer, 28.08.2019
  */

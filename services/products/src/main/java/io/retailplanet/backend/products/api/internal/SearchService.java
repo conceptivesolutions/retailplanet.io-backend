@@ -42,7 +42,7 @@ public class SearchService
   public Response searchProducts(@QueryParam("query") String pQuery, @QueryParam("sorting") String pSorting,
                                  @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength)
   {
-    // validate event
+    // validate
     if (Utility.isNullOrEmptyTrimmedString(pQuery) ||
         pOffset == null || pOffset < 0 || pOffset == Integer.MAX_VALUE ||
         pLength == null || pLength <= 0 || pLength > 100)
@@ -82,7 +82,7 @@ public class SearchService
   }
 
   /**
-   * Handles the filters object in SearchProductsEvent
+   * Handles the filters object
    *
    * @param pQuery   Query to enrich
    * @param pFilters Filters object

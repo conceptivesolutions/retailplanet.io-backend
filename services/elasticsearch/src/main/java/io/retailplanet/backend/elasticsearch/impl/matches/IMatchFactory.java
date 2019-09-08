@@ -16,7 +16,7 @@ public interface IMatchFactory
   /**
    * Interprets a list of matches
    *
-   * @param pMatches Matches retrieved by event
+   * @param pMatches Matches retrieved
    * @return list of "real" matches objects
    */
   @NotNull
