@@ -2,7 +2,6 @@ package io.retailplanet.backend.elasticsearch.impl.facades;
 
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import io.retailplanet.backend.elasticsearch.impl.util.QueryUtility;
-import io.vertx.core.json.*;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.*;
@@ -79,7 +78,7 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
   @NotNull
   private _SearchResult _toResults(@NotNull SearchHits pHits)
   {
-    List<JsonObject> elements = _extractElements(pHits);
+    List<Object> elements = _extractElements(pHits);
     long maxSize = pHits.getTotalHits().value;
     return new _SearchResult(elements, maxSize);
   }
@@ -91,13 +90,13 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
    * @return retailplanet object
    */
   @NotNull
-  private List<JsonObject> _extractElements(@NotNull SearchHits pHits)
+  private List<Object> _extractElements(@NotNull SearchHits pHits)
   {
-    List<JsonObject> results = new ArrayList<>();
+    List<Object> results = new ArrayList<>();
     for (SearchHit hit : pHits.getHits())
     {
-      JsonObject obj = new JsonObject(hit.getSourceAsString());
-      if (obj.getValue("id") == null)
+      Map<String, Object> obj = hit.getSourceAsMap();
+      if (obj.get("id") == null)
         obj.put("id", hit.getId());
 
       // Overwrite results with inner hits, if some are found (via nested query)
@@ -105,9 +104,9 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
       if (innerHits != null)
       {
         innerHits.forEach((pName, pInnerHits) -> {
-          JsonArray array = new JsonArray();
+          List<Map<String, Object>> array = new ArrayList<>();
           for (SearchHit hitsHit : pInnerHits.getHits())
-            array.add(new JsonObject(hitsHit.getSourceAsString()));
+            array.add(hitsHit.getSourceAsMap());
           obj.put(pName, array);
         });
       }
@@ -121,10 +120,10 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
    */
   private static final class _SearchResult implements ISearchResult
   {
-    private final List<JsonObject> elements;
+    private final List<Object> elements;
     private final long maxSize;
 
-    private _SearchResult(List<JsonObject> pElements, long pMaxSize)
+    private _SearchResult(List<Object> pElements, long pMaxSize)
     {
       elements = pElements;
       maxSize = pMaxSize;
@@ -132,7 +131,7 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
 
     @NotNull
     @Override
-    public List<JsonObject> getElements()
+    public List<Object> getElements()
     {
       return elements;
     }

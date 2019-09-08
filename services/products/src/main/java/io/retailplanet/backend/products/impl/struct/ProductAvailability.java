@@ -1,9 +1,11 @@
 package io.retailplanet.backend.products.impl.struct;
 
-import com.fasterxml.jackson.annotation.*;
+import com.google.common.collect.ImmutableMap;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import io.vertx.core.json.JsonObject;
 import org.jetbrains.annotations.NotNull;
+
+import javax.json.bind.annotation.*;
+import java.util.Map;
 
 /**
  * @author w.glanzer, 21.06.2019
@@ -12,13 +14,13 @@ import org.jetbrains.annotations.NotNull;
 public class ProductAvailability
 {
 
-  @JsonProperty
+  @JsonbProperty
   public TYPE type;
 
-  @JsonProperty
+  @JsonbProperty
   public int quantity;
 
-  @JsonCreator
+  @JsonbCreator
   public ProductAvailability()
   {
   }
@@ -37,11 +39,12 @@ public class ProductAvailability
    * @return the content as json object
    */
   @NotNull
-  public JsonObject toJSON()
+  public Map<String, Object> toJSON()
   {
-    return new JsonObject()
+    return ImmutableMap.<String, Object>builder()
         .put(IIndexStructure.IAvailability.TYPE, type)
-        .put(IIndexStructure.IAvailability.QUANTITY, quantity);
+        .put(IIndexStructure.IAvailability.QUANTITY, quantity)
+        .build();
   }
 
 }

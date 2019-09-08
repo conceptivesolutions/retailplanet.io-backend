@@ -1,7 +1,6 @@
 package io.retailplanet.backend.elasticsearch.impl.facades;
 
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
-import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.jetbrains.annotations.*;
@@ -69,7 +68,7 @@ public interface IIndexFacade
      * @return the current result page
      */
     @NotNull
-    List<JsonObject> getElements();
+    List<Object> getElements();
 
     /**
      * @return count of all elements (not only the current resultpage)

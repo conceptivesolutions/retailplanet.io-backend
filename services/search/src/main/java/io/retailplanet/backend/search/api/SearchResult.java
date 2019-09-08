@@ -1,9 +1,9 @@
 package io.retailplanet.backend.search.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jetbrains.annotations.NotNull;
 
+import javax.json.bind.annotation.JsonbProperty;
 import java.util.*;
 
 /**
@@ -16,31 +16,31 @@ public final class SearchResult
   /**
    * Offset of the result page
    */
-  @JsonProperty
+  @JsonbProperty
   public Integer offset;
 
   /**
    * Length / Size of the result page
    */
-  @JsonProperty
+  @JsonbProperty
   public Integer length;
 
   /**
    * Maximum count of all results
    */
-  @JsonProperty
+  @JsonbProperty
   public Long maxSize;
 
   /**
    * Map containing all possible filters on the client side (with additional information)
    */
-  @JsonProperty
+  @JsonbProperty
   public Map<String, String[]> filters;
 
   /**
    * Current result page
    */
-  @JsonProperty
+  @JsonbProperty
   public List<Object> elements;
 
   @NotNull

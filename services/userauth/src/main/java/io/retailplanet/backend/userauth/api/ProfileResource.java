@@ -1,10 +1,10 @@
 package io.retailplanet.backend.userauth.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.userauth.impl.*;
 
 import javax.inject.Inject;
+import javax.json.bind.annotation.JsonbProperty;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
@@ -104,13 +104,13 @@ public class ProfileResource
    */
   public static class User
   {
-    @JsonProperty
+    @JsonbProperty
     public String id;
 
-    @JsonProperty
+    @JsonbProperty
     public List<String> roles;
 
-    @JsonProperty
+    @JsonbProperty
     public Avatar avatar;
   }
 
@@ -119,10 +119,10 @@ public class ProfileResource
    */
   public static class Avatar
   {
-    @JsonProperty
+    @JsonbProperty
     public String url;
 
-    @JsonProperty
+    @JsonbProperty
     public String base64;
   }
 

@@ -5,7 +5,6 @@ import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.common.util.i18n.ListUtil;
 import io.retailplanet.backend.markets.impl.services.IIndexReadService;
 import io.retailplanet.backend.markets.impl.struct.IIndexStructure;
-import io.vertx.core.json.JsonArray;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.inject.Inject;
@@ -41,13 +40,13 @@ public class SearchService
 
     // result
     List<String> marketIDs = Collections.emptyList();
-    if (searchResult.hits() != null)
+    List<Object> hits = searchResult.hits();
+    if (hits != null)
     {
       marketIDs = new ArrayList<>();
-      JsonArray arr = new JsonArray(searchResult.hits());
-      for (int i = 0; i < arr.size(); i++)
+      for (Object hit : hits)
       {
-        String id = arr.getJsonObject(i).getString(IIndexStructure.IMarket.ID);
+        String id = Utility.getString((Map<String, Object>) hit, IIndexStructure.IMarket.ID);
         if (!Utility.isNullOrEmptyTrimmedString(id))
           marketIDs.add(id);
       }

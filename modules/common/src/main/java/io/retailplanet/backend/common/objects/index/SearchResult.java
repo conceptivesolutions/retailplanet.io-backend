@@ -1,8 +1,8 @@
 package io.retailplanet.backend.common.objects.index;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.*;
 
+import javax.json.bind.annotation.JsonbProperty;
 import java.util.List;
 
 /**
@@ -16,13 +16,13 @@ public class SearchResult
   /**
    * Contains the current count of result elements
    */
-  @JsonProperty
+  @JsonbProperty
   long count;
 
   /**
    * Contains the result elements
    */
-  @JsonProperty
+  @JsonbProperty
   List<Object> hits;
 
   /**

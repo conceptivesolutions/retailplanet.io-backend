@@ -1,8 +1,8 @@
 package io.retailplanet.backend.common.objects.products;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.*;
 
+import javax.json.bind.annotation.JsonbProperty;
 import java.util.*;
 
 /**
@@ -16,19 +16,19 @@ public class SearchResult
   /**
    * Maximum count of all results
    */
-  @JsonProperty
+  @JsonbProperty
   long maxSize;
 
   /**
    * Map containing all possible filters on the client side (with additional information)
    */
-  @JsonProperty
+  @JsonbProperty
   Map<String, String[]> filters;
 
   /**
    * Current result page
    */
-  @JsonProperty
+  @JsonbProperty
   List<Object> elements;
 
   @NotNull

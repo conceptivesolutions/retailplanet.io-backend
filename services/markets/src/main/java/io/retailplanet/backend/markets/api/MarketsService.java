@@ -3,14 +3,13 @@ package io.retailplanet.backend.markets.api;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.markets.impl.services.*;
 import io.retailplanet.backend.markets.impl.struct.*;
-import io.vertx.core.json.JsonArray;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.Arrays;
-import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Resource for all markets requests
@@ -46,7 +45,7 @@ public class MarketsService
     // store in index
     indexWriteService.upsertDocument(clientID, IIndexStructure.INDEX_TYPE, Arrays.stream(pContent)
         .map(pMarket -> pMarket.toIndexJSON(clientID))
-        .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
+        .collect(Collectors.toList()));
 
     // return 200
     return Response.ok().build();

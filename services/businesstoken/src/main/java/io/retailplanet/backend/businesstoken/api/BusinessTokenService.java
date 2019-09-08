@@ -1,9 +1,9 @@
 package io.retailplanet.backend.businesstoken.api;
 
+import com.google.common.collect.ImmutableMap;
 import io.retailplanet.backend.businesstoken.impl.cache.TokenCache;
 import io.retailplanet.backend.businesstoken.impl.services.IUserAuthService;
 import io.retailplanet.backend.common.util.Utility;
-import io.vertx.core.json.JsonObject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.inject.Inject;
@@ -60,9 +60,10 @@ public class BusinessTokenService
     if (validUntil.isAfter(Instant.now()))
       tokenCache.putToken(pClientID, session_token, validUntil);
 
-    return Response.ok(new JsonObject()
+    return Response.ok(ImmutableMap.builder()
                            .put("session_token", session_token)
-                           .put("valid_until", validUntil)).build();
+                           .put("valid_until", validUntil)
+                           .build()).build();
   }
 
   /**

@@ -2,17 +2,16 @@ package io.retailplanet.backend.elasticsearch.api.internal;
 
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
-import io.vertx.core.json.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.elasticsearch.common.xcontent.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
+import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Service: Write operations on Index
@@ -42,9 +41,8 @@ public class IndexWriteService
     try
     {
       indexFacade.upsertDocument(pClientID, pType, _getDocumentsFromDocField(pDocument).stream()
-          .map(pJsonObj -> pJsonObj.getJsonObject("map"))
           .map(pJsonObj -> {
-            String id = pJsonObj.getString("id");
+            String id = Utility.getString(pJsonObj, "id");
             if (id == null)
               throw new IllegalArgumentException("JSONObject does not have ID value: " + pJsonObj);
             pJsonObj.remove("id"); // remove id, because we already have it in elasticsearch structure afterwards
@@ -66,16 +64,10 @@ public class IndexWriteService
    * @return all documents
    */
   @NotNull
-  private List<JsonObject> _getDocumentsFromDocField(@NotNull Object pEvent) //todo
+  private List<Map<String, Object>> _getDocumentsFromDocField(@NotNull Object pEvent) //todo
   {
-    if (pEvent instanceof JsonObject)
-      return Collections.singletonList((JsonObject) pEvent);
-    else if (pEvent instanceof JsonArray)
-      return (List) ((JsonArray) pEvent).stream().collect(Collectors.toList());
-    else if (pEvent instanceof List)
-      return _getDocumentsFromDocField(new JsonArray((List) pEvent));
-    else if (pEvent instanceof Map && ((Map) pEvent).containsKey("list"))
-      return _getDocumentsFromDocField(((Map) pEvent).get("list"));
+    if (pEvent instanceof List)
+      return (List<Map<String, Object>>) pEvent;
     else
       throw new IllegalArgumentException("'doc' does not have correct type: " + pEvent.getClass());
   }
@@ -83,17 +75,17 @@ public class IndexWriteService
   /**
    * Creates an elasticsearch content for vertx json object
    *
-   * @param pJsonObject JSON
+   * @param pContent JSON
    * @return Content for elasticsearch
    */
   @NotNull
-  private XContentBuilder _toContentBuilder(@NotNull JsonObject pJsonObject)
+  private XContentBuilder _toContentBuilder(@NotNull Map<String, Object> pContent)
   {
     try
     {
       XContentBuilder builder = XContentFactory.jsonBuilder().prettyPrint();
       try (XContentParser parser = XContentFactory.xContent(XContentType.JSON)
-          .createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION, pJsonObject.encode()))
+          .createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION, JsonbBuilder.create().toJson(pContent)))
       {
         builder.copyCurrentStructure(parser);
       }

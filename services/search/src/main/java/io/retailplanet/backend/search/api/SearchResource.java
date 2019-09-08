@@ -3,12 +3,12 @@ package io.retailplanet.backend.search.api;
 import io.retailplanet.backend.common.objects.products.SearchResult;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.search.impl.services.IProductSearchService;
-import io.vertx.core.json.JsonObject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.util.List;
 
 /**
  * Resource for all /search requests
@@ -26,7 +26,7 @@ public class SearchResource
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   public Response search(@HeaderParam("Authorization") String pUserToken, @QueryParam("query") String pQuery, @QueryParam("sort") String pSorting,
-                         @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength, @QueryParam("filter") JsonObject pFilter)
+                         @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength, @QueryParam("filter") List<String> pFilter) //todo filter
   {
     int offset = pOffset == null ? 0 : pOffset;
     int length = pLength == null ? 20 : pLength;

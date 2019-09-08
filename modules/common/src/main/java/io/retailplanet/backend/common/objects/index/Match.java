@@ -1,9 +1,9 @@
 package io.retailplanet.backend.common.objects.index;
 
-import com.fasterxml.jackson.annotation.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jetbrains.annotations.*;
 
+import javax.json.bind.annotation.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -13,19 +13,19 @@ import java.util.stream.*;
 @RegisterForReflection
 public class Match
 {
-  @JsonProperty
+  @JsonbProperty
   String name;
 
-  @JsonProperty
+  @JsonbProperty
   String[] content;
 
-  @JsonProperty
+  @JsonbProperty
   String nestedPath;
 
-  @JsonProperty
+  @JsonbProperty
   List<Match> innerMatches;
 
-  @JsonCreator
+  @JsonbCreator
   Match()
   {
   }

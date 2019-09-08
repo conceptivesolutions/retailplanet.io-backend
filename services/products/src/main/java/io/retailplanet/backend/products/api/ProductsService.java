@@ -3,14 +3,13 @@ package io.retailplanet.backend.products.api;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.products.impl.services.*;
 import io.retailplanet.backend.products.impl.struct.Product;
-import io.vertx.core.json.JsonArray;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.Arrays;
-import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static io.retailplanet.backend.products.impl.struct.IIndexStructure.INDEX_TYPE;
 
@@ -48,7 +47,7 @@ public class ProductsService
     // store in index
     indexWriteService.upsertDocument(clientID, INDEX_TYPE, Arrays.stream(pContent)
         .map(pProduct -> pProduct.toIndexJSON(clientID))
-        .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
+        .collect(Collectors.toList()));
 
     // return 200
     return Response.ok().build();
