@@ -1,7 +1,6 @@
 package io.retailplanet.backend.elasticsearch.api.internal;
 
-import io.retailplanet.backend.common.events.index.DocumentSearchResultEvent;
-import io.retailplanet.backend.common.objects.index.Query;
+import io.retailplanet.backend.common.objects.index.*;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
 import io.retailplanet.backend.elasticsearch.impl.filters.IFilterFactory;
@@ -38,14 +37,14 @@ public class IndexReadService
    * @param pQuery      Query
    */
   @POST
-  public DocumentSearchResultEvent search(@QueryParam("types") List<String> pIndexTypes, @QueryParam("offset") Integer pOffset,
-                                          @QueryParam("length") Integer pLength, Query pQuery) throws Exception
+  public SearchResult search(@QueryParam("types") List<String> pIndexTypes, @QueryParam("offset") Integer pOffset,
+                             @QueryParam("length") Integer pLength, Query pQuery) throws Exception
   {
     List<IQueryBuilder> filters = filterFactory.interpretFilters(pQuery.filters());
     List<IQueryBuilder> matches = matchFactory.interpretMatches(pQuery.matches());
     IIndexFacade.ISearchResult result = indexFacade.search(pIndexTypes, matches, filters, pOffset, pLength);
 
-    return new DocumentSearchResultEvent()
+    return new SearchResult()
         .hits(Collections.unmodifiableList(result.getElements()))
         .count(result.getMaxSize());
   }

@@ -1,19 +1,16 @@
-package io.retailplanet.backend.common.events.index;
+package io.retailplanet.backend.common.objects.index;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import io.retailplanet.backend.common.events.AbstractEvent;
 import org.jetbrains.annotations.*;
 
 import java.util.List;
 
 /**
- * Event: A document search returned a result
+ * A document search returned a result
  *
  * @author w.glanzer, 13.07.2019
  */
-@RegisterForReflection
-public class DocumentSearchResultEvent extends AbstractEvent<DocumentSearchResultEvent>
+public class SearchResult
 {
 
   /**
@@ -35,7 +32,7 @@ public class DocumentSearchResultEvent extends AbstractEvent<DocumentSearchResul
    * @return Builder
    */
   @NotNull
-  public DocumentSearchResultEvent count(long pCount)
+  public SearchResult count(long pCount)
   {
     count = pCount;
     return this;
@@ -56,7 +53,7 @@ public class DocumentSearchResultEvent extends AbstractEvent<DocumentSearchResul
    * @return Builder
    */
   @NotNull
-  public DocumentSearchResultEvent hits(List<Object> pHits)
+  public SearchResult hits(List<Object> pHits)
   {
     hits = pHits;
     return this;

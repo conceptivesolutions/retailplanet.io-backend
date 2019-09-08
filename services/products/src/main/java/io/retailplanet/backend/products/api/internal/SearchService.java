@@ -1,6 +1,5 @@
 package io.retailplanet.backend.products.api.internal;
 
-import io.retailplanet.backend.common.events.index.DocumentSearchResultEvent;
 import io.retailplanet.backend.common.events.search.*;
 import io.retailplanet.backend.common.objects.index.*;
 import io.retailplanet.backend.common.util.Utility;
@@ -55,7 +54,7 @@ public class SearchService
       Response.status(Response.Status.BAD_REQUEST).build();
     }
 
-    DocumentSearchResultEvent searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), offset, length, _buildIndexQuery(pEvent));
+    SearchResult searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), offset, length, _buildIndexQuery(pEvent));
 
     return Response.ok(_answerSearchProductsEvent(pEvent, searchResult)).build();
   }
@@ -66,7 +65,7 @@ public class SearchService
    * @param pSourceEvent                 Source event the user started
    * @param pSearchProductsInIndexResult Search in index
    */
-  private SearchProductsResultEvent _answerSearchProductsEvent(@NotNull SearchProductsEvent pSourceEvent, @NotNull DocumentSearchResultEvent pSearchProductsInIndexResult)
+  private SearchProductsResultEvent _answerSearchProductsEvent(@NotNull SearchProductsEvent pSourceEvent, @NotNull SearchResult pSearchProductsInIndexResult)
   {
     long count = pSearchProductsInIndexResult.hits() != null ? Math.max(0, pSearchProductsInIndexResult.count()) : 0;
     List<Object> collect = Utility.notNull(pSearchProductsInIndexResult.hits(), ListUtil::of).stream()

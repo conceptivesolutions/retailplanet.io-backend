@@ -1,7 +1,6 @@
 package io.retailplanet.backend.markets.impl.services;
 
-import io.retailplanet.backend.common.events.index.DocumentSearchResultEvent;
-import io.retailplanet.backend.common.objects.index.Query;
+import io.retailplanet.backend.common.objects.index.*;
 import io.retailplanet.backend.common.processor.URL;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
@@ -26,7 +25,7 @@ public interface IIndexReadService
    * @param pQuery      Query
    */
   @POST
-  DocumentSearchResultEvent search(@QueryParam("types") List<String> pIndexTypes, @QueryParam("offset") Integer pOffset,
-                                   @QueryParam("length") Integer pLength, Query pQuery);
+  SearchResult search(@QueryParam("types") List<String> pIndexTypes, @QueryParam("offset") Integer pOffset,
+                      @QueryParam("length") Integer pLength, Query pQuery);
 
 }
