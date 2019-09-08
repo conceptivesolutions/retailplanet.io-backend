@@ -155,7 +155,7 @@ class ElasticFacadeReadWriteImpl extends ElasticFacadeReadImpl
         if (item.isFailed())
         {
           successfullcount--;
-          _LOGGER.debug("Item failed to update " + item.getId(), item.getFailure().getCause());
+          _LOGGER.warn("Item failed to update " + item.getId(), item.getFailure().getCause());
         }
 
       // update metrics

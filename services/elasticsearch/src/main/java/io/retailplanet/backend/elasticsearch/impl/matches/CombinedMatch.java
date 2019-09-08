@@ -1,6 +1,6 @@
 package io.retailplanet.backend.elasticsearch.impl.matches;
 
-import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
+import io.retailplanet.backend.common.objects.index.Match;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import io.retailplanet.backend.elasticsearch.impl.util.QueryUtility;
 import org.apache.lucene.search.join.ScoreMode;
@@ -21,10 +21,10 @@ class CombinedMatch implements IQueryBuilder
   static final String TYPE = "combined";
 
   private final String nestedPath;
-  private final DocumentSearchEvent.Operator operator;
+  private final Match.Operator operator;
   private final List<IQueryBuilder> innerBuilders;
 
-  CombinedMatch(@Nullable String pNestedPath, @NotNull DocumentSearchEvent.Operator pOperator, @NotNull List<IQueryBuilder> pInnerBuilders)
+  CombinedMatch(@Nullable String pNestedPath, @NotNull Match.Operator pOperator, @NotNull List<IQueryBuilder> pInnerBuilders)
   {
     nestedPath = pNestedPath;
     operator = pOperator;
@@ -44,7 +44,7 @@ class CombinedMatch implements IQueryBuilder
         .collect(Collectors.toList());
 
     QueryBuilder builder;
-    if (operator == DocumentSearchEvent.Operator.OR)
+    if (operator == Match.Operator.OR)
       builder = QueryUtility.combineShould(builders);
     else
       builder = QueryUtility.combineMust(builders);

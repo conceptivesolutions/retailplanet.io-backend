@@ -29,18 +29,6 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-
-    <!-- Include Kafka 2.0.x for test purposes-->
-    <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka_2.12</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka-clients</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <profiles>

@@ -1,15 +1,14 @@
 package io.retailplanet.backend.products.impl.filter;
 
-import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
-import io.retailplanet.backend.common.events.market.*;
-import io.retailplanet.backend.products.impl.events.IEventFacade;
+import io.retailplanet.backend.common.objects.index.*;
+import io.retailplanet.backend.products.impl.services.IMarketSearchService;
 import io.retailplanet.backend.products.impl.struct.*;
 import org.jetbrains.annotations.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.retailplanet.backend.common.events.index.DocumentSearchEvent.Match.*;
+import static io.retailplanet.backend.common.objects.index.Match.*;
 
 /**
  * GeoSearch filters the index by lat and lon and availability
@@ -19,15 +18,15 @@ import static io.retailplanet.backend.common.events.index.DocumentSearchEvent.Ma
 class GeoSearchFilter implements ISearchFilter
 {
 
-  private final IEventFacade eventFacade;
+  private final IMarketSearchService marketSearchService;
   private final List<ProductAvailability.TYPE> availabilities;
   private final double lat;
   private final double lon;
   private final int distance;
 
-  GeoSearchFilter(@NotNull IEventFacade pEventFacade, @Nullable List<ProductAvailability.TYPE> pAvailabilities, double pLat, double pLon, int pDistance)
+  GeoSearchFilter(@NotNull IMarketSearchService pMarketSearchService, @Nullable List<ProductAvailability.TYPE> pAvailabilities, double pLat, double pLon, int pDistance)
   {
-    eventFacade = pEventFacade;
+    marketSearchService = pMarketSearchService;
     availabilities = pAvailabilities == null || pAvailabilities.isEmpty() ? null : pAvailabilities;
     lat = pLat;
     lon = pLon;
@@ -35,13 +34,13 @@ class GeoSearchFilter implements ISearchFilter
   }
 
   @Override
-  public void enrichQuery(@NotNull DocumentSearchEvent.Query pQuery) throws Exception
+  public void enrichQuery(@NotNull Query pQuery) throws Exception
   {
     List<String> marketIDs = _getMarketIDsWithinCurrentLocation();
     if (marketIDs == null)
       return;
 
-    pQuery.matches(combined(DocumentSearchEvent.Operator.AND, _createMarketIDsMatch(marketIDs), _createAvailabilityMatch(availabilities))
+    pQuery.matches(combined(Operator.AND, _createMarketIDsMatch(marketIDs), _createAvailabilityMatch(availabilities))
                        .nested(IIndexStructure.IProduct.AVAILABILITY));
   }
 
@@ -63,17 +62,8 @@ class GeoSearchFilter implements ISearchFilter
   {
     try
     {
-      SearchMarketsEvent ev = new SearchMarketsEvent()
-          .withGeoSearch(new SearchMarketsEvent.Geo()
-                             .lat(lat)
-                             .lon(lon)
-                             .distance(distance));
-
       // we have to block here, because we need the information
-      SearchMarketsResultEvent searchMarketsResultEvent = eventFacade.sendSearchMarketsEvent(ev).blockingGet();
-      if (searchMarketsResultEvent != null)
-        return searchMarketsResultEvent.marketIDs();
-      return null;
+      return marketSearchService.geoSearch(lat, lon, distance);
     }
     catch (Exception e)
     {
@@ -85,7 +75,7 @@ class GeoSearchFilter implements ISearchFilter
    * @return Creates a match to only query specific market ids
    */
   @NotNull
-  private DocumentSearchEvent.Match _createMarketIDsMatch(@NotNull List<String> pMarketIDs)
+  private Match _createMarketIDsMatch(@NotNull List<String> pMarketIDs)
   {
     return or(IIndexStructure.IProduct.AVAILABILITY + "." + IIndexStructure.IAvailability.MARKETID, pMarketIDs);
   }
@@ -94,7 +84,7 @@ class GeoSearchFilter implements ISearchFilter
    * @return Creates an availability match
    */
   @Nullable
-  private DocumentSearchEvent.Match _createAvailabilityMatch(@Nullable List<ProductAvailability.TYPE> pAvailabilities)
+  private Match _createAvailabilityMatch(@Nullable List<ProductAvailability.TYPE> pAvailabilities)
   {
     if (pAvailabilities == null)
       return null;

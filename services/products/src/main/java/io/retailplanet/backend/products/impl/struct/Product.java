@@ -1,13 +1,13 @@
 package io.retailplanet.backend.products.impl.struct;
 
-import com.fasterxml.jackson.annotation.*;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import com.google.common.collect.ImmutableMap;
 import io.retailplanet.backend.common.util.Utility;
-import io.vertx.core.json.*;
+import io.retailplanet.backend.common.util.i18n.ListUtil;
 import org.jetbrains.annotations.NotNull;
 
+import javax.json.bind.annotation.JsonbCreator;
 import java.util.*;
-import java.util.stream.*;
+import java.util.stream.Collectors;
 
 import static io.retailplanet.backend.products.impl.struct.IIndexStructure.IProduct.*;
 
@@ -16,56 +16,47 @@ import static io.retailplanet.backend.products.impl.struct.IIndexStructure.IProd
  *
  * @author w.glanzer, 21.06.2019
  */
-@RegisterForReflection
 public class Product
 {
 
   /**
    * Name of the product
    */
-  @JsonProperty
   public String name;
 
   /**
    * Product ID, not application unique - just within a market
    */
-  @JsonProperty
   public String id;
 
   /**
    * Category
    */
-  @JsonProperty
   public String category;
 
   /**
    * URL for more information
    */
-  @JsonProperty
   public String url;
 
   /**
    * Current price
    */
-  @JsonProperty
   public float price;
 
   /**
    * A list of all preview urls
    */
-  @JsonProperty
   public List<String> previews;
 
   /**
    * Additional information about this product
    */
-  @JsonProperty
   public Map<String, String> additionalInfos;
 
   /**
    * Availability in a specific market
    */
-  @JsonProperty
   public Map<String, ProductAvailability> availability;
 
   /**
@@ -73,7 +64,7 @@ public class Product
    */
   private long created = System.currentTimeMillis();
 
-  @JsonCreator
+  @JsonbCreator
   public Product()
   {
   }
@@ -85,9 +76,9 @@ public class Product
    * @return the content as json object
    */
   @NotNull
-  public JsonObject toIndexJSON(@NotNull String pClientID)
+  public Map<String, Object> toIndexJSON(@NotNull String pClientID)
   {
-    JsonObject productObj = new JsonObject();
+    ImmutableMap.Builder<String, Object> productObj = ImmutableMap.builder();
 
     productObj.put(NAME, name);
     productObj.put(ID, id);
@@ -106,18 +97,21 @@ public class Product
 
     if (additionalInfos != null)
       productObj.put(ADDITIONAL_INFO, additionalInfos.entrySet().stream()
-          .map(pEntry -> new JsonObject()
+          .map(pEntry -> ImmutableMap.builder()
               .put(IIndexStructure.IAdditionalInfo.NAME, pEntry.getKey())
-              .put(IIndexStructure.IAdditionalInfo.VALUE, pEntry.getValue()))
-          .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
+              .put(IIndexStructure.IAdditionalInfo.VALUE, pEntry.getValue())
+              .build())
+          .collect(Collectors.toList()));
 
     if (availability != null)
       productObj.put(AVAILABILITY, availability.entrySet().stream()
-          .map(pEntry -> pEntry.getValue().toJSON()
-              .put(IIndexStructure.IAvailability.MARKETID, pEntry.getKey()))
-          .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
+          .map(pEntry -> ImmutableMap.builder()
+              .putAll(pEntry.getValue().toJSON())
+              .put(IIndexStructure.IAvailability.MARKETID, pEntry.getKey())
+              .build())
+          .collect(Collectors.toList()));
 
-    return productObj;
+    return productObj.build();
   }
 
   /**
@@ -129,33 +123,32 @@ public class Product
   @NotNull
   public static Product fromIndexJSON(@NotNull Map<String, Object> pIndexObj)
   {
-    JsonObject index = new JsonObject(pIndexObj);
     Product product = new Product();
-    product.name = index.getString(NAME);
-    product.id = index.getString(ID);
-    product.price = index.getFloat(PRICE, 0F);
-    product.created = index.getInteger(UPDATED, 0);
-    product.url = index.getString(URL);
-    product.category = index.getString(CATEGORY);
-    product.previews = index.getJsonArray(PREVIEWS, new JsonArray()).getList();
-    product.additionalInfos = index.getJsonArray(ADDITIONAL_INFO, new JsonArray()).stream()
-        .map(JsonObject.class::cast)
+    product.name = Utility.getString(pIndexObj, NAME);
+    product.id = Utility.getString(pIndexObj, ID);
+    product.price = Utility.getFloat(pIndexObj, PRICE, 0F);
+    product.created = Utility.getLong(pIndexObj, UPDATED, 0L);
+    product.url = Utility.getString(pIndexObj, URL);
+    product.category = Utility.getString(pIndexObj, CATEGORY);
+    product.previews = Utility.getList(pIndexObj, PREVIEWS, ListUtil.of());
+    product.additionalInfos = Utility.getList(pIndexObj, ADDITIONAL_INFO, ListUtil.of()).stream()
+        .map(pEntry -> (Map<String, Object>) pEntry)
         .map(pEntry -> {
-          String name = pEntry.getString(IIndexStructure.IAdditionalInfo.NAME);
-          String value = pEntry.getString(IIndexStructure.IAdditionalInfo.VALUE);
+          String name = Utility.getString(pEntry, IIndexStructure.IAdditionalInfo.NAME);
+          String value = Utility.getString(pEntry, IIndexStructure.IAdditionalInfo.VALUE);
           if (Utility.isNullOrEmptyTrimmedString(name))
             return null;
           return new AbstractMap.SimpleImmutableEntry<>(name, value);
         })
         .filter(Objects::nonNull)
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    product.availability = index.getJsonArray(AVAILABILITY, new JsonArray()).stream()
-        .map(JsonObject.class::cast)
+    product.availability = Utility.getList(pIndexObj, AVAILABILITY, ListUtil.of()).stream()
+        .map(pEntry -> (Map<String, Object>) pEntry)
         .map(pEntry -> {
           ProductAvailability avail = new ProductAvailability();
-          avail.quantity = pEntry.getInteger(IIndexStructure.IAvailability.QUANTITY, 0);
-          avail.type = ProductAvailability.TYPE.valueOf(pEntry.getString(IIndexStructure.IAvailability.TYPE));
-          return new AbstractMap.SimpleImmutableEntry<>(pEntry.getString(IIndexStructure.IAvailability.MARKETID), avail);
+          avail.quantity = Utility.getInteger(pEntry, IIndexStructure.IAvailability.QUANTITY, 0);
+          avail.type = ProductAvailability.TYPE.valueOf(Utility.getString(pEntry, IIndexStructure.IAvailability.TYPE));
+          return new AbstractMap.SimpleImmutableEntry<>(Utility.getString(pEntry, IIndexStructure.IAvailability.MARKETID), avail);
         })
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     return product;

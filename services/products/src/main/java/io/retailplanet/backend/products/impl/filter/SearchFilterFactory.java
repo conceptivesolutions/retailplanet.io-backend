@@ -1,7 +1,8 @@
 package io.retailplanet.backend.products.impl.filter;
 
-import io.retailplanet.backend.products.impl.events.IEventFacade;
+import io.retailplanet.backend.products.impl.services.IMarketSearchService;
 import io.retailplanet.backend.products.impl.struct.ProductAvailability;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -16,7 +17,8 @@ class SearchFilterFactory implements ISearchFilterFactory
 {
 
   @Inject
-  private IEventFacade eventFacade;
+  @RestClient
+  private IMarketSearchService marketSearchService;
 
   @NotNull
   @Override
@@ -29,7 +31,7 @@ class SearchFilterFactory implements ISearchFilterFactory
       {
         case "geo":
           List<Object> arguments = (List<Object>) pArgumentObject;
-          return new GeoSearchFilter(eventFacade, Collections.singletonList(ProductAvailability.TYPE.AVAILABLE),
+          return new GeoSearchFilter(marketSearchService, Collections.singletonList(ProductAvailability.TYPE.AVAILABLE),
                                      Double.parseDouble(String.valueOf(arguments.get(0))), Double.parseDouble(String.valueOf(arguments.get(1))),
                                      Integer.parseInt(String.valueOf(arguments.get(2)))); //todo availability
 

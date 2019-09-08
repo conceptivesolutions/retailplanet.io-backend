@@ -28,8 +28,14 @@ class MainCrawlingThread extends Thread
   private final Semaphore blockingSemaphore = new Semaphore(8);
   private final List<CompletableFuture<?>> uploadTasks = Collections.synchronizedList(new ArrayList<>());
 
-  @ConfigProperty(name = "RP_HOST")
-  private String host;
+  @ConfigProperty(name = "RP_BUSINESSTOKEN_HOST")
+  private String tokenHost;
+
+  @ConfigProperty(name = "RP_PRODUCT_HOST")
+  private String productHost;
+
+  @ConfigProperty(name = "RP_MARKET_HOST")
+  private String marketHost;
 
   @ConfigProperty(name = "RP_CLIENTID")
   private String clientID;
@@ -67,7 +73,7 @@ class MainCrawlingThread extends Thread
     try
     {
       // Init upload
-      uploadFacade.init(host, clientID, clientToken);
+      uploadFacade.init(tokenHost, productHost, marketHost, clientID, clientToken);
     }
     catch (Exception e)
     {

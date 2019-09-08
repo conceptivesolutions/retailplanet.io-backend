@@ -1,6 +1,6 @@
 package io.retailplanet.backend.products.impl.filter;
 
-import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
+import io.retailplanet.backend.common.objects.index.Query;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -16,6 +16,6 @@ public interface ISearchFilter
    *
    * @param pQuery index query
    */
-  void enrichQuery(@NotNull DocumentSearchEvent.Query pQuery) throws Exception;
+  void enrichQuery(@NotNull Query pQuery) throws Exception;
 
 }

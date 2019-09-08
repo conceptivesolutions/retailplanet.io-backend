@@ -5,35 +5,6 @@ services:
   # ==== STORAGE ====
   # =================
 
-  # Zookeeper to manage kafka instances
-  kafka_zookeeper:
-    image: debezium/zookeeper:latest
-    restart: always
-    ports:
-      - "2181:2181"
-    volumes:
-      - ./.kafka/zookeeper:/zookeeper/data
-      - ./.kafka/zookeeper_conf:/zookeeper/conf
-
-  # Kafka instance
-  kafka:
-    image: debezium/kafka:latest
-    restart: always
-    links:
-      - kafka_zookeeper
-    ports:
-      - "9092:9092"
-    volumes:
-      - ./.kafka/kafka:/kafka/data
-    environment:
-      ZOOKEEPER_CONNECT: "kafka_zookeeper:2181"
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_LOG_RETENTION_HOURS: -1
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LOCAL:PLAINTEXT
-      LISTENERS: "LOCAL://0.0.0.0:9092"
-      ADVERTISED_LISTENERS: "LOCAL://kafka:9092"
-      KAFKA_INTER_BROKER_LISTENER_NAME: LOCAL
-
   # Elasticsearch
   search1:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.0.0
@@ -69,32 +40,20 @@ services:
   # searchAPI-Service
   search:
     image: images.conceptive.io/retailplanet.backend.search.native:latest
-    links:
-      - kafka
     ports:
       - 8880:8080
-    environment:
-      KAFKA_SERVERS: kafka:9092
 
   # BusinessAPI-Service
   businessapi:
     image: images.conceptive.io/retailplanet.backend.businessapi.native:latest
-    links:
-      - kafka
     ports:
       - 8881:8080
-    environment:
-      KAFKA_SERVERS: kafka:9092
 
   # UserAuth-Service
   userauth:
     image: images.conceptive.io/retailplanet.backend.userauth.native:latest
-    links:
-      - kafka
     ports:
       - 8882:8080
-    environment:
-      KAFKA_SERVERS: kafka:9092
 
   # ===========================
   # ==== Internal Services ====
@@ -103,44 +62,27 @@ services:
   # BusinessToken-Service
   businesstoken:
     image: images.conceptive.io/retailplanet.backend.businesstoken:latest # no native image, because H2 can not be embedded
-    links:
-      - kafka
     volumes:
       - ./.h2:/data/h2
     environment:
-      KAFKA_SERVERS: kafka:9092
       H2_DATA: /data/h2/businesstoken
 
   # Elasticsearch-Service
   elasticsearch:
     image: images.conceptive.io/retailplanet.backend.elasticsearch.native:latest
     links:
-      - kafka
       - search1
     environment:
-      KAFKA_SERVERS: kafka:9092
       ELASTICSEARCH_SERVERS: search1:9200
 
   # Markets-Service
   markets:
     image: images.conceptive.io/retailplanet.backend.markets.native:latest
-    links:
-      - kafka
-    environment:
-      KAFKA_SERVERS: kafka:9092
 
   # Products-Service
   products:
     image: images.conceptive.io/retailplanet.backend.products.native:latest
-    links:
-      - kafka
-    environment:
-      KAFKA_SERVERS: kafka:9092
 
   # Metrics-Service
   metrics:
     image: images.conceptive.io/retailplanet.backend.metrics.native:latest
-    links:
-      - kafka
-    environment:
-      KAFKA_SERVERS: kafka:9092

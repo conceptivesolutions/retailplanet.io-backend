@@ -1,63 +1,59 @@
 package io.retailplanet.backend.markets.impl.struct;
 
-import com.fasterxml.jackson.annotation.*;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import io.vertx.core.json.JsonObject;
+import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
+
+import javax.json.bind.annotation.JsonbCreator;
+import java.util.*;
 
 /**
  * Represents a single market
  *
  * @author w.glanzer, 23.06.2019
  */
-@RegisterForReflection
 public class Market
 {
 
   /**
    * Uniquie identifier
    */
-  @JsonProperty
   public String id;
 
   /**
    * Displayable name of this market
    */
-  @JsonProperty
   public String name;
 
   /**
    * LAT-Part of the GPS address
    */
-  @JsonProperty
   public float lat;
 
   /**
    * LNG-Part of the GPS address
    */
-  @JsonProperty
   public float lng;
 
   /**
    * Displayable address
    */
-  @JsonProperty
   public String address;
 
-  @JsonCreator
+  @JsonbCreator
   public Market()
   {
   }
 
   @NotNull
-  public JsonObject toIndexJSON(@NotNull String pClientID)
+  public Map<String, Object> toIndexJSON(@NotNull String pClientID)
   {
-    JsonObject result = new JsonObject()
+    Map<String, Object> result = new HashMap<>(ImmutableMap.<String, Object>builder()
         .put(IIndexStructure.IMarket.ID, id)
         .put(IIndexStructure.IMarket.CLIENTID, pClientID)
-        .put(IIndexStructure.IMarket.LOCATION, new JsonObject()
+        .put(IIndexStructure.IMarket.LOCATION, ImmutableMap.builder()
             .put("lat", lat)
-            .put("lon", lng));
+            .put("lon", lng)
+            .build()).build());
 
     if (name != null)
       result.put(IIndexStructure.IMarket.NAME, name);

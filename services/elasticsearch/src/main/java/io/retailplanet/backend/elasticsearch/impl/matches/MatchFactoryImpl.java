@@ -1,6 +1,6 @@
 package io.retailplanet.backend.elasticsearch.impl.matches;
 
-import io.retailplanet.backend.common.events.index.DocumentSearchEvent;
+import io.retailplanet.backend.common.objects.index.Match;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import org.jetbrains.annotations.*;
 
@@ -24,13 +24,13 @@ class MatchFactoryImpl implements IMatchFactory
       switch (pMatchType)
       {
         case EqualMatch.TYPE:
-          return new EqualMatch(pNestedPath, pMatchDetails[0], pMatchDetails[1], DocumentSearchEvent.Operator.valueOf(pMatchDetails[2]));
+          return new EqualMatch(pNestedPath, pMatchDetails[0], pMatchDetails[1], Match.Operator.valueOf(pMatchDetails[2]));
 
         case OrMatch.TYPE:
           return new OrMatch(pNestedPath, pMatchDetails[0], Arrays.asList(pMatchDetails).subList(1, pMatchDetails.length));
 
         case CombinedMatch.TYPE:
-          return new CombinedMatch(pNestedPath, DocumentSearchEvent.Operator.valueOf(pMatchDetails[0]), Objects.requireNonNull(pInnerMatches));
+          return new CombinedMatch(pNestedPath, Match.Operator.valueOf(pMatchDetails[0]), Objects.requireNonNull(pInnerMatches));
 
         default:
           throw new IllegalArgumentException("Matchtype not found " + pMatchType);

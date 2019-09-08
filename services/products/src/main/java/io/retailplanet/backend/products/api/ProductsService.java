@@ -1,18 +1,15 @@
 package io.retailplanet.backend.products.api;
 
-import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
-import io.retailplanet.backend.common.events.product.ProductUpsertEvent;
-import io.retailplanet.backend.common.util.*;
-import io.retailplanet.backend.products.impl.events.*;
+import io.retailplanet.backend.common.util.Utility;
+import io.retailplanet.backend.products.impl.services.*;
 import io.retailplanet.backend.products.impl.struct.Product;
-import io.vertx.core.json.*;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import java.util.Arrays;
-import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static io.retailplanet.backend.products.impl.struct.IIndexStructure.INDEX_TYPE;
 
@@ -21,58 +18,39 @@ import static io.retailplanet.backend.products.impl.struct.IIndexStructure.INDEX
  *
  * @author w.glanzer, 20.06.2019
  */
-@ApplicationScoped
+@Path("/business/product")
 public class ProductsService
 {
 
   @Inject
-  private IEventFacade eventFacade;
+  @RestClient
+  private ISessionTokenValidateService sessionTokenValidateService;
+
+  @Inject
+  @RestClient
+  private IIndexWriteService indexWriteService;
 
   /**
-   * Inserts / Updates a list of products
+   * Put products with a given session token
    *
-   * @param pEvent Products to upsert
+   * @param pToken   SessionToken to validate put request
+   * @param pContent content
    */
-  @Incoming(IEvents.IN_PRODUCTS_UPSERT)
-  public void productUpsert(@Nullable ProductUpsertEvent pEvent)
+  @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response putProducts(@HeaderParam("session_token") String pToken, Product[] pContent)
   {
-    if (pEvent == null)
-      return;
+    String clientID = sessionTokenValidateService.findIssuerByToken(pToken);
+    if (pContent == null || Utility.isNullOrEmptyTrimmedString(clientID))
+      return Response.status(Response.Status.BAD_REQUEST).build();
 
-    eventFacade.trace(pEvent, () -> {
-      String clientID = pEvent.clientID();
-      byte[] binContent = pEvent.content();
-      String sessionToken = pEvent.session_token(); //todo validate session token
-      if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID) || Utility.isNullOrEmptyTrimmedString(sessionToken))
-      {
-        eventFacade.notifyError(pEvent, "Invalid Event");
-        return;
-      }
+    // store in index
+    indexWriteService.upsertDocument(clientID, INDEX_TYPE, Arrays.stream(pContent)
+        .map(pProduct -> pProduct.toIndexJSON(clientID))
+        .collect(Collectors.toList()));
 
-      try
-      {
-        // decompress
-        String content = ZipUtility.uncompressBase64(binContent);
-
-        // read products
-        Product[] products = Json.decodeValue(content, Product[].class);
-
-        // store in index
-        DocumentUpsertEvent event = pEvent.createAnswer(DocumentUpsertEvent.class)
-            .clientID(clientID)
-            .type(INDEX_TYPE)
-            .doc(Arrays.stream(products)
-                     .map(pProduct -> pProduct.toIndexJSON(clientID))
-                     .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
-
-        // fire request
-        eventFacade.sendDocumentUpsertEvent(event);
-      }
-      catch (Exception e)
-      {
-        eventFacade.notifyError(pEvent, "Failed to upsert product", e);
-      }
-    });
+    // return 200
+    return Response.ok().build();
   }
 
 }

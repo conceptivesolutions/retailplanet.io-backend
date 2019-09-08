@@ -22,13 +22,6 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!-- Include Kafka 2.0.x-->
-    <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka_2.12</artifactId>
-      <scope>test</scope>
-    </dependency>
-
     <!-- Health framework -->
     <dependency>
       <groupId>io.quarkus</groupId>

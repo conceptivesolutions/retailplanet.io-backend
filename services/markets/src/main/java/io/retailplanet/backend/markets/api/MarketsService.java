@@ -1,73 +1,53 @@
 package io.retailplanet.backend.markets.api;
 
-import io.retailplanet.backend.common.events.index.DocumentUpsertEvent;
-import io.retailplanet.backend.common.events.market.MarketUpsertEvent;
-import io.retailplanet.backend.common.util.*;
-import io.retailplanet.backend.markets.impl.events.*;
+import io.retailplanet.backend.common.util.Utility;
+import io.retailplanet.backend.markets.impl.services.*;
 import io.retailplanet.backend.markets.impl.struct.*;
-import io.vertx.core.json.*;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import java.util.Arrays;
-import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
- * Service: Markets
+ * Resource for all markets requests
  *
  * @author w.glanzer, 23.06.2019
  */
-@ApplicationScoped
+@Path("/business/market")
 public class MarketsService
 {
 
   @Inject
-  private IEventFacade eventFacade;
+  @RestClient
+  private ISessionTokenValidateService sessionTokenValidateService;
+
+  @Inject
+  @RestClient
+  private IIndexWriteService indexWriteService;
 
   /**
-   * Inserts / Updates a list of markets
+   * Put markets with a given session token
    *
-   * @param pEvent Markets to upsert
+   * @param pToken   SessionToken to validate put request
+   * @param pContent content
    */
-  @Incoming(IEvents.IN_MARKETS_UPSERT)
-  public void marketUpsert(@Nullable MarketUpsertEvent pEvent)
+  @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response putMarkets(@HeaderParam("session_token") String pToken, Market[] pContent)
   {
-    if (pEvent == null)
-      return;
+    String clientID = sessionTokenValidateService.findIssuerByToken(pToken);
+    if (pContent == null || Utility.isNullOrEmptyTrimmedString(clientID))
+      return Response.status(Response.Status.BAD_REQUEST).build();
 
-    eventFacade.trace(pEvent, () -> {
-      String clientID = pEvent.clientID();
-      byte[] binContent = pEvent.content();
-      if (binContent == null || binContent.length == 0 || Utility.isNullOrEmptyTrimmedString(clientID))
-        return;
+    // store in index
+    indexWriteService.upsertDocument(clientID, IIndexStructure.INDEX_TYPE, Arrays.stream(pContent)
+        .map(pMarket -> pMarket.toIndexJSON(clientID))
+        .collect(Collectors.toList()));
 
-      try
-      {
-        // decompress
-        String content = ZipUtility.uncompressBase64(binContent);
-
-        // read markets
-        Market[] markets = Json.decodeValue(content, Market[].class);
-
-        // store in index
-        DocumentUpsertEvent request = new DocumentUpsertEvent()
-            .clientID(clientID)
-            .type(IIndexStructure.INDEX_TYPE)
-            .doc(Arrays.stream(markets)
-                     .map(pMarket -> pMarket.toIndexJSON(clientID))
-                     .collect(Collector.of(JsonArray::new, JsonArray::add, JsonArray::addAll)));
-
-        // fire request
-        eventFacade.sendDocumentUpsertEvent(request);
-      }
-      catch (Exception e)
-      {
-        eventFacade.notifyError(pEvent, "Failed to upsert market", e);
-      }
-
-      return;
-    });
+    // return 200
+    return Response.ok().build();
   }
 }
