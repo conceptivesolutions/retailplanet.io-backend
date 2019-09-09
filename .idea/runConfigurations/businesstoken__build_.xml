@@ -6,6 +6,7 @@
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/services/businesstoken" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <envs>
+      <env name="MONGODB_HOST" value="mongodb://localhost:27017" />
       <env name="H2_DATA" value="$PROJECT_DIR$/.h2/businesstoken" />
       <env name="LOG_LEVEL" value="INFO" />
       <env name="LOG_FILE" value="false" />

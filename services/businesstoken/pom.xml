@@ -20,6 +20,12 @@
       <artifactId>quarkus-hibernate-orm-panache</artifactId>
     </dependency>
 
+    <!-- MongoDB Client -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-mongodb-client</artifactId>
+    </dependency>
+
     <!-- H2 connector -->
     <dependency>
       <groupId>io.quarkus</groupId>

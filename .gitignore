@@ -15,5 +15,6 @@ release.properties
 
 # Docker Data
 .h2
+.mongodb
 .elastic
 services/businesstoken/ObjectStore

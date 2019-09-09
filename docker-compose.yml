@@ -19,6 +19,14 @@ services:
     ports:
       - 9200:9200
 
+  # MongoDB
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./.mongodb:/data/db
+
   # =======================
   # ==== DOCUMENTATION ====
   # =======================

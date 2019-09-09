@@ -14,6 +14,12 @@
   <name>retailplanet.io: Service: UserAuth</name>
 
   <dependencies>
+    <!-- MongoDB Client -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-mongodb-client</artifactId>
+    </dependency>
+
     <!-- metrics -->
     <dependency>
       <groupId>io.retailplanet.backend.modules</groupId>
