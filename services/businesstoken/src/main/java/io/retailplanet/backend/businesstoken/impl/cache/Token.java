@@ -1,76 +1,124 @@
 package io.retailplanet.backend.businesstoken.impl.cache;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import io.quarkus.panache.common.Parameters;
+import com.mongodb.client.MongoClient;
+import org.bson.Document;
 import org.jetbrains.annotations.*;
 
-import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.stream.Stream;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Represents a single business token
  *
  * @author w.glanzer, 17.06.2019
  */
-@Entity
-class Token extends PanacheEntity
+class Token
 {
+
+  /**
+   * Represents the ID of this token
+   */
+  String id;
 
   /**
    * Represents the clientID of this token
    */
-  @Column(name = "CLIENTID")
   String clientID;
 
   /**
    * Represents the inner token, generated for this client
    */
-  @Column(name = "SESSIONTOKEN")
   String sessionToken;
 
   /**
    * Represents, how long the token will be active. After this timestamp, the token will be inactive
    */
-  @Column(name = "VALID")
-  Timestamp validUntil;
+  long validUntil;
 
   /**
-   * Returns the Token instance for a session token
+   * Inserts a new token in the database
    *
-   * @param pSessionToken Session Token
-   * @return the token, or <tt>null</tt>
+   * @param pMongoClient MongoClient
+   * @param pToken       Token to index
    */
-  @Nullable
-  public static Token findBySessionToken(@NotNull String pSessionToken)
+  public static void insert(@NotNull MongoClient pMongoClient, @NotNull Token pToken)
   {
-    return find("SESSIONTOKEN", pSessionToken)
-        .firstResult();
+    pMongoClient
+        .getDatabase("businesstoken")
+        .getCollection("tokens")
+        .insertOne(new Document()
+                       .append("_id", pToken.id)
+                       .append("clientID", pToken.clientID)
+                       .append("sessionToken", pToken.sessionToken)
+                       .append("validUntil", pToken.validUntil));
   }
 
   /**
-   * Returns all token instances for the given client
+   * Returns a token which was retrieved by a sessionToken
    *
-   * @param pClientID Client ID
-   * @return the tokens
+   * @param pMongoClient  MongoClient
+   * @param pSessionToken Token to search for
+   * @return the Token instance, or <tt>null</tt>
    */
-  @NotNull
-  public static Stream<Token> findByClientID(@NotNull String pClientID)
+  @Nullable
+  public static Token findBySessionToken(@NotNull MongoClient pMongoClient, @NotNull String pSessionToken)
   {
-    return find("CLIENTID", pClientID).stream();
+    Document doc = pMongoClient
+        .getDatabase("businesstoken")
+        .getCollection("tokens")
+        .find(new Document().append("sessionToken", pSessionToken))
+        .first();
+
+    if (doc == null)
+      return null;
+
+    Token token = new Token();
+    token.id = doc.getString("_id");
+    token.clientID = doc.getString("clientID");
+    token.sessionToken = doc.getString("sessionToken");
+    token.validUntil = doc.getLong("validUntil");
+    return token;
   }
 
   /**
    * Returns a list of all expired tokens
    *
-   * @param pTime Timestamp to determine, if a token is expired
-   * @return Token stream
+   * @param pMongoClient MongoClient
+   * @return All expired tokens
    */
   @NotNull
-  public static Stream<Token> findExpiredTokens(@NotNull Instant pTime)
+  public static List<Token> findExpiredTokens(@NotNull MongoClient pMongoClient)
   {
-    return find("VALID < :time", Parameters.with("time", new Timestamp(pTime.toEpochMilli()))).stream();
+    List<Token> expiredTokens = new ArrayList<>();
+
+    pMongoClient
+        .getDatabase("businesstoken")
+        .getCollection("tokens")
+        .find(new Document().append("validUntil", new Document("$lt", System.currentTimeMillis())))
+        .forEach((Consumer<Document>) doc -> {
+          Token token = new Token();
+          token.id = doc.getString("_id");
+          token.clientID = doc.getString("clientID");
+          token.sessionToken = doc.getString("sessionToken");
+          token.validUntil = doc.getLong("validUntil");
+          expiredTokens.add(token);
+        });
+
+    return expiredTokens;
+  }
+
+  /**
+   * Deletes a token from database
+   *
+   * @param pMongoClient MongoClient
+   * @param pToken       Token to delete
+   */
+  public static void delete(@NotNull MongoClient pMongoClient, @NotNull Token pToken)
+  {
+    pMongoClient
+        .getDatabase("businesstoken")
+        .getCollection("tokens")
+        .deleteOne(new Document("_id", pToken.id));
   }
 
 }

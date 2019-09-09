@@ -1,12 +1,12 @@
 package io.retailplanet.backend.businesstoken.impl.cache;
 
+import com.mongodb.client.MongoClient;
 import org.jetbrains.annotations.*;
 import org.slf4j.*;
 
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
-import java.sql.Timestamp;
+import javax.inject.*;
 import java.time.Instant;
+import java.util.UUID;
 
 /**
  * @author w.glanzer, 17.06.2019
@@ -17,20 +17,25 @@ public class TokenCache
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(TokenCache.class);
 
+  @Inject
+  private MongoClient mongoClient;
+
   /**
    * Puts a token for the specific clientID in the cache
    *
    * @param pClientID ID of the client
    * @param pToken    Token
    */
-  @Transactional
   public void putToken(@NotNull String pClientID, @NotNull String pToken, @NotNull Instant pValidUntil)
   {
     Token token = new Token();
+    token.id = UUID.randomUUID().toString();
     token.clientID = pClientID;
     token.sessionToken = pToken;
-    token.validUntil = new Timestamp(pValidUntil.toEpochMilli());
-    token.persist();
+    token.validUntil = pValidUntil.toEpochMilli();
+
+    // insert
+    Token.insert(mongoClient, token);
 
     _LOGGER.info("Indexed new token " + token.id + " for client " + pClientID + ", valid until " + pValidUntil);
   }
@@ -41,13 +46,12 @@ public class TokenCache
    * @param pSessionToken session token
    * @return <tt>true</tt> if the token is valid
    */
-  @Transactional
   public STATE validateToken(@NotNull String pSessionToken)
   {
-    Token token = Token.findBySessionToken(pSessionToken);
+    Token token = Token.findBySessionToken(mongoClient, pSessionToken);
     if (token == null)
       return STATE.INVALID;
-    if (token.validUntil != null && token.validUntil.toInstant().isBefore(Instant.now()))
+    if (token.validUntil < System.currentTimeMillis())
     {
       _invalidate(token);
       return STATE.EXPIRED;
@@ -62,10 +66,9 @@ public class TokenCache
    * @return the clientid, or <tt>null</tt>
    */
   @Nullable
-  @Transactional
   public String findIssuer(@NotNull String pSessionToken)
   {
-    Token token = Token.findBySessionToken(pSessionToken);
+    Token token = Token.findBySessionToken(mongoClient, pSessionToken);
     if (token == null)
       return null;
     return token.clientID;
@@ -76,32 +79,20 @@ public class TokenCache
    *
    * @param pToken session token
    */
-  @Transactional
   public void invalidateToken(@NotNull String pToken)
   {
-    Token token = Token.findBySessionToken(pToken);
-    if(token != null)
+    Token token = Token.findBySessionToken(mongoClient, pToken);
+    if (token != null)
       _invalidate(token);
-  }
-
-  /**
-   * Invalidates all tokens for a specific user
-   *
-   * @param pClientID ID of the client to invalidate all tokens
-   */
-  @Transactional
-  public void invalidateAllTokens(@NotNull String pClientID)
-  {
-    Token.findByClientID(pClientID).forEach(this::_invalidate);
   }
 
   /**
    * Invalidates all expired tokens for all users
    */
-  @Transactional
   public void invalidateAllExpiredTokens()
   {
-    Token.findExpiredTokens(Instant.now()).forEach(this::_invalidate);
+    _LOGGER.info("Invalidating all expired tokens ");
+    Token.findExpiredTokens(mongoClient).forEach(this::_invalidate);
   }
 
   /**
@@ -109,11 +100,10 @@ public class TokenCache
    *
    * @param pToken Token
    */
-  @Transactional
   private void _invalidate(@NotNull Token pToken)
   {
     _LOGGER.info("Invalidating token " + pToken.id + " for client " + pToken.clientID);
-    pToken.delete();
+    Token.delete(mongoClient, pToken);
   }
 
   /**

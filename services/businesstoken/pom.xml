@@ -14,22 +14,10 @@
   <name>retailplanet.io: Service: BusinessToken</name>
 
   <dependencies>
-    <!-- Hibernate -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-hibernate-orm-panache</artifactId>
-    </dependency>
-
     <!-- MongoDB Client -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-mongodb-client</artifactId>
-    </dependency>
-
-    <!-- H2 connector -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jdbc-h2</artifactId>
     </dependency>
 
     <!-- metrics -->
