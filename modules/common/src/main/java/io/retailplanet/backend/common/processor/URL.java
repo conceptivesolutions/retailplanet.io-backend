@@ -24,12 +24,12 @@ public @interface URL
   enum ETarget
   {
     __DUMMY__("http://dummy.localhost.not.resolvable", "http://localhost"),
-    BUSINESSTOKEN("http://businesstoken.retailplanet-services.svc.cluster.local", "http://localhost:8088"),
-    ELASTICSEARCH("http://elasticsearch.retailplanet-services.svc.cluster.local", "http://localhost:8083"),
-    MARKETS("http://markets.retailplanet-services.svc.cluster.local", "http://localhost:8084"),
-    METRICS("http://metrics.retailplanet-services.svc.cluster.local", "http://localhost:8085"),
-    PRODUCTS("http://products.retailplanet-services.svc.cluster.local", "http://localhost:8086"),
-    USERAUTH("http://userauth.retailplanet-services.svc.cluster.local", "http://localhost:8082");
+    BUSINESSTOKEN("http://businesstoken.retailplanet-services.svc.cluster.local:8080", "http://localhost:8088"),
+    ELASTICSEARCH("http://elasticsearch.retailplanet-services.svc.cluster.local:8080", "http://localhost:8083"),
+    MARKETS("http://markets.retailplanet-services.svc.cluster.local:8080", "http://localhost:8084"),
+    METRICS("http://metrics.retailplanet-services.svc.cluster.local:8080", "http://localhost:8085"),
+    PRODUCTS("http://products.retailplanet-services.svc.cluster.local:8080", "http://localhost:8086"),
+    USERAUTH("http://userauth.retailplanet-services.svc.cluster.local:8080", "http://localhost:8082");
 
     private String productionURL;
     private String localURL;
