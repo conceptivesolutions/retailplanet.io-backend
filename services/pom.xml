@@ -14,6 +14,17 @@
   <artifactId>services</artifactId>
   <name>retailplanet.io: Services</name>
   <packaging>pom</packaging>
+    
+  <modules>
+    <module>businessapi</module>
+    <module>businesstoken</module>
+    <module>elasticsearch</module>
+    <module>metrics</module>
+    <module>markets</module>
+    <module>products</module>
+    <module>search</module>
+    <module>userauth</module>
+  </modules>
 
   <dependencies>
     <!-- Retailplanet: Common -->
@@ -33,30 +44,8 @@
 
   <profiles>
     <profile>
-      <id>build.jvm</id>
-      <modules>
-        <module>businessapi</module>
-        <module>businesstoken</module>
-        <module>elasticsearch</module>
-        <module>metrics</module>
-        <module>markets</module>
-        <module>products</module>
-        <module>search</module>
-        <module>userauth</module>
-      </modules>
-    </profile>
-    <profile>
       <!-- Native is a profile to compile quarkus instances with GRAAL_VM to native executables -->
       <id>build.native</id>
-      <modules>
-        <module>businessapi</module>
-        <module>elasticsearch</module>
-        <module>metrics</module>
-        <module>markets</module>
-        <module>products</module>
-        <module>search</module>
-        <module>userauth</module>
-      </modules>
       <build>
         <plugins>
           <plugin>
