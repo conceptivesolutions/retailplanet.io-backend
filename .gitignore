@@ -2,6 +2,7 @@
 /.idea/*
 !/.idea/codeStyles
 !/.idea/runConfigurations
+!/.idea/vcs.xml
 *.ipr
 *.iml
 *.iws
