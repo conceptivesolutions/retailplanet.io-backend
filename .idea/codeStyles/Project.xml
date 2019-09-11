@@ -8,6 +8,7 @@
       </value>
     </option>
     <option name="RIGHT_MARGIN" value="200" />
+    <option name="FORMATTER_TAGS_ENABLED" value="true" />
     <option name="BRACE_STYLE" value="2" />
     <option name="CLASS_BRACE_STYLE" value="2" />
     <option name="METHOD_BRACE_STYLE" value="2" />
