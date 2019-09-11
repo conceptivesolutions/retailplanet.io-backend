@@ -31,7 +31,7 @@ public class ProfileResource
   public Object getInformations(@HeaderParam("Authorization") String pBearerToken)
   {
     if (Utility.isNullOrEmptyTrimmedString(pBearerToken))
-      return Response.status(Response.Status.BAD_REQUEST).build();
+      return Response.status(Response.Status.UNAUTHORIZED).build();
 
     //todo verify permissions
 
