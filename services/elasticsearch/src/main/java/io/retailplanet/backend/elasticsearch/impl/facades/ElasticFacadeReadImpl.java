@@ -47,9 +47,11 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
                                  .query(QueryUtility.combineMust(_toQueryBuilders(pMatches)))
                                  .postFilter(QueryUtility.combineMust(_toQueryBuilders(pFilters))));
 
+    _LOGGER.info("ElasticSearch current query: " + request.toString().replace("\n", " "));
+
     SearchResponse response = restClient.search(request, RequestOptions.DEFAULT);
 
-    _LOGGER.info("ElasticSearch responded after " + response.getTook().toString());
+    _LOGGER.info("ElasticSearch responded after " + response.getTook().toString() + " with " + response.getHits().getTotalHits() + " hits");
 
     return _toResults(response.getHits());
   }
