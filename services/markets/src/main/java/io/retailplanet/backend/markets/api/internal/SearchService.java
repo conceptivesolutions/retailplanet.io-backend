@@ -1,5 +1,6 @@
 package io.retailplanet.backend.markets.api.internal;
 
+import io.retailplanet.backend.common.comm.markets.IMarketSearchResource;
 import io.retailplanet.backend.common.objects.index.*;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.common.util.i18n.ListUtil;
@@ -17,7 +18,7 @@ import java.util.*;
  * @author w.glanzer, 14.07.2019
  */
 @Path("internal/markets/search")
-public class SearchService
+public class SearchService implements IMarketSearchResource
 {
 
   @Inject

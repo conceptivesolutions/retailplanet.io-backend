@@ -1,10 +1,10 @@
 package io.retailplanet.backend.products.impl.services;
 
+import io.retailplanet.backend.common.comm.index.IIndexWriteResource;
 import io.retailplanet.backend.common.processor.URL;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.Path;
 
 /**
  * @author w.glanzer, 05.09.2019
@@ -12,17 +12,6 @@ import javax.ws.rs.core.Response;
 @Path("/internal/elasticsearch")
 @RegisterRestClient
 @URL(targetModule = URL.ETarget.ELASTICSEARCH)
-public interface IIndexWriteService
+public interface IIndexWriteService extends IIndexWriteResource
 {
-
-  /**
-   * Inserts / Updates documents in index
-   *
-   * @param pClientID client that issued this write
-   * @param pType     indextype to write to
-   * @param pDocument document to insert
-   */
-  @PUT
-  Response upsertDocument(@QueryParam("clientID") String pClientID, @QueryParam("type") String pType, Object pDocument);
-
 }

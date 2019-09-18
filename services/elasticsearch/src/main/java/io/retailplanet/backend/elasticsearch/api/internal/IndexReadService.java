@@ -1,5 +1,6 @@
 package io.retailplanet.backend.elasticsearch.api.internal;
 
+import io.retailplanet.backend.common.comm.index.IIndexReadResource;
 import io.retailplanet.backend.common.objects.index.*;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
@@ -16,7 +17,7 @@ import java.util.*;
  * @author w.glanzer, 16.07.2019
  */
 @Path("/internal/elasticsearch")
-public class IndexReadService
+public class IndexReadService implements IIndexReadResource
 {
 
   @Inject
@@ -38,15 +39,22 @@ public class IndexReadService
    */
   @POST
   public SearchResult search(@QueryParam("types") List<String> pIndexTypes, @QueryParam("offset") Integer pOffset,
-                             @QueryParam("length") Integer pLength, Query pQuery) throws Exception
+                             @QueryParam("length") Integer pLength, Query pQuery)
   {
-    List<IQueryBuilder> filters = filterFactory.interpretFilters(pQuery.filters());
-    List<IQueryBuilder> matches = matchFactory.interpretMatches(pQuery.matches());
-    IIndexFacade.ISearchResult result = indexFacade.search(pIndexTypes, matches, filters, pOffset, pLength);
+    try
+    {
+      List<IQueryBuilder> filters = filterFactory.interpretFilters(pQuery.filters());
+      List<IQueryBuilder> matches = matchFactory.interpretMatches(pQuery.matches());
+      IIndexFacade.ISearchResult result = indexFacade.search(pIndexTypes, matches, filters, pOffset, pLength);
 
-    return new SearchResult()
-        .hits(Collections.unmodifiableList(result.getElements()))
-        .count(result.getMaxSize());
+      return new SearchResult()
+          .hits(Collections.unmodifiableList(result.getElements()))
+          .count(result.getMaxSize());
+    }
+    catch (Exception e)
+    {
+      throw new InternalServerErrorException(e);
+    }
   }
 
 }

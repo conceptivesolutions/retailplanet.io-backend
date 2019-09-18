@@ -1,5 +1,6 @@
 package io.retailplanet.backend.products.api.internal;
 
+import io.retailplanet.backend.common.comm.products.IProductSearchResource;
 import io.retailplanet.backend.common.objects.index.*;
 import io.retailplanet.backend.common.objects.products.SearchResult;
 import io.retailplanet.backend.common.util.Utility;
@@ -13,7 +14,6 @@ import org.slf4j.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * @author w.glanzer, 12.07.2019
  */
 @Path("/internal/products/search")
-public class SearchService
+public class SearchService implements IProductSearchResource
 {
 
   private static final Logger _LOGGER = LoggerFactory.getLogger(SearchService.class);
@@ -39,11 +39,11 @@ public class SearchService
    * Executes product search
    */
   @POST
-  public Response searchProducts(@QueryParam("query") String pQuery, @QueryParam("sorting") String pSorting,
-                                 @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength)
+  public SearchResult searchProducts(@QueryParam("query") String pQuery, @QueryParam("sorting") String pSorting,
+                                     @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength)
   {
     if (Utility.isNullOrEmptyTrimmedString(pQuery))
-      return Response.status(Response.Status.BAD_REQUEST).build();
+      throw new BadRequestException();
 
     if (pOffset == null || pOffset < 0 || pOffset == Integer.MAX_VALUE)
       pOffset = 0;
@@ -64,10 +64,10 @@ public class SearchService
     _LOGGER.info("Search with term '" + pQuery + "' returned " + collect.size() + " (" + count + ") results");
 
     // send answer
-    return Response.ok(new SearchResult()
-                           .filters(new HashMap<>()) //todo filters
-                           .maxSize(count)
-                           .elements(collect)).build();
+    return new SearchResult()
+        .filters(new HashMap<>()) //todo filters
+        .maxSize(count)
+        .elements(collect);
   }
 
   /**

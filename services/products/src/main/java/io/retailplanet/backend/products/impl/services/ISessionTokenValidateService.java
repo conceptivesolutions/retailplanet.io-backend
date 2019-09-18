@@ -1,9 +1,10 @@
 package io.retailplanet.backend.products.impl.services;
 
+import io.retailplanet.backend.common.comm.businesstoken.ISessionTokenValidateResource;
 import io.retailplanet.backend.common.processor.URL;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Path;
 
 /**
  * @author w.glanzer, 05.09.2019
@@ -11,16 +12,6 @@ import javax.ws.rs.*;
 @Path("/internal/validate")
 @RegisterRestClient
 @URL(targetModule = URL.ETarget.BUSINESSTOKEN)
-public interface ISessionTokenValidateService
+public interface ISessionTokenValidateService extends ISessionTokenValidateResource
 {
-
-  /**
-   * Retrieve the issuer (clientID), who issued the session_token
-   *
-   * @param pSessionToken Token
-   */
-  @GET
-  @Path("issuer")
-  String findIssuerByToken(@QueryParam("session_token") String pSessionToken);
-
 }

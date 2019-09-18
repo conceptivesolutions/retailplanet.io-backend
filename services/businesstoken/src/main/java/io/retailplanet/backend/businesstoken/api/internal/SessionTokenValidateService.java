@@ -1,11 +1,11 @@
 package io.retailplanet.backend.businesstoken.api.internal;
 
 import io.retailplanet.backend.businesstoken.impl.cache.TokenCache;
+import io.retailplanet.backend.common.comm.businesstoken.ISessionTokenValidateResource;
 import io.retailplanet.backend.common.util.Utility;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 /**
  * Service for validating requests that were issued with a session token
@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
  * @author w.glanzer, 21.06.2019
  */
 @Path("/internal/validate")
-public class SessionTokenValidateService
+public class SessionTokenValidateService implements ISessionTokenValidateResource
 {
 
   @Inject
@@ -26,22 +26,22 @@ public class SessionTokenValidateService
    */
   @GET
   @Path("issuer")
-  public Response issuer(@QueryParam("session_token") String pSessionToken)
+  public String findIssuerByToken(@QueryParam("session_token") String pSessionToken)
   {
     if (Utility.isNullOrEmptyTrimmedString(pSessionToken))
-      return Response.status(Response.Status.NOT_FOUND).build();
+      throw new NotFoundException();
 
     // validate token
     TokenCache.STATE valid = tokenCache.validateToken(pSessionToken);
     if (valid != TokenCache.STATE.VALID)
-      return Response.status(Response.Status.NOT_FOUND).build();
+      throw new NotFoundException();
 
     // find issuer
     String issuer = tokenCache.findIssuer(pSessionToken);
     if (Utility.isNullOrEmptyTrimmedString(issuer))
-      return Response.status(Response.Status.NOT_FOUND).build();
+      throw new NotFoundException();
 
-    return Response.ok(issuer).build();
+    return issuer;
   }
 
 }

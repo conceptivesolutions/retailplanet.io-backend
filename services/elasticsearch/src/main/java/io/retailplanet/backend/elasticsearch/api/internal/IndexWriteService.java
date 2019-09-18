@@ -1,5 +1,6 @@
 package io.retailplanet.backend.elasticsearch.api.internal;
 
+import io.retailplanet.backend.common.comm.index.IIndexWriteResource;
 import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.elasticsearch.impl.facades.IIndexFacade;
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,7 +20,7 @@ import java.util.*;
  * @author w.glanzer, 22.06.2019
  */
 @Path("/internal/elasticsearch")
-public class IndexWriteService
+public class IndexWriteService implements IIndexWriteResource
 {
 
   @Inject

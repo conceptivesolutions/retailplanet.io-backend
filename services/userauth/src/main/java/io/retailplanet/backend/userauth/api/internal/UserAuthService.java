@@ -1,5 +1,7 @@
 package io.retailplanet.backend.userauth.api.internal;
 
+import io.retailplanet.backend.common.comm.userauth.IUserAuthResource;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
@@ -7,7 +9,7 @@ import javax.ws.rs.core.Response;
  * @author w.glanzer, 05.09.2019
  */
 @Path("/internal/userauth")
-public class UserAuthService
+public class UserAuthService implements IUserAuthResource
 {
 
   /**

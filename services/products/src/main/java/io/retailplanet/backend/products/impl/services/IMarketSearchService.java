@@ -1,10 +1,10 @@
 package io.retailplanet.backend.products.impl.services;
 
+import io.retailplanet.backend.common.comm.markets.IMarketSearchResource;
 import io.retailplanet.backend.common.processor.URL;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-import javax.ws.rs.*;
-import java.util.List;
+import javax.ws.rs.Path;
 
 /**
  * @author w.glanzer, 05.09.2019
@@ -12,17 +12,6 @@ import java.util.List;
 @Path("/internal/markets/search")
 @RegisterRestClient
 @URL(targetModule = URL.ETarget.MARKETS)
-public interface IMarketSearchService
+public interface IMarketSearchService extends IMarketSearchResource
 {
-
-  /**
-   * Executes an geoSearch over all markets
-   *
-   * @param pLat      Latitude
-   * @param pLon      Longitude
-   * @param pDistance Distance in km
-   */
-  @POST
-  List<String> geoSearch(@QueryParam("lat") double pLat, @QueryParam("lon") double pLon, @QueryParam("dist") int pDistance);
-
 }
