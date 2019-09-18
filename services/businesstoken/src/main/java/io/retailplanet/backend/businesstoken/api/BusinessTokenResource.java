@@ -8,9 +8,9 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.MediaType;
 import java.time.*;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Service to generate / list all currently available businesstokens
@@ -41,16 +41,14 @@ public class BusinessTokenResource
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/generate")
-  public Response generateToken(@QueryParam("clientid") String pClientID, @QueryParam("token") String pClientToken)
+  public Map<String, Object> generateToken(@QueryParam("clientid") String pClientID, @QueryParam("token") String pClientToken)
   {
     // validate request
     if (Utility.isNullOrEmptyTrimmedString(pClientID) || Utility.isNullOrEmptyTrimmedString(pClientToken))
-      return Response.status(Response.Status.BAD_REQUEST).build();
+      throw new BadRequestException();
 
     // check if user is allowed to create tokens
-    Response createAllowed = userAuthService.validate(pClientID, "BUSINESSTOKEN_CREATE");
-    if (createAllowed.getStatus() != Response.Status.OK.getStatusCode())
-      return Response.status(Response.Status.FORBIDDEN).build();
+    userAuthService.validate(pClientID, "BUSINESSTOKEN_CREATE");
 
     // generate token and validity
     String session_token = UUID.randomUUID().toString(); // todo
@@ -60,10 +58,10 @@ public class BusinessTokenResource
     if (validUntil.isAfter(Instant.now()))
       tokenCache.putToken(pClientID, session_token, validUntil);
 
-    return Response.ok(ImmutableMap.builder()
-                           .put("session_token", session_token)
-                           .put("valid_until", validUntil)
-                           .build()).build();
+    return ImmutableMap.<String, Object>builder()
+        .put("session_token", session_token)
+        .put("valid_until", validUntil)
+        .build();
   }
 
   /**
@@ -73,16 +71,14 @@ public class BusinessTokenResource
    */
   @DELETE
   @Path("{session_token}")
-  public Response invalidateToken(@PathParam("session_token") String pSessionToken)
+  public void invalidateToken(@PathParam("session_token") String pSessionToken)
   {
     // validate request
     if (Utility.isNullOrEmptyTrimmedString(pSessionToken))
-      return Response.status(Response.Status.BAD_REQUEST).build();
+      throw new BadRequestException();
 
     // Invalidate given session_token
     tokenCache.invalidateToken(pSessionToken);
-
-    return Response.ok().build();
   }
 
 }

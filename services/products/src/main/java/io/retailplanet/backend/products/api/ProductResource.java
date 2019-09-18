@@ -7,7 +7,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.MediaType;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -38,19 +38,16 @@ public class ProductResource
    */
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response putProducts(@HeaderParam("session_token") String pToken, Product[] pContent)
+  public void putProducts(@HeaderParam("session_token") String pToken, Product[] pContent)
   {
     String clientID = sessionTokenValidateService.findIssuerByToken(pToken);
     if (pContent == null || Utility.isNullOrEmptyTrimmedString(clientID))
-      return Response.status(Response.Status.BAD_REQUEST).build();
+      throw new BadRequestException();
 
     // store in index
     indexWriteService.upsertDocument(clientID, INDEX_TYPE, Arrays.stream(pContent)
         .map(pProduct -> pProduct.toIndexJSON(clientID))
         .collect(Collectors.toList()));
-
-    // return 200
-    return Response.ok().build();
   }
 
 }

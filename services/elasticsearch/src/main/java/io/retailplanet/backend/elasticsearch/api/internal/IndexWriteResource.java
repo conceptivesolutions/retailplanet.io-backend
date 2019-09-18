@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.inject.Inject;
 import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
 
@@ -34,10 +33,10 @@ public class IndexWriteResource implements IIndexWriteResource
    * @param pDocument document to insert
    */
   @PUT
-  public Response upsertDocument(@QueryParam("clientID") String pClientID, @QueryParam("type") String pType, Object pDocument) //todo specify Object
+  public void upsertDocument(@QueryParam("clientID") String pClientID, @QueryParam("type") String pType, Object pDocument) //todo specify Object
   {
     if (Utility.isNullOrEmptyTrimmedString(pClientID) || Utility.isNullOrEmptyTrimmedString(pType) || pDocument == null)
-      return Response.status(Response.Status.BAD_REQUEST).build();
+      throw new BadRequestException();
 
     try
     {
@@ -54,8 +53,6 @@ public class IndexWriteResource implements IIndexWriteResource
     {
       throw new RuntimeException("Failed to update index with type " + pType + " for client " + pClientID, e);
     }
-
-    return Response.ok().build();
   }
 
   /**

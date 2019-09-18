@@ -5,7 +5,7 @@ import io.retailplanet.backend.userauth.impl.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
@@ -28,17 +28,17 @@ public class ProfileResource
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Object getInformations(@HeaderParam("Authorization") String pBearerToken)
+  public User getInformations(@HeaderParam("Authorization") String pBearerToken)
   {
     if (Utility.isNullOrEmptyTrimmedString(pBearerToken))
-      return Response.status(Response.Status.UNAUTHORIZED).build();
+      throw new BadRequestException();
 
     //todo verify permissions
 
     // Profile-Infos
     IUser user = userDirectory.findUser("xxx"); //todo userid
     if (user == null)
-      return Response.status(Response.Status.NOT_FOUND).build();
+      throw new NotFoundException();
 
     // Return POJO
     User response = new User();
@@ -57,14 +57,14 @@ public class ProfileResource
   @GET
   @Path("avatar/{userid}.png")
   @Produces("image/png")
-  public Object getAvatar(@PathParam("userid") String pUserID, @HeaderParam("If-None-Match") String pCacheIfNoneMatch)
+  public String getAvatar(@PathParam("userid") String pUserID, @HeaderParam("If-None-Match") String pCacheIfNoneMatch)
   {
     //todo cache
 
     // Profile-Infos
     IUser user = userDirectory.findUser(pUserID);
     if (user == null)
-      return Response.status(Response.Status.NOT_FOUND).build();
+      throw new NotFoundException();
 
     return user.getAvatar();
   }
@@ -77,15 +77,15 @@ public class ProfileResource
    * @return Response
    */
   @PATCH
-  public Response update(@HeaderParam("Authorization") String pBearerToken, User pUser)
+  public void update(@HeaderParam("Authorization") String pBearerToken, User pUser)
   {
     if (pUser == null)
-      return Response.status(Response.Status.BAD_REQUEST).build();
+      throw new BadRequestException();
 
     // Get User
     IUser loggedInUser = userDirectory.findUser("xxx"); //todo userid
     if (loggedInUser == null)
-      return Response.status(Response.Status.NOT_FOUND).build();
+      throw new BadRequestException();
 
     // Update necessary
     String newAvatarURL = pUser.avatar != null ? pUser.avatar.url : null;
@@ -94,8 +94,6 @@ public class ProfileResource
     String newAvatarBase64 = pUser.avatar != null ? pUser.avatar.base64 : null;
     if (newAvatarBase64 != null)
       loggedInUser.getMutable().setAvatarFromBase64(newAvatarBase64);
-
-    return Response.ok().build();
   }
 
   /**

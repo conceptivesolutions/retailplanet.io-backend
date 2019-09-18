@@ -1,7 +1,6 @@
 package io.retailplanet.backend.common.comm.index;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 /**
  * @author w.glanzer, 05.09.2019
@@ -17,6 +16,6 @@ public interface IIndexWriteResource
    * @param pDocument document to insert
    */
   @PUT
-  Response upsertDocument(@QueryParam("clientID") String pClientID, @QueryParam("type") String pType, Object pDocument);
+  void upsertDocument(@QueryParam("clientID") String pClientID, @QueryParam("type") String pType, Object pDocument);
 
 }

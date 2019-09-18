@@ -1,7 +1,6 @@
 package io.retailplanet.backend.common.comm.userauth;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 /**
  * @author w.glanzer, 05.09.2019
@@ -17,6 +16,6 @@ public interface IUserAuthResource
    * @return Response, if allowed or not
    */
   @GET
-  Response validate(@QueryParam("clientID") String pClientID, @QueryParam("scope") String pScope);
+  void validate(@QueryParam("clientID") String pClientID, @QueryParam("scope") String pScope);
 
 }
