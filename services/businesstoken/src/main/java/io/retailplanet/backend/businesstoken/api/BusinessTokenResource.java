@@ -18,7 +18,7 @@ import java.util.UUID;
  * @author w.glanzer, 10.06.2019
  */
 @Path("/business/token")
-public class BusinessTokenService
+public class BusinessTokenResource
 {
 
   /* Represents how long a token will be active by default */

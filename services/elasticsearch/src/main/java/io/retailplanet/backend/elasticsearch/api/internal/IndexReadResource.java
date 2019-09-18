@@ -17,7 +17,7 @@ import java.util.*;
  * @author w.glanzer, 16.07.2019
  */
 @Path("/internal/elasticsearch")
-public class IndexReadService implements IIndexReadResource
+public class IndexReadResource implements IIndexReadResource
 {
 
   @Inject

@@ -19,7 +19,7 @@ import static io.retailplanet.backend.products.impl.struct.IIndexStructure.INDEX
  * @author w.glanzer, 20.06.2019
  */
 @Path("/business/product")
-public class ProductsService
+public class ProductResource
 {
 
   @Inject

@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
  * @author w.glanzer, 05.09.2019
  */
 @Path("/internal/userauth")
-public class UserAuthService implements IUserAuthResource
+public class UserAuthResource implements IUserAuthResource
 {
 
   /**

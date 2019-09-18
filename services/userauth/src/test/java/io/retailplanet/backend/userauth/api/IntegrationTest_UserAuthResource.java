@@ -9,7 +9,7 @@ import static io.restassured.RestAssured.given;
  * @author w.glanzer, 11.09.2019
  */
 @QuarkusTest
-public class IntegrationTest_UserAuthService
+public class IntegrationTest_UserAuthResource
 {
 
   @Test

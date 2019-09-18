@@ -13,7 +13,7 @@ import javax.ws.rs.*;
  * @author w.glanzer, 21.06.2019
  */
 @Path("/internal/validate")
-public class SessionTokenValidateService implements ISessionTokenValidateResource
+public class SessionTokenValidateResource implements ISessionTokenValidateResource
 {
 
   @Inject

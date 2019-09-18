@@ -8,7 +8,7 @@ import javax.ws.rs.*;
  * @author w.glanzer, 28.08.2019
  */
 @Path("/internal/metrics")
-public class MetricAnswerService
+public class MetricAnswerResource
 {
 
   @GET

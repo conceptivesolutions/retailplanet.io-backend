@@ -38,35 +38,35 @@ public final class SearchResult
   public List<Object> elements;
 
   @NotNull
-  SearchResult offset(Integer pOffset)
+  public SearchResult offset(Integer pOffset)
   {
     offset = pOffset;
     return this;
   }
 
   @NotNull
-  SearchResult length(Integer pLength)
+  public SearchResult length(Integer pLength)
   {
     length = pLength;
     return this;
   }
 
   @NotNull
-  SearchResult maxSize(Long pMaxSize)
+  public SearchResult maxSize(Long pMaxSize)
   {
     maxSize = pMaxSize;
     return this;
   }
 
   @NotNull
-  SearchResult filters(Map<String, String[]> pFilters)
+  public SearchResult filters(Map<String, String[]> pFilters)
   {
     filters = pFilters;
     return this;
   }
 
   @NotNull
-  SearchResult elements(List<Object> pElements)
+  public SearchResult elements(List<Object> pElements)
   {
     elements = pElements;
     return this;

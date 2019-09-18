@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * @author w.glanzer, 23.06.2019
  */
 @Path("/business/market")
-public class MarketsService
+public class MarketResource
 {
 
   @Inject

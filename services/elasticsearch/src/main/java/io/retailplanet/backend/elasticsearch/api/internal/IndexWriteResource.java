@@ -20,7 +20,7 @@ import java.util.*;
  * @author w.glanzer, 22.06.2019
  */
 @Path("/internal/elasticsearch")
-public class IndexWriteService implements IIndexWriteResource
+public class IndexWriteResource implements IIndexWriteResource
 {
 
   @Inject
