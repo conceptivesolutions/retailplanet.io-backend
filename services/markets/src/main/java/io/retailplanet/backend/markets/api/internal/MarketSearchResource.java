@@ -18,7 +18,7 @@ import java.util.*;
  * @author w.glanzer, 14.07.2019
  */
 @Path("internal/markets/search")
-public class SearchResource implements IMarketSearchResource
+public class MarketSearchResource implements IMarketSearchResource
 {
 
   @Inject

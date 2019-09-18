@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
  * @author w.glanzer, 12.07.2019
  */
 @Path("/internal/products/search")
-public class SearchResource implements IProductSearchResource
+public class ProductSearchResource implements IProductSearchResource
 {
 
-  private static final Logger _LOGGER = LoggerFactory.getLogger(SearchResource.class);
+  private static final Logger _LOGGER = LoggerFactory.getLogger(ProductSearchResource.class);
 
   @Inject
   @RestClient
