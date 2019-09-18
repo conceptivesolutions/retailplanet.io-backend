@@ -61,6 +61,8 @@ public class SearchService
         .map(this::_searchResultToProduct)
         .collect(Collectors.toList());
 
+    _LOGGER.info("Search with term '" + pQuery + "' returned " + collect.size() + " (" + count + ") results");
+
     // send answer
     return Response.ok(new SearchResult()
                            .filters(new HashMap<>()) //todo filters

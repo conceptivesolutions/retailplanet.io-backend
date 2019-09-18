@@ -51,7 +51,7 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
 
     SearchResponse response = restClient.search(request, RequestOptions.DEFAULT);
 
-    _LOGGER.info("ElasticSearch responded after " + response.getTook().toString() + " with " + response.getHits().getTotalHits() + " hits");
+    _LOGGER.info("ElasticSearch responded after " + response.getTook().toString() + " with " + response.getHits().getTotalHits());
 
     return _toResults(response.getHits());
   }
