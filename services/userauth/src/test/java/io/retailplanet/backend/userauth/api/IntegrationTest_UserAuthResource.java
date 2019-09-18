@@ -21,7 +21,7 @@ public class IntegrationTest_UserAuthResource
         .queryParam("scope", "myScope")
         .when().get("/internal/userauth")
         .then()
-          .statusCode(200);
+          .statusCode(204);
     // @formatter:on
   }
 

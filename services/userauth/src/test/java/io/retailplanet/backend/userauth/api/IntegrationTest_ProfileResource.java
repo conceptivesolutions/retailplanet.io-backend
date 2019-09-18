@@ -38,7 +38,7 @@ public class IntegrationTest_ProfileResource
     given()
         .when().get("/profile")
         .then()
-          .statusCode(401);
+          .statusCode(400);
     // @formatter:on
   }
 
@@ -51,7 +51,7 @@ public class IntegrationTest_ProfileResource
         .header("Authorization", "IAMINVALID")
         .when().get("/profile")
         .then()
-          .statusCode(401);
+          .statusCode(400);
     // @formatter:on
   }
 
