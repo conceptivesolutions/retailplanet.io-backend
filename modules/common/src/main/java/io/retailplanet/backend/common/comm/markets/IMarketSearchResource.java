@@ -1,11 +1,14 @@
 package io.retailplanet.backend.common.comm.markets;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import javax.ws.rs.*;
 import java.util.List;
 
 /**
  * @author w.glanzer, 05.09.2019
  */
+@RegisterForReflection
 public interface IMarketSearchResource
 {
 
