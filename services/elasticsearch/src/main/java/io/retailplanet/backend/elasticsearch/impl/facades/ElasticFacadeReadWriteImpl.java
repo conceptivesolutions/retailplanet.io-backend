@@ -87,8 +87,8 @@ class ElasticFacadeReadWriteImpl extends ElasticFacadeReadImpl
     // create new index request
     CreateIndexRequest productIndex = new CreateIndexRequest(indexName)
         .settings(Settings.builder()
-                      .put("index.number_of_shards", 3)
-                      .put("index.number_of_replicas", 2)
+                      .put("index.number_of_shards", 1)
+                      .put("index.number_of_replicas", 0)
                       .putList("index.store.preload", "nvd", "dvd"))
         .mapping(structProvider.createMapping(pIndexType), XContentType.JSON);
 
