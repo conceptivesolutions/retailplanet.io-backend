@@ -15,6 +15,20 @@ import java.util.stream.Stream;
  */
 public interface IIndexFacade
 {
+  /**
+   * Default value for the search offset
+   */
+  int DEFAULT_OFFSET = 0;
+
+  /**
+   * Default value for the search size
+   */
+  int DEFAULT_SIZE = 20;
+
+  /**
+   * Max size for search
+   */
+  int MAX_SIZE = 100;
 
   /**
    * Insert / Update a elasticsearch document
