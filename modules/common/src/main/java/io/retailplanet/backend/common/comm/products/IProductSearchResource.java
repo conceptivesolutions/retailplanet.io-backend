@@ -17,6 +17,6 @@ public interface IProductSearchResource
    */
   @POST
   SearchResult searchProducts(@QueryParam("query") String pQuery, @QueryParam("sorting") String pSorting,
-                              @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength);
+                              @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength, @QueryParam("filter") String pFilter);
 
 }

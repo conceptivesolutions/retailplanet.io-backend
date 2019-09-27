@@ -13,6 +13,7 @@ import org.jetbrains.annotations.*;
 import org.slf4j.*;
 
 import javax.inject.Inject;
+import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,7 +41,7 @@ public class ProductSearchResource implements IProductSearchResource
    */
   @POST
   public SearchResult searchProducts(@QueryParam("query") String pQuery, @QueryParam("sorting") String pSorting,
-                                     @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength)
+                                     @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength, @QueryParam("filter") String pFilter)
   {
     if (Utility.isNullOrEmptyTrimmedString(pQuery))
       throw new BadRequestException();
@@ -52,7 +53,7 @@ public class ProductSearchResource implements IProductSearchResource
       pLength = 20;
 
     Query query = new Query().matches(Match.equal(IIndexStructure.IProduct.NAME, pQuery, Match.Operator.OR));
-    _enrichWithFilters(query, null); //todo filters
+    _enrichWithFilters(query, pFilter);
 
     io.retailplanet.backend.common.objects.index.SearchResult searchResult = indexReadService.search(ListUtil.of(IIndexStructure.INDEX_TYPE), pOffset, pLength, query);
 
@@ -90,12 +91,28 @@ public class ProductSearchResource implements IProductSearchResource
    * @param pQuery   Query to enrich
    * @param pFilters Filters object
    */
-  private void _enrichWithFilters(@NotNull Query pQuery, @Nullable Map<String, Object> pFilters)
+  private void _enrichWithFilters(@NotNull Query pQuery, @Nullable String pFilters)
   {
     if (pFilters == null)
       return;
 
-    for (Map.Entry<String, Object> filter : pFilters.entrySet())
+    Map<String, Object> filters = _parseFilters(pFilters);
+    if (filters == null)
+      return;
+
+    //todo remove specialhandling
+    if (filters.containsKey("availability"))
+    {
+      List<String> availability = (List<String>) filters.remove("availability");
+      if (filters.containsKey("geo"))
+      {
+        ((List) filters.get("geo")).add(availability.stream()
+                                            .map(ProductAvailability.TYPE::valueOf)
+                                            .collect(Collectors.toList()));
+      }
+    }
+
+    for (Map.Entry<String, Object> filter : filters.entrySet())
     {
       try
       {
@@ -106,6 +123,26 @@ public class ProductSearchResource implements IProductSearchResource
       {
         _LOGGER.warn("Filter could not be interpreted", e);
       }
+    }
+  }
+
+  /**
+   * Parses the json string to a map
+   *
+   * @param pFilters Filters-JSON
+   * @return Map, or <tt>null</tt> if invalid json
+   */
+  @Nullable
+  private Map<String, Object> _parseFilters(@NotNull String pFilters)
+  {
+    try
+    {
+      return new HashMap<>(JsonbBuilder.create().fromJson(pFilters, Map.class));
+    }
+    catch (Exception e)
+    {
+      _LOGGER.error("Failed to parse filters: " + pFilters, e);
+      return null;
     }
   }
 

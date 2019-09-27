@@ -31,7 +31,7 @@ class SearchFilterFactory implements ISearchFilterFactory
       {
         case "geo":
           List<Object> arguments = (List<Object>) pArgumentObject;
-          return new GeoSearchFilter(marketSearchService, Collections.singletonList(ProductAvailability.TYPE.AVAILABLE),
+          return new GeoSearchFilter(marketSearchService, (List<ProductAvailability.TYPE>) arguments.get(3),
                                      Double.parseDouble(String.valueOf(arguments.get(0))), Double.parseDouble(String.valueOf(arguments.get(1))),
                                      Integer.parseInt(String.valueOf(arguments.get(2)))); //todo availability
 

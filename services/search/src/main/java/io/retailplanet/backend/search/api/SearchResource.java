@@ -8,7 +8,6 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 /**
  * Resource for all /search requests
@@ -26,7 +25,7 @@ public class SearchResource
   @Produces(MediaType.APPLICATION_JSON)
   @GET
   public io.retailplanet.backend.search.api.SearchResult search(@HeaderParam("Authorization") String pUserToken, @QueryParam("query") String pQuery, @QueryParam("sort") String pSorting,
-                                                                @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength, @QueryParam("filter") List<String> pFilter) //todo filter
+                                                                @QueryParam("offset") Integer pOffset, @QueryParam("length") Integer pLength, @QueryParam("filter") String pFilterJSON)
   {
     int offset = pOffset == null ? 0 : pOffset;
     int length = pLength == null ? 20 : pLength;
@@ -35,7 +34,7 @@ public class SearchResource
     if (offset < 0 || length <= 0 || length > 100 || Utility.isNullOrEmptyTrimmedString(pQuery))
       throw new BadRequestException();
 
-    SearchResult result = productSearchService.searchProducts(pQuery, pSorting, pOffset, pLength);
+    SearchResult result = productSearchService.searchProducts(pQuery, pSorting, pOffset, pLength, pFilterJSON);
 
     return new io.retailplanet.backend.search.api.SearchResult()
         .offset(offset)
