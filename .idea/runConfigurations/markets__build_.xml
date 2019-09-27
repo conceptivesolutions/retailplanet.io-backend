@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="markets (build)" type="JarApplication" folderName="w/ maven">
+  <configuration default="false" name="markets (build)" type="JarApplication">
     <option name="JAR_PATH" value="$PROJECT_DIR$/services/markets/target/markets-2.0-SNAPSHOT-runner.jar" />
     <option name="VM_PARAMETERS" value="-Dquarkus.http.port=8084 " />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/services/markets/target" />

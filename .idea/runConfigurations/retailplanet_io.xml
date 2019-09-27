@@ -1,13 +1,14 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="retailplanet.io" type="CompoundRunConfigurationType">
-    <toRun name="elastic (build)" type="JarApplication" />
-    <toRun name="metrics (build)" type="JarApplication" />
-    <toRun name="markets (build)" type="JarApplication" />
-    <toRun name="businessapi (build)" type="JarApplication" />
-    <toRun name="userauth (build)" type="JarApplication" />
-    <toRun name="search (build)" type="JarApplication" />
-    <toRun name="products (build)" type="JarApplication" />
-    <toRun name="businesstoken (build)" type="JarApplication" />
-    <method v="2" />
+  <configuration default="false" name="retailplanet.io" type="Multirun" factoryName="Multirun" separateTabs="false" startOneByOne="false" markFailedProcess="false" hideSuccessProcess="true" delayTime="0">
+    <runConfiguration name="businesstoken (build)" type="JAR Application" />
+    <runConfiguration name="elastic (build)" type="JAR Application" />
+    <runConfiguration name="markets (build)" type="JAR Application" />
+    <runConfiguration name="products (build)" type="JAR Application" />
+    <runConfiguration name="search (build)" type="JAR Application" />
+    <runConfiguration name="userauth (build)" type="JAR Application" />
+    <runConfiguration name="metrics (build)" type="JAR Application" />
+    <method v="2">
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/modules/pom.xml" goal="clean install" />
+    </method>
   </configuration>
 </component>
