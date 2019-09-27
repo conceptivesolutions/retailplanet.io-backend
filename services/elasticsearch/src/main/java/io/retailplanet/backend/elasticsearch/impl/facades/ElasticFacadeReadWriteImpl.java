@@ -15,6 +15,7 @@ import org.elasticsearch.common.xcontent.*;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.*;
 
+import javax.enterprise.inject.Typed;
 import javax.inject.*;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
  * @author w.glanzer, 20.06.2019
  */
 @Singleton
+@Typed(ElasticFacadeReadWriteImpl.class)
 class ElasticFacadeReadWriteImpl extends ElasticFacadeReadImpl
 {
 
