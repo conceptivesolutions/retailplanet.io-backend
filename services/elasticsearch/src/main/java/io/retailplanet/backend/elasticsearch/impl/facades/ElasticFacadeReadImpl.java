@@ -1,13 +1,11 @@
 package io.retailplanet.backend.elasticsearch.impl.facades;
 
-import io.retailplanet.backend.common.util.Utility;
-import io.retailplanet.backend.common.util.i18n.ListUtil;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import io.retailplanet.backend.elasticsearch.impl.util.QueryUtility;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.*;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.jetbrains.annotations.*;
@@ -69,9 +67,6 @@ abstract class ElasticFacadeReadImpl implements IIndexFacade
   @NotNull
   private List<QueryBuilder> _toQueryBuilders(@NotNull List<IQueryBuilder> pBuilders)
   {
-    if (Utility.isDevMode())
-      return ListUtil.of(QueryBuilders.matchAllQuery());
-
     return pBuilders.stream()
         .map(IQueryBuilder::toQueryBuilder)
         .filter(Objects::nonNull)

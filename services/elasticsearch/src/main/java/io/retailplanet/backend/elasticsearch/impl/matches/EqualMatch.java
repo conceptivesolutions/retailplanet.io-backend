@@ -1,6 +1,7 @@
 package io.retailplanet.backend.elasticsearch.impl.matches;
 
 import io.retailplanet.backend.common.objects.index.Match;
+import io.retailplanet.backend.common.util.Utility;
 import io.retailplanet.backend.elasticsearch.impl.IQueryBuilder;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.*;
@@ -33,6 +34,9 @@ class EqualMatch implements IQueryBuilder
   @Override
   public QueryBuilder toQueryBuilder()
   {
+    if (fieldValue.equals("*") && Utility.isDevMode())
+      return QueryBuilders.matchAllQuery();
+
     MatchQueryBuilder builder = QueryBuilders.matchQuery(fieldName, fieldValue)
         .operator(operator == Match.Operator.AND ? Operator.AND : Operator.OR);
     if (nestedPath != null)
